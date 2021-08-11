@@ -1,10 +1,8 @@
 *.Rproj
 
-www/*
-packrat/*
-# packrat/lib*/
-# packrat/src/*
-# packrat/bundles/*
+packrat/lib*/
+packrat/src/*
+packrat/bundles/*
 
 dev-files/
 
