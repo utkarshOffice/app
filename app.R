@@ -34,7 +34,9 @@ ui <- function(request){
                      menuSubItem("Slurry Viscosity Drying Model", tabName = "slurry"),
                      menuSubItem('SD Slurry Properties', tabName = 'bulkdensity'),
                      menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
-                     menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2')
+                     menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2'),
+                     menuSubItem('Chill Roll Mill Model', tabName = 'crm')
+                     
             ),
             menuItem('Beauty & Personal Care', tabName = 'BCP'
                      ,menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner')
@@ -70,7 +72,8 @@ ui <- function(request){
                 tabItem(tabName = "bulkdensity1", SD_powderUI("SD_powdermodel")),
                 tabItem(tabName = "bulkdensity2", NTR_powderUI("NTR_powdermodel")),
                 tabItem(tabName = "skin", Facial_MoisturizerUI("Facial_Moisturizermodel")),
-                tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI") )
+                tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI")),
+                tabItem(tabName = "crm", chillrollUI("chillrollmodel") )
             ),
             
         )
@@ -87,6 +90,7 @@ server <-  function(input, output, session) {
     SD_powderServer("SD_powdermodel", top_session=session)
     NTR_powderServer("NTR_powdermodel", top_session=session)
     Facial_MoisturizerServer("Facial_Moisturizermodel", top_session=session)
+    chillrollServer("chillrollmodel", top_session=session)
     
     observe({
         reactiveValuesToList(input)
