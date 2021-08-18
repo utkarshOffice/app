@@ -14,8 +14,9 @@ chillrollServer <- function(id, top_session){
       optimise1_uday <- reactiveVal(NULL)
       optimise2_uday <- reactiveVal(NULL)
       
-      x_uday <- data.frame(Models_uday <- c("Flake Final Temp = (Cooling_seg_fraction)*(-48.3757602771176) + (T_ambient)^2*(-0.0000431916784640458) + (T_flake feed)*(0.339086502336415) + (T_chilled water)*0.529509608669907 + (Film thickness)*(18.6709859995675) + (Film thickness)^2*(6.55116697694696) + (DEFI Free roll length)^2*(0.13197883988453) + (Roll Speed)*7.21191328015338 + (Roll Speed)^2*1.26186094993258 - 18.9553266806959"
-      ))
+      x_uday <- data.frame(Models_uday <- c("Flake Final Temp (Model 1) = (Cooling_seg_fraction)*(-45.5179701273954) + (Film_thickness)*(18.8956339477401) + ((Film_thickness)^2)*(6.67710528547635) + (Roll_Speed)*(7.21746209125386) + ((Roll_Speed)^2)*(1.27090332399397) + 20.3887470216993",
+                                            "Flake Final Temp (Model 2) = (Cooling_seg_fraction)*(-48.3757602771176) + (T_ambient)^2*(-0.0000431916784640458) + (T_flake feed)*(0.339086502336415) + (T_chilled water)*0.529509608669907 + (Film thickness)*(18.6709859995675) + (Film thickness)^2*(6.55116697694696) + (DEFI Free roll length)^2*(0.13197883988453) + (Roll Speed)*7.21191328015338 + (Roll Speed)^2*1.26186094993258 - 18.9553266806959"
+                                            ))
       
       
       b_uday <- c("Film_thickness", "Cooling_seg_fraction", "T_flake_feed" , "T_ambient","T_chilled_water" ,"DEFI_Free_roll_length", "Roll_Speed")
@@ -59,7 +60,9 @@ chillrollServer <- function(id, top_session){
       # profiler renderings
       observeEvent(req(input$profiler_Film_thickness),{
         
-        eqn1 <- "(Cooling_seg_fraction)*(-48.3757602771176) + ((T_ambient)**2)*(-0.0000431916784640458) + (T_flake_feed)*(0.339086502336415) + (T_chilled_water)*(0.529509608669907) + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + ((DEFI_Free_roll_length)**2)*(0.13197883988453) + (Roll_Speed)*(7.21191328015338) + ((Roll_Speed)**2)*(1.26186094993258) - (18.9553266806959)"
+        eqn1 <- "(Cooling_seg_fraction)*(-45.5179701273954) + (Film_thickness)*(18.8956339477401) + ((Film_thickness)^2)*(6.67710528547635) + (Roll_Speed)*(7.21746209125386) + ((Roll_Speed)^2)*(1.27090332399397) + 20.3887470216993"
+        eqn2 <- "(Cooling_seg_fraction)*(-48.3757602771176) + ((T_ambient)**2)*(-0.0000431916784640458) + (T_flake_feed)*(0.339086502336415) + (T_chilled_water)*(0.529509608669907) + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + ((DEFI_Free_roll_length)**2)*(0.13197883988453) + (Roll_Speed)*(7.21191328015338) + ((Roll_Speed)**2)*(1.26186094993258) - (18.9553266806959)"
+        
         
         Film_thickness <- round(seq(from  = 0.5, to = 2.0, length.out = 25),3)
         Cooling_seg_fraction <- reactive(input$profiler_Cooling_seg_fraction)
@@ -80,11 +83,19 @@ chillrollServer <- function(id, top_session){
         
         observeEvent(input$profiler_Film_thickness | input$profiler_T_ambient | input$profiler_T_flake_feed | input$profiler_Cooling_seg_fraction |input$profiler_DEFI_Free_roll_length | input$profiler_T_chilled_water | input$profiler_Cooling_seg_fraction,
             {
-            Final_Flake_Temp <- reactive(eval(parse(text = eqn1)))
+            Final_Flake_Temp_M1 <- reactive(eval(parse(text = eqn1)))
+            Final_Flake_Temp_M2 <- reactive(eval(parse(text = eqn2)))
             
             output$plot1 <- renderPlot({
-              FFT <- Final_Flake_Temp()
-              ggplot(data=data.frame(Film_thickness, FFT), aes(x=Film_thickness, y= FFT)) +
+              FFT1 <- Final_Flake_Temp_M1()
+              ggplot(data=data.frame(Film_thickness, FFT1), aes(x=Film_thickness, y= FFT1)) +
+                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
+                gghighlight(Film_thickness == input$profiler_Film_thickness)
+            })
+            
+            output$plot2 <- renderPlot({
+              FFT2 <- Final_Flake_Temp_M2()
+              ggplot(data=data.frame(Film_thickness, FFT2), aes(x=Film_thickness, y= FFT2)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                 gghighlight(Film_thickness == input$profiler_Film_thickness)
             })
@@ -331,7 +342,7 @@ chillrollServer <- function(id, top_session){
         observe({
           y_uday <- reactive({
             # munits <- rep("%(w/w)",length(all_vars_uday))
-            values <- c(0.287, 0.13, 0.17, 0.17, 0.07, 0.01, 0.01)
+            values <- c(1.0, 0.75, 110, 30, 7.5, 0.01, 2.0)
             sqr <- data.frame(t(values))
             #sqr1 <- datatable(sqr, editable = T,colnames = c("Model Predictors","Measurement Units", "Enter Simulation Values"))
             colnames(sqr) <- all_vars_uday
@@ -347,26 +358,26 @@ chillrollServer <- function(id, top_session){
           # datatable(x1_uday$df, editable = T)
           datatable(x1_uday$df, editable = T) %>%
             formatStyle(
-              "NaLAS",
-              color = styleInterval(c(0.129, 0.411), c('red', 'black', 'red')))%>%
+              "Film_thickness",
+              color = styleInterval(c(0.5, 2.0), c('red', 'black', 'red')))%>%
             formatStyle(
-              "TargetSMC",
-              color = styleInterval(c(0.286, 0.371), c('red', 'black', 'red')))%>%
+              "Cooling_seg_fraction",
+              color = styleInterval(c(0.5, 0.875), c('red', 'black', 'red')))%>%
             formatStyle(
-              "AlkSilicate",
-              color = styleInterval(c(0.069, 0.161), c('red', 'black', 'red')))%>%
+              "T_flake_feed",
+              color = styleInterval(c(100, 130), c('red', 'black', 'red')))%>%
             formatStyle(
-              "CP5",
-              color = styleInterval(c(0.00, 0.031), c('red', 'black', 'red')))%>%
+              "T_ambient",
+              color = styleInterval(c(15, 40), c('red', 'black', 'red')))%>%
             formatStyle(
-              "LSA",
-              color = styleInterval(c(0.169, 0.451), c('red', 'black', 'red')))%>%
+              "T_chilled_water",
+              color = styleInterval(c(-5, 15), c('red', 'black', 'red')))%>%
             formatStyle(
-              "Sulphate",
-              color = styleInterval(c(0.169, 0.521), c('red', 'black', 'red')))%>%
+              "DEFI_Free_roll_length",
+              color = styleInterval(c(0.001, 0.1), c('red', 'black', 'red')))%>%
             formatStyle(
-              "SCMC",
-              color = styleInterval(c(0.00, 0.011), c('red', 'black', 'red')))
+              "Roll_Speed",
+              color = styleInterval(c(1.0, 4.0), c('red', 'black', 'red')))
         })
         
         
@@ -396,50 +407,47 @@ chillrollServer <- function(id, top_session){
         
         
         observeEvent(input$simulate_uday,{
-          eqn1 <- "69.1536246310703*((TargetSMC-0.29)/0.315)+177.928009032322*((NaLASinSlurry-0.09)/0.315)+110.938848553557*((LSAinSlurry-0.13)/0.315)-19.3532538435312*((SulphateinSlurry-0.12)/0.315)+200.241313148041*((AlkSilicateinSlurry-0.054)/0.315)+84.026446932*((CP5inSlurry-0.001)/0.315)-133.9508143*(SCMCinSlurry/0.315)+((TargetSMC-0.29)/0.315)*(((NaLASinSlurry-0.09)/0.315)*-617.616933895298)+((TargetSMC-0.29)/0.315)*(((LSAinSlurry-0.13)/0.315)*-390.462090953345)+((TargetSMC-0.29)/0.315)*(((AlkSilicateinSlurry -0.054)/0.315)*-764.6979746)+((LSAinSlurry-0.13)/0.315)*(((CP5inSlurry-0.001)/0.315)*-1142.960714+((LSAinSlurry-0.13)/0.135)*((SCMCinSlurry/0.315)*2249.8386364))"
-          eqn2 = "-869.69157979082*TargetSMC+ 275.811033852585*NaLASinSlurry+-640.1501097706*AlkSilicateinSlurry+668.418092332803*CP5inSlurry+ 318.358001206768*LSAinSlurry+1671.3734983827 *SCMCinSlurry + 388.721602050357*SulphateinSlurry+TargetSMC*(TargetSMC*1310.48156368694)+NaLASinSlurry*(NaLASinSlurry*212.536004289529)+SulphateinSlurry*(SulphateinSlurry*-384.589140519452)+LSAinSlurry*(LSAinSlurry*-17.9351176105554)+AlkSilicateinSlurry*(AlkSilicateinSlurry*6523.70048980465)+CP5inSlurry*(CP5inSlurry*-19394.6828836579)+SCMCinSlurry*(SCMCinSlurry*-216978.610667717)"
-          eqn3 <- "1.64652727504537 *TargetSMC+ -0.340054974118285 *NaLAS +0.0349876142645199 *AlkSilicate+ -0.26064073764549 *CP5 +-0.0575389664392278 * LSA + -1.17237663840093 * SCMC + -0.298363251134605 * Sulphate"
+          
+          eqn1 <- "(Cooling_seg_fraction)*(-45.5179701273954) + (Film_thickness)*(18.8956339477401) + ((Film_thickness)^2)*(6.67710528547635) + (Roll_Speed)*(7.21746209125386) + ((Roll_Speed)^2)*(1.27090332399397) + 20.3887470216993"
+          eqn2 <- "(Cooling_seg_fraction)*(-48.3757602771176) + ((T_ambient)**2)*(-0.0000431916784640458) + (T_flake_feed)*(0.339086502336415) + (T_chilled_water)*(0.529509608669907) + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + ((DEFI_Free_roll_length)**2)*(0.13197883988453) + (Roll_Speed)*(7.21191328015338) + ((Roll_Speed)**2)*(1.26186094993258) - (18.9553266806959)"
           
           df <- as.data.frame(x1_uday$df)
+                    # df$Cooling_seg_fraction <- as.numeric(df$NaLAS) + as.numeric(df$SCMC) + as.numeric(df$AlkSilicate) + as.numeric(df$CP5) + as.numeric(df$Sulphate) + as.numeric(df$LSA)
+          # df$Film_thickness <- as.numeric(df$NaLAS)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
+          # df$T_ambient <- as.numeric(df$LSA)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
+          # df$T_flake_feed <- as.numeric(df$SCMC)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
+          # df$T_chilled_water <- as.numeric(df$AlkSilicate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
+          # df$Roll_Speed <- as.numeric(df$CP5)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
+          # df$DEFI_Free_roll_length <- as.numeric(df$Sulphate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
+          
+          # output$newvals_uday <- renderDataTable({
+          #   newvals <-  round(data.frame(cbind(df$NaLASinSlurry,df$LSAinSlurry, df$SCMCinSlurry, df$AlkSilicateinSlurry, df$CP5inSlurry , df$SulphateinSlurry)
+          #   ),3)
+          #   
+          #   DT::datatable(newvals[2,] , colnames = c("NaLAS in Slurry", "LSA in Slurry", " SCMC in Slurry", " Alk Silicate in Slurry", " CP5 in Slurry", "Sulphate in Slurry"), rownames = NULL)
+          #   
+          # })
           
           
-          
-          df$sum <- as.numeric(df$NaLAS) + as.numeric(df$SCMC) + as.numeric(df$AlkSilicate) + as.numeric(df$CP5) + as.numeric(df$Sulphate) + as.numeric(df$LSA)
-          df$NaLASinSlurry <- as.numeric(df$NaLAS)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          df$LSAinSlurry <- as.numeric(df$LSA)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          df$SCMCinSlurry <- as.numeric(df$SCMC)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          df$AlkSilicateinSlurry <- as.numeric(df$AlkSilicate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          df$CP5inSlurry <- as.numeric(df$CP5)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          df$SulphateinSlurry <- as.numeric(df$Sulphate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          
-          output$newvals_uday <- renderDataTable({
-            newvals <-  round(data.frame(cbind(df$NaLASinSlurry,df$LSAinSlurry, df$SCMCinSlurry, df$AlkSilicateinSlurry, df$CP5inSlurry , df$SulphateinSlurry)
-            ),3)
-            
-            DT::datatable(newvals[2,] , colnames = c("NaLAS in Slurry", "LSA in Slurry", " SCMC in Slurry", " Alk Silicate in Slurry", " CP5 in Slurry", "Sulphate in Slurry"), rownames = NULL)
-            
-          })
-          
-          
-          output$simulation_heading_uday <- renderUI({
-            h3("Calculated Values for other Variables")
-          })
+          # output$simulation_heading_uday <- renderUI({
+          #   h3("Calculated Values for other Variables")
+          # })
           
           for(i in b_uday){
             eqn1 <- gsub(i, df[2,i], eqn1)
             eqn2 <- gsub(i, df[2,i], eqn2)
           }
           
-          for(i in all_vars_uday){
-            eqn3 <- gsub(i, df[2,i], eqn3)
-          }
-          Pred_Formula_Low_Sheer_Viscosity <- eval(parse(text = eqn1))
-          Torque300 <- eval(parse(text = eqn2))
-          Drying_Prediction <- eval(parse(text = eqn3))
+          # for(i in all_vars_uday){
+          #   eqn3 <- gsub(i, df[2,i], eqn3)
+          # }
+          Final_Flake_Temp_M1 <- eval(parse(text = eqn1))
+          Final_Flake_Temp_M2 <- eval(parse(text = eqn2))
+          # Drying_Prediction <- eval(parse(text = eqn3))
           
           
           
-          tbl <- cbind(Pred_Formula_Low_Sheer_Viscosity, Torque300, Drying_Prediction)
+          tbl <- cbind(Final_Flake_Temp_M1, Final_Flake_Temp_M2)
           df1 <- x1_uday$df
           
           manualinput_uday(df1)
@@ -460,10 +468,7 @@ chillrollServer <- function(id, top_session){
           
           output$result1_uday <- renderDataTable(
             
-            {  
-              
-              
-              tbl })
+            { tbl })
         })
         
         # nrdata2 <- as.data.frame(tbl)
@@ -530,9 +535,9 @@ chillrollServer <- function(id, top_session){
               eqn2 <- gsub(i, paste0("df1$",i), eqn2)
             }
             
-            for(i in d_uday){
-              eqn3 <- gsub(i, paste0("df1$",i), eqn3)
-            }
+            # for(i in d_uday){
+            #   eqn3 <- gsub(i, paste0("df1$",i), eqn3)
+            # }
             
             Pred_Formula_Low_Sheer_Viscosity <- eval(parse(text = eqn1))
             Torque300 <- eval(parse(text = eqn2))
