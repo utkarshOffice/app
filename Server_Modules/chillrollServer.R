@@ -20,8 +20,8 @@ chillrollServer <- function(id, top_session){
       
       
       b_uday <- c("Film_thickness", "Cooling_seg_fraction", "T_flake_feed" , "T_ambient","T_chilled_water" ,"DEFI_Free_roll_length", "Roll_Speed")
-      c_uday <- c("Film_thickness", "Cooling_seg_fraction", "T_flake_feed" , "T_ambient","T_chilled_water" ,"DEFI_Free_roll_length", "Roll_Speed")
-      d_uday <- c("Film_thickness", "Cooling_seg_fraction", "T_flake_feed" , "T_ambient","T_chilled_water" ,"DEFI_Free_roll_length", "Roll_Speed")
+      c_uday <- c("filmthick", "coolseg", "tfeed" , "tambient","tsteel" ,"rollldefifree", "rollspeed")
+      d_uday <- c("filmthick", "coolseg", "tfeed" , "tambient","tsteel" ,"rollldefifree", "rollspeed")
       # c_uday <- c("targetsmc", "NaLASinSlurry", "LSAinSlurry" , "SulphateinSlurry","AlkSilicateinSlurry" ,"CP5inSlurry", "SCMCinSlurry")
       # d_uday <- c("targetsmc", "nalas", "lsa" , "sulphate","alksilicate" ,"cp5", "scmc")
       all_vars_uday <-c("Film_thickness", "Cooling_seg_fraction", "T_flake_feed" , "T_ambient","T_chilled_water" ,"DEFI_Free_roll_length", "Roll_Speed")
@@ -104,6 +104,7 @@ chillrollServer <- function(id, top_session){
       })
       
       
+      # --------------------------------------------- VISUALIZATION ------------------------------------------------------
       
       #visualization page renderings
       observeEvent(req(input$datacall_uday),
@@ -113,53 +114,55 @@ chillrollServer <- function(id, top_session){
                        req(input$datacall_uday)
                        inFile <- input$datacall_uday
                        if(is.null(inFile)) return(NULL)
-                       
+
                        #xlfile <- read_excel(paste0(inFile$datapath, ".xlsx"))
-                       xlfile <- read_excel(input$datacall_uday$datapath)
+                       xlfile <- read_excel(input$datacall_uday$datapath , sheet='Sensor')
                        colnames(xlfile) <- gsub("\\[.*?\\]","",colnames(xlfile))
                        colnames(xlfile) <- gsub(" ","",colnames(xlfile))
                        colnames(xlfile) <- tolower(colnames(xlfile))
                        xlfile
-                       
+
                      })
                      df1 <- uday_data_slurry1()
-                     df1$sum <- df1$nalas + df1$scmc + df1$alksilicate + df1$cp5 + df1$sulphate + df1$lsa
-                     df1$NaLASinSlurry <- df1$nalas/df1$sum*(1-df1$targetsmc)
-                     df1$LSAinSlurry <- df1$lsa/df1$sum*(1-df1$targetsmc)
-                     df1$SCMCinSlurry <- df1$scmc/df1$sum*(1-df1$targetsmc)
-                     df1$AlkSilicateinSlurry <- df1$alksilicate/df1$sum*(1-df1$targetsmc)
-                     df1$CP5inSlurry <- df1$cp5/df1$sum*(1-df1$targetsmc)
-                     df1$SulphateinSlurry <- df1$sulphate/df1$sum*(1-df1$targetsmc)
+                     # df1$sum <- df1$nalas + df1$scmc + df1$alksilicate + df1$cp5 + df1$sulphate + df1$lsa
+                     # df1$NaLASinSlurry <- df1$nalas/df1$sum*(1-df1$targetsmc)
+                     # df1$LSAinSlurry <- df1$lsa/df1$sum*(1-df1$targetsmc)
+                     # df1$SCMCinSlurry <- df1$scmc/df1$sum*(1-df1$targetsmc)
+                     # df1$AlkSilicateinSlurry <- df1$alksilicate/df1$sum*(1-df1$targetsmc)
+                     # df1$CP5inSlurry <- df1$cp5/df1$sum*(1-df1$targetsmc)
+                     # df1$SulphateinSlurry <- df1$sulphate/df1$sum*(1-df1$targetsmc)
                      #View(df1)
                      uday_data_slurry2 <- reactive({
                        req(input$datacall_uday)
                        inFile <- input$datacall_uday
                        if(is.null(inFile)) return(NULL)
-                       
+
                        #file.rename(inFile$datapath, paste0(inFile$datapath, ".xlsx"))
                        #xlfile <- read_excel(paste0(inFile$datapath, ".xlsx"))
-                       xlfile <- read_excel(input$datacall_uday$datapath)
-                       
+                       xlfile <- read_excel(input$datacall_uday$datapath, sheet='Sensor', range='Sensor!D1:J502')
+
                        xlfile
-                       
+
                      })
                      df2 <- uday_data_slurry2()
-                     df3 <- df1[tail(seq_along(df1),7)]
-                     colnames(df3) <- c("Sum", "NaLAS in Slurry", "LSA in Slurry", "SCMC in Slurry", "Alk Silicate in Slurry", "CP5 in Slurry", "Sulphate in Slurry")
-                     # View(df3)
-                     finaldf <- as.data.frame(cbind(df2, df3))
+                     #df3 <- df1[tail(seq_along(df1),7)]
                      
+                     #colnames(df3) <- c("Cool seg",	"T ambient","T feed","T steel",	"film thick"	,"roll L DEFI Free", "roll Speed")
+                     #View(df3)
+                     #finaldf <- as.data.frame(cbind(df2, df3))
+                     finaldf <- as.data.frame(df2)
+
                      output$simulationdata_uday <- renderDataTable({
                        uday_data_slurry2()
                      })
                      # View(finaldf)
                      #View(data_uday)
-                     updateSelectInput(session, "y_axis_bd", choices = colnames(finaldf), selected = colnames(finaldf)[2])
-                     updateSelectInput(session, "x_axis_bd", choices = colnames(finaldf))
+                     updateSelectInput(session, "y_axis_bd", choices = colnames(finaldf), selected = colnames(finaldf)[1])
+                     updateSelectInput(session, "x_axis_bd", choices = colnames(finaldf), selected = colnames(finaldf)[5])
                      updateSelectInput(session, "x_line", choices = colnames(finaldf))
                      updateSelectInput(session, "y_line", choices = colnames(finaldf))
                      updateSelectInput(session, "hist_choice_uday", choices = colnames(finaldf))
-                     
+
                      output$simulationdata1_uday <- renderDataTable(finaldf)
                      output$scatterplot_uday <- renderPlot(
                        if(length(input$y_axis_bd) == 1){
@@ -190,7 +193,7 @@ chillrollServer <- function(id, top_session){
                            #scaleFactor <- max(data()[[input$y_axis[1]]]) / max(data()[[input$y_axis[2]]])
                            first <- input$y_axis_bd[1]
                            second <- input$y_axis_bd[2]
-                           
+
                            ggplot(finaldf, aes(x=finaldf[[input$x_axis_bd]])) +
                              geom_point(aes(y=finaldf[[first]]), col="blue")+
                              geom_point(aes(y=finaldf[[second]] * 1), col="red", shape = 18)+
@@ -215,7 +218,7 @@ chillrollServer <- function(id, top_session){
                            first <- input$y_axis_bd[1]
                            second <- input$y_axis_bd[2]
                            #scaleFactor <- max(data()[[first]]) / max(data()[[second]])
-                           
+
                            ggplot(finaldf, aes(x=finaldf[[input$x_axis_bd]])) +
                              geom_point(aes(y=finaldf[[first]]), col="blue")+
                              geom_point(aes(y=finaldf[[second]] * 1), col="red", shape = 18)+
@@ -229,7 +232,7 @@ chillrollServer <- function(id, top_session){
                          }
                        }
                      })
-                     
+
                      output$ggscatter_uday <- renderPlot({
                        if(input$smooth_uday){
                          if(length(input$y_axis_bd) == 1){
@@ -239,7 +242,7 @@ chillrollServer <- function(id, top_session){
                            #scaleFactor <- max(data()[[input$y_axis[1]]]) / max(data()[[input$y_axis[2]]])
                            first <- input$y_axis_bd[1]
                            second <- input$y_axis_bd[2]
-                           
+
                            ggplot(finaldf, aes(x=finaldf[[input$x_axis_bd]])) +
                              geom_point(aes(y=finaldf[[first]]), col="blue")+
                              geom_point(aes(y=finaldf[[second]] * 1), col="red", shape = 18)+
@@ -264,7 +267,7 @@ chillrollServer <- function(id, top_session){
                            first <- input$y_axis_bd[1]
                            second <- input$y_axis_bd[2]
                            #scaleFactor <- max(data()[[first]]) / max(data()[[second]])
-                           
+
                            ggplot(finaldf, aes(x=finaldf[[input$x_axis_bd]])) +
                              geom_point(aes(y=finaldf[[first]]), col="blue")+
                              geom_point(aes(y=finaldf[[second]] * 1), col="red", shape = 18)+
@@ -278,7 +281,7 @@ chillrollServer <- function(id, top_session){
                          }
                        }
                      })
-                     
+
                      output$multi_lines_graph_uday <- renderPlotly({
                        if(length(input$y_axis_bd) == 1){
                          fig <- plot_ly( x = ~data_uday_bd()[[input$x_axis_bd]], marker=list(size=10))
@@ -334,17 +337,16 @@ chillrollServer <- function(id, top_session){
                          labs(x = as.character(input$hist_choice_uday))
                      })
                    })
+
       
-      
+      # --------------------------------------------- SIMULATION ------------------------------------------------------
       
       observeEvent(req(x_uday),{
         x1_uday <- reactiveValues()
         observe({
           y_uday <- reactive({
-            # munits <- rep("%(w/w)",length(all_vars_uday))
             values <- c(1.0, 0.75, 110, 30, 7.5, 0.01, 2.0)
             sqr <- data.frame(t(values))
-            #sqr1 <- datatable(sqr, editable = T,colnames = c("Model Predictors","Measurement Units", "Enter Simulation Values"))
             colnames(sqr) <- all_vars_uday
             rownames(sqr) <- c("Enter Simulation Values")
             sqr
@@ -355,7 +357,7 @@ chillrollServer <- function(id, top_session){
         
         
         output$simulation_input_uday <- renderDataTable({ 
-          # datatable(x1_uday$df, editable = T)
+          
           datatable(x1_uday$df, editable = T) %>%
             formatStyle(
               "Film_thickness",
@@ -412,40 +414,17 @@ chillrollServer <- function(id, top_session){
           eqn2 <- "(Cooling_seg_fraction)*(-48.3757602771176) + ((T_ambient)**2)*(-0.0000431916784640458) + (T_flake_feed)*(0.339086502336415) + (T_chilled_water)*(0.529509608669907) + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + ((DEFI_Free_roll_length)**2)*(0.13197883988453) + (Roll_Speed)*(7.21191328015338) + ((Roll_Speed)**2)*(1.26186094993258) - (18.9553266806959)"
           
           df <- as.data.frame(x1_uday$df)
-                    # df$Cooling_seg_fraction <- as.numeric(df$NaLAS) + as.numeric(df$SCMC) + as.numeric(df$AlkSilicate) + as.numeric(df$CP5) + as.numeric(df$Sulphate) + as.numeric(df$LSA)
-          # df$Film_thickness <- as.numeric(df$NaLAS)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          # df$T_ambient <- as.numeric(df$LSA)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          # df$T_flake_feed <- as.numeric(df$SCMC)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          # df$T_chilled_water <- as.numeric(df$AlkSilicate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          # df$Roll_Speed <- as.numeric(df$CP5)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          # df$DEFI_Free_roll_length <- as.numeric(df$Sulphate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          
-          # output$newvals_uday <- renderDataTable({
-          #   newvals <-  round(data.frame(cbind(df$NaLASinSlurry,df$LSAinSlurry, df$SCMCinSlurry, df$AlkSilicateinSlurry, df$CP5inSlurry , df$SulphateinSlurry)
-          #   ),3)
-          #   
-          #   DT::datatable(newvals[2,] , colnames = c("NaLAS in Slurry", "LSA in Slurry", " SCMC in Slurry", " Alk Silicate in Slurry", " CP5 in Slurry", "Sulphate in Slurry"), rownames = NULL)
-          #   
-          # })
-          
-          
-          # output$simulation_heading_uday <- renderUI({
-          #   h3("Calculated Values for other Variables")
-          # })
+  
           
           for(i in b_uday){
-            eqn1 <- gsub(i, df[2,i], eqn1)
-            eqn2 <- gsub(i, df[2,i], eqn2)
+            eqn1 <- gsub(i, df[1,i], eqn1)
+            eqn2 <- gsub(i, df[1,i], eqn2)
           }
           
-          # for(i in all_vars_uday){
-          #   eqn3 <- gsub(i, df[2,i], eqn3)
-          # }
+
           Final_Flake_Temp_M1 <- eval(parse(text = eqn1))
           Final_Flake_Temp_M2 <- eval(parse(text = eqn2))
-          # Drying_Prediction <- eval(parse(text = eqn3))
-          
-          
+
           
           tbl <- cbind(Final_Flake_Temp_M1, Final_Flake_Temp_M2)
           df1 <- x1_uday$df
@@ -467,20 +446,8 @@ chillrollServer <- function(id, top_session){
           })
           
           output$result1_uday <- renderDataTable(
-            
             { tbl })
         })
-        
-        # nrdata2 <- as.data.frame(tbl)
-        # nrdata12 <- as.data.frame(df1)
-        # View(nrdata2)
-        # View(nrdata12)
-        # output$download1_uday <- downloadHandler(
-        #   filename = function() { "Manual Entry Simulation sd.xlsx"},
-        #   content = function(file) {
-        #     write_xlsx(list("Input" = nrdata12,"Results" = nrdata2), file)
-        #   }
-        # )
         
         
         
@@ -489,8 +456,8 @@ chillrollServer <- function(id, top_session){
           inFile <- input$datacall_uday
           if(is.null(inFile)) return(NULL)
           
-          #xlfile <- read_excel(paste0(inFile$datapath, ".xlsx"))
-          xlfile <- read_excel(input$datacall_uday$datapath)
+
+          xlfile <- read_excel(input$datacall_uday$datapath, sheet='Sensor')
           colnames(xlfile) <- gsub("\\[.*?\\]","",colnames(xlfile))
           colnames(xlfile) <- gsub(" ","",colnames(xlfile))
           colnames(xlfile) <- tolower(colnames(xlfile))
@@ -504,50 +471,34 @@ chillrollServer <- function(id, top_session){
                        showModal(modalDialog(paste0(i, " is not present in imported data but required in equation. 0 is placed in the place of missing variables to render the respective coefficients ineffective.")))
                      }
                      })
-        # View(uday_data_slurry()[,1])
+
         observeEvent(req(input$datacall_uday), {
           
-          #View(uday_data_slurry())
+
           df1 <- uday_data_slurry()
-          
-          #View(df1)
-          df1$sum <- df1$nalas + df1$scmc + df1$alksilicate + df1$cp5 + df1$sulphate + df1$lsa
-          df1$NaLASinSlurry <- df1$nalas/df1$sum*(1-df1$targetsmc)
-          df1$LSAinSlurry <- df1$lsa/df1$sum*(1-df1$targetsmc)
-          df1$SCMCinSlurry <- df1$scmc/df1$sum*(1-df1$targetsmc)
-          df1$AlkSilicateinSlurry <- df1$alksilicate/df1$sum*(1-df1$targetsmc)
-          df1$CP5inSlurry <- df1$cp5/df1$sum*(1-df1$targetsmc)
-          df1$SulphateinSlurry <- df1$sulphate/df1$sum*(1-df1$targetsmc)
-          
-          #View(df1)
+      
           observeEvent(req(input$simulate2_uday),{
-            eqn1 <- "69.1536246310703*((targetsmc-0.29)/0.315)+177.928009032322*((NaLASinSlurry-0.09)/0.315)+110.938848553557*((LSAinSlurry-0.13)/0.315)-19.3532538435312*((SulphateinSlurry-0.12)/0.315)+200.241313148041*((AlkSilicateinSlurry-0.054)/0.315)+84.026446932*((CP5inSlurry-0.001)/0.315)-133.9508143*(SCMCinSlurry/0.315)+((targetsmc-0.29)/0.315)*(((NaLASinSlurry-0.09)/0.315)*-617.616933895298)+((targetsmc-0.29)/0.315)*(((LSAinSlurry-0.13)/0.315)*-390.462090953345)+((targetsmc-0.29)/0.315)*(((AlkSilicateinSlurry -0.054)/0.315)*-764.6979746)+((LSAinSlurry-0.13)/0.315)*(((CP5inSlurry-0.001)/0.315)*-1142.960714+((LSAinSlurry-0.13)/0.135)*((SCMCinSlurry/0.315)*2249.8386364))"
-            eqn2 = "-869.69157979082*targetsmc+ 275.811033852585*NaLASinSlurry+-640.1501097706*AlkSilicateinSlurry+668.418092332803*CP5inSlurry+ 318.358001206768*LSAinSlurry+1671.3734983827 *SCMCinSlurry + 388.721602050357*SulphateinSlurry+targetsmc*(targetsmc*1310.48156368694)+NaLASinSlurry*(NaLASinSlurry*212.536004289529)+SulphateinSlurry*(SulphateinSlurry*-384.589140519452)+LSAinSlurry*(LSAinSlurry*-17.9351176105554)+AlkSilicateinSlurry*(AlkSilicateinSlurry*6523.70048980465)+CP5inSlurry*(CP5inSlurry*-19394.6828836579)+SCMCinSlurry*(SCMCinSlurry*-216978.610667717)"
-            eqn3 <- "1.64652727504537 *targetsmc+ -0.340054974118285 *nalas +0.0349876142645199 *alksilicate+ -0.26064073764549 *cp5 +-0.0575389664392278 * lsa + -1.17237663840093 * scmc + -0.298363251134605 * sulphate"
+            eqn1 <- "(coolseg)*(-45.5179701273954) + (filmthick)*(18.8956339477401) + ((filmthick)^2)*(6.67710528547635) + (rollspeed)*(7.21746209125386) + ((rollspeed)^2)*(1.27090332399397) + 20.3887470216993"
+            eqn2 <- "(coolseg)*(-48.3757602771176) + ((tambient)**2)*(-0.0000431916784640458) + (tfeed)*(0.339086502336415) + (tsteel)*(0.529509608669907) + (filmthick)*(18.6709859995675) + ((filmthick)**2)*(6.55116697694696) + ((rollldefifree)**2)*(0.13197883988453) + (rollspeed)*(7.21191328015338) + ((rollspeed)**2)*(1.26186094993258) - (18.9553266806959)"
             
-            
-            
-            #View(colnames(df()))
-            
+
             
             for(i in c_uday){
               eqn1 <- gsub(i, paste0("df1$",i), eqn1)
               eqn2 <- gsub(i, paste0("df1$",i), eqn2)
             }
+
             
-            # for(i in d_uday){
-            #   eqn3 <- gsub(i, paste0("df1$",i), eqn3)
-            # }
-            
-            Pred_Formula_Low_Sheer_Viscosity <- eval(parse(text = eqn1))
-            Torque300 <- eval(parse(text = eqn2))
-            Drying_Prediction <- eval(parse(text = eqn3))
-            tbl <- cbind(Pred_Formula_Low_Sheer_Viscosity, Torque300, Drying_Prediction)
+            Final_Flake_Temp_M1 <- eval(parse(text = eqn1))
+            Final_Flake_Temp_M2 <- eval(parse(text = eqn2))
+
+            tbl <- cbind(Final_Flake_Temp_M1, Final_Flake_Temp_M2)
             nrdata <- as.data.frame(tbl)
             
-            importresults_uday(tbl)
+         
             
-            # nrdata1 <- as.data.frame(df)
+            importresults_uday(tbl)
+
             output$download2_uday <- downloadHandler(
               filename = function() { "Import Data Simulation.xlsx"},
               content = function(file) {
@@ -560,14 +511,17 @@ chillrollServer <- function(id, top_session){
             })
             
             output$modeltable2_uday <- renderDataTable({
-              DT::datatable(as.data.frame(cbind(Pred_Formula_Low_Sheer_Viscosity, Torque300, Drying_Prediction)), rownames = FALSE)
+              DT::datatable(as.data.frame(cbind(Final_Flake_Temp_M1, Final_Flake_Temp_M2)), rownames = FALSE)
             })
           })
         })
         
         
-        #})
         
+        
+        
+        #})
+        # --------------------------------------------- OPTIMIZATION ------------------------------------------------------
         #optimisation renderings for uday(SD slurry props- drying prediction)
         observeEvent(req(x_uday),
                      {
