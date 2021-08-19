@@ -3,7 +3,7 @@ chillrollUI <- function(id){
   
   tagList(
     {
-      tabsetPanel(id = "tabs_uday",tabPanel("Model Introduction",
+      tabsetPanel(id = "tabs_santosh",tabPanel("Model Introduction",
                                             h1("Chill Roll Mill Model"), 
                                             em("Model Owners: Aditi/Santosh"), 
       ),
@@ -17,9 +17,9 @@ chillrollUI <- function(id){
                    tags$li(" This table presents the available model for this segment.")
                    ,tags$li(" Simulation will take place for all equations simultaneously.")
                  ),
-                 dataTableOutput(ns("models_uday")),
+                 dataTableOutput(ns("models_santosh")),
                  h3("Accepted range for user inputs"),
-                 dataTableOutput(ns("advice_uday"))
+                 dataTableOutput(ns("advice_santosh"))
                )
                ,
                wellPanel(
@@ -32,8 +32,8 @@ chillrollUI <- function(id){
                                         tags$li(" Entered values will automatically be saved for simulation stage.")
                                       ),
                                       h3("The table shows variables for Final Flake Temp Model 1 and Model 2 Predictions."),
-                                      dataTableOutput(ns("simulation_input_uday")),
-                                      actionButton(ns("commit_uday"),"Go to simulation",icon("paper-plane"), 
+                                      dataTableOutput(ns("simulation_input_santosh")),
+                                      actionButton(ns("commit_santosh"),"Go to simulation",icon("paper-plane"), 
                                                    style="color: #fff; background-color: #337ab7; border-color: #2e6d7a4"),
                  ),
                  tabPanel("External Data Import",
@@ -41,9 +41,9 @@ chillrollUI <- function(id){
                             tags$li(" This segment provides simulation data import functionality."),
                             tags$li(" A time series excel file dataset is expected with the naming format of variables in equation.")
                           ),
-                          fileInput(ns("datacall_uday"),"Import Simulation Data"),
-                          dataTableOutput(ns("simulationdata_uday")),
-                          actionButton(ns("commit2_uday"), "Go to Visualization",icon("paper-plane"), 
+                          fileInput(ns("datacall_santosh"),"Import Simulation Data"),
+                          dataTableOutput(ns("simulationdata_santosh")),
+                          actionButton(ns("commit2_santosh"), "Go to Visualization",icon("paper-plane"), 
                                        style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
                  ),
                )),
@@ -68,7 +68,7 @@ chillrollUI <- function(id){
                    selectInput(ns("x_axis_bd"), 'X axis', choices = c(" "," ") ),
                    selectInput(ns("y_axis_bd"), 'Y axis', choices = c(" "," ")
                                ,selected = names(mtcars)[2], multiple = TRUE),
-                   plotOutput(ns("scatterplot_uday")),
+                   plotOutput(ns("scatterplot_santosh")),
                    br(),
                    br(),
                    tags$ul(
@@ -76,36 +76,36 @@ chillrollUI <- function(id){
                      tags$li(" It takes the first two selections of y-axis for plotting . Linear regression method is used for creating trendlines."),
                      tags$li("Trend Line checkbox can be adding or removing the trend line in graph.")
                    ),
-                   checkboxInput(ns("smooth_uday"),"Trend Line", TRUE),
-                   plotOutput(ns("ggscatter_uday")),
-                   checkboxInput(ns("smooth2_uday"),"Multitrend", TRUE),
-                   plotOutput(ns("ggsmooth_uday"))
-                   #plotlyOutput(ns("multi_lines_graph_uday"))
+                   checkboxInput(ns("smooth_santosh"),"Trend Line", TRUE),
+                   plotOutput(ns("ggscatter_santosh")),
+                   checkboxInput(ns("smooth2_santosh"),"Multitrend", TRUE),
+                   plotOutput(ns("ggsmooth_santosh"))
+                   #plotlyOutput(ns("multi_lines_graph_santosh"))
                    
                  ),
                  wellPanel(
                    h2("Histogram"),
-                   selectInput(ns("hist_choice_uday"), "Histogram Variable", c(" "," ")),
-                   plotOutput(ns("hist_uday"))
+                   selectInput(ns("hist_choice_santosh"), "Histogram Variable", c(" "," ")),
+                   plotOutput(ns("hist_santosh"))
                  )
                ),
       ),
       tabPanel("Simulation",
                h3("Simulation Input Response"),
-               tabsetPanel(id = "simuPage_uday",
+               tabsetPanel(id = "simuPage_santosh",
                            tabPanel("Manual Entry Simulation",
                                     #h3("Informative Plots"),
                                     #img(src= "SDslurry1.png"),
                                     #img(src= "SDslurry2.png"),
                                     h3("Input values taken for manual simulation."),
-                                    dataTableOutput(ns("modeltable_uday")),
-                                    actionButton(ns("simulate_uday"),"Simulate on entered Data",
+                                    dataTableOutput(ns("modeltable_santosh")),
+                                    actionButton(ns("simulate_santosh"),"Simulate on entered Data",
                                                  style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                                    uiOutput(ns("simulation_heading_uday")),
-                                    dataTableOutput(ns("newvals_uday")),
-                                    uiOutput(ns("heading1_uday")),
-                                    dataTableOutput(ns("result1_uday")),
-                                    downloadButton(ns("download1_uday"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                                    uiOutput(ns("simulation_heading_santosh")),
+                                    dataTableOutput(ns("newvals_santosh")),
+                                    uiOutput(ns("heading1_santosh")),
+                                    dataTableOutput(ns("result1_santosh")),
+                                    downloadButton(ns("download1_santosh"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                            ),
                            tabPanel("Profiler",
                                     wellPanel(
@@ -128,12 +128,12 @@ chillrollUI <- function(id){
                            
                            
                            tabPanel("Imported Data Simulation",
-                                    uiOutput(ns("heading_uday")),
-                                    dataTableOutput(ns("modeltable2_uday")),
+                                    uiOutput(ns("heading_santosh")),
+                                    dataTableOutput(ns("modeltable2_santosh")),
                                     br(),
-                                    actionButton(ns("simulate2_uday"),"Simulate on Imported Data",
+                                    actionButton(ns("simulate2_santosh"),"Simulate on Imported Data",
                                                  style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                                    downloadButton(ns("download2_uday"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                                    downloadButton(ns("download2_santosh"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                                     ,
                                     
                                     
@@ -156,10 +156,10 @@ chillrollUI <- function(id){
                    ),
                    br() ),
                  wellPanel(
-                   fluidRow(radioButtons(ns("radio_button_uday"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
+                   fluidRow(radioButtons(ns("radio_button_santosh"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
                             br(),
-                            column(2,selectInput(ns("inequality_selection_uday"),"Select the inequality type",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                            column(2,offset=3,numericInput(ns("numeric_input_uday"),"Enter the target Drying Prediction Value",0.32))),
+                            column(2,selectInput(ns("inequality_selection_santosh"),"Select the inequality type",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                            column(2,offset=3,numericInput(ns("numeric_input_santosh"),"Enter the target Drying Prediction Value",0.32))),
                    
                    wellPanel(
                      h2("Objective Function Table"), br(),
@@ -169,28 +169,28 @@ chillrollUI <- function(id){
                      tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
                      tags$li("Press the 'Run optimiser' button to generate the optimal solution.")),
                    br(),
-                   dataTableOutput(ns("optimiser_table1_uday"))),
+                   dataTableOutput(ns("optimiser_table1_santosh"))),
                  
-                 fluidRow(column(2,actionButton(ns("run_optimiser_uday"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
-                          column(2,actionButton(ns("reset_uday"),"Reset to defaults",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")) ),
+                 fluidRow(column(2,actionButton(ns("run_optimiser_santosh"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                          column(2,actionButton(ns("reset_santosh"),"Reset to defaults",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")) ),
                  wellPanel(
                    h3("Results"),
                    tags$li("The \"Results\" table shows the value of Drying Prediction obtained.") ,br(),
-                   dataTableOutput(ns("optimiser_table2_uday")),
+                   dataTableOutput(ns("optimiser_table2_santosh")),
                    h3("Predictors"),br(),
                    tags$li("The \"Predictors table\" shows the optimised value taken by each predictor to obtain the above Drying Prediction value. "),br(),
-                   dataTableOutput(ns("optimiser_table3_uday")),
+                   dataTableOutput(ns("optimiser_table3_santosh")),
                    h4("Objective Function Value"),
-                   uiOutput(ns("value_results_uday")),
-                   downloadButton(ns("download3_uday"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4"), br()
+                   uiOutput(ns("value_results_santosh")),
+                   downloadButton(ns("download3_santosh"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4"), br()
                    
                  ),
                  wellPanel(
                    h2("Global Download"),
                    h4("Download all the results that have been generated throughout the app"),
-                   actionButton(ns("downloadresults_uday"),"Proceed to download all Results",
+                   actionButton(ns("downloadresults_santosh"),"Proceed to download all Results",
                                 style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                   uiOutput(ns("Download_Values_uday"))
+                   uiOutput(ns("Download_Values_santosh"))
                  )
                ) #fluidrow end
       ) #tabpanel optimisation end
