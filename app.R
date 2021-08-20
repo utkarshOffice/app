@@ -35,7 +35,8 @@ ui <- function(request){
                      menuSubItem('SD Slurry Properties', tabName = 'bulkdensity'),
                      menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
                      menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2'),
-                     menuSubItem('Chill Roll Mill Model', tabName = 'crm')
+                     menuSubItem('Chill Roll Mill Model', tabName = 'crm'),
+                     menuSubItem('MonoPP Haiti Type Model', tabName = 'monoPP_haiti')
                      
             ),
             menuItem('Beauty & Personal Care', tabName = 'BCP'
@@ -73,7 +74,8 @@ ui <- function(request){
                 tabItem(tabName = "bulkdensity2", NTR_powderUI("NTR_powdermodel")),
                 tabItem(tabName = "skin", Facial_MoisturizerUI("Facial_Moisturizermodel")),
                 tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI")),
-                tabItem(tabName = "crm", chillrollUI("chillrollmodel") )
+                tabItem(tabName = "crm", chillrollUI("chillrollmodel")),
+                tabItem(tabName = "monoPP_haiti", monoPP_haitiUI("monoPP_haitimodel") )
             ),
             
         )
@@ -91,6 +93,8 @@ server <-  function(input, output, session) {
     NTR_powderServer("NTR_powdermodel", top_session=session)
     Facial_MoisturizerServer("Facial_Moisturizermodel", top_session=session)
     chillrollServer("chillrollmodel", top_session=session)
+    monoPP_haitiServer("monoPP_haitimodel", top_session=session)
+    
     
     observe({
         reactiveValuesToList(input)
