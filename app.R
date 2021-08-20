@@ -75,7 +75,7 @@ ui <- function(request){
                 tabItem(tabName = "skin", Facial_MoisturizerUI("Facial_Moisturizermodel")),
                 tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI")),
                 tabItem(tabName = "crm", chillrollUI("chillrollmodel")),
-                tabItem(tabName = "monoPP_haiti", monoPP_haitiUI("monoPP_haitimodel") )
+                tabItem(tabName = "monoPP_haiti", monoPP_HaitiUI("monoPP_Haitimodel") )
             ),
             
         )
@@ -93,7 +93,7 @@ server <-  function(input, output, session) {
     NTR_powderServer("NTR_powdermodel", top_session=session)
     Facial_MoisturizerServer("Facial_Moisturizermodel", top_session=session)
     chillrollServer("chillrollmodel", top_session=session)
-    monoPP_haitiServer("monoPP_haitimodel", top_session=session)
+    monoPP_HaitiServer("monoPP_Haitimodel", top_session=session)
     
     
     observe({

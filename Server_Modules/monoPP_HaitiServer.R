@@ -72,13 +72,13 @@ monoPP_HaitiServer <- function(id, top_session){
       observeEvent(req(input$profiler_Sealing_Pressure),{
         
         eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure - 50)/25) + 
-                (0.5005544208)*((Sealing_Time - 475)/275) + (1.1487322096)*((Sealing_Temperature - 120)/20) - 
-                (0.265927563)*((Layer_Thickness - 35)/5) - (0.214751072)*((Sealing_Pressure - 50)/25)*((Sealing_Time - 475)/275) + 
-                (0.1653191326)*((Sealing_Pressure - 50)/25)*((Layer_Thickness - 35)/5) - 
-                (0.190088312)*((Sealing_Time-475)/275)*((Layer_Thickness - 35)/5) - 
-                (0.227255444)*((Layer_Thickness - 35)/5)*((Sealing_Temperature - 120)/20) - 
+                (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
+                (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure - 50)/25)*((Sealing_Time() - 475)/275) + 
+                (0.1653191326)*((Sealing_Pressure - 50)/25)*((Layer_Thickness() - 35)/5) - 
+                (0.190088312)*((Sealing_Time()-475)/275)*((Layer_Thickness() - 35)/5) - 
+                (0.227255444)*((Layer_Thickness() - 35)/5)*((Sealing_Temperature() - 120)/20) - 
                 (0.438383433)*((Sealing_Pressure - 50)/25)*((Sealing_Pressure - 50)/25) + 
-                (0.422789614)*((Sealing_Time-475)/275)*((Sealing_Time-475)/275)"
+                (0.422789614)*((Sealing_Time()-475)/275)*((Sealing_Time()-475)/275)"
         
         eqn1 <- gsub("\n","",eqn1) 
         
@@ -102,7 +102,11 @@ monoPP_HaitiServer <- function(id, top_session){
                          ggplot(data=data.frame(Sealing_Pressure, Mean_Seal_Strength), aes(x=Sealing_Pressure, y= Mean_Seal_Strength)) +
                            geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                            gghighlight(Sealing_Pressure == input$profiler_Sealing_Pressure)
-                       })
+                         
+                         
+                         
+                         
+                      })
                        
                        # output$plot2 <- renderPlot({
                        #   Mean_Seal_Strength <- Mean_Seal_Strnt()
