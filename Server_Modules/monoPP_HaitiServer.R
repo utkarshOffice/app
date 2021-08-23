@@ -102,10 +102,6 @@ monoPP_HaitiServer <- function(id, top_session){
                          ggplot(data=data.frame(Sealing_Pressure, Mean_Seal_Strength), aes(x=Sealing_Pressure, y= Mean_Seal_Strength)) +
                            geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                            gghighlight(Sealing_Pressure == input$profiler_Sealing_Pressure)
-                         
-                         
-                         
-                         
                       })
                        
                        # output$plot2 <- renderPlot({

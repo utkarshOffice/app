@@ -65,8 +65,8 @@ chillrollServer <- function(id, top_session){
       # profiler renderings
       observeEvent(req(input$profiler_Film_thickness),{
         
-        eqn1 <- "(Cooling_seg_fraction)*(-45.5179701273954) + (Film_thickness)*(18.8956339477401) + ((Film_thickness)^2)*(6.67710528547635) + (Roll_Speed)*(7.21746209125386) + ((Roll_Speed)^2)*(1.27090332399397) + 20.3887470216993"
-        eqn2 <- "(Cooling_seg_fraction)*(-48.3757602771176) + ((T_ambient)**2)*(-0.0000431916784640458) + (T_flake_feed)*(0.339086502336415) + (T_chilled_water)*(0.529509608669907) + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + ((DEFI_Free_roll_length)**2)*(0.13197883988453) + (Roll_Speed)*(7.21191328015338) + ((Roll_Speed)**2)*(1.26186094993258) - (18.9553266806959)"
+        eqn1 <- "(Cooling_seg_fraction())*(-45.5179701273954) + (Film_thickness)*(18.8956339477401) + ((Film_thickness)^2)*(6.67710528547635) + (Roll_Speed())*(7.21746209125386) + ((Roll_Speed())^2)*(1.27090332399397) + 20.3887470216993"
+        eqn2 <- "(Cooling_seg_fraction())*(-48.3757602771176) + ((T_ambient())**2)*(-0.0000431916784640458) + (T_flake_feed())*(0.339086502336415) + (T_chilled_water())*(0.529509608669907) + (Film_thickness*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + ((DEFI_Free_roll_length())**2)*(0.13197883988453) + (Roll_Speed())*(7.21191328015338) + ((Roll_Speed())**2)*(1.26186094993258) - (18.9553266806959)"
         
         
         Film_thickness <- round(seq(from  = 0.5, to = 2.0, length.out = 25),3)

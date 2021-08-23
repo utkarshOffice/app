@@ -35,13 +35,17 @@ ui <- function(request){
                      menuSubItem('SD Slurry Properties', tabName = 'bulkdensity'),
                      menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
                      menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2'),
-                     menuSubItem('Chill Roll Mill Model', tabName = 'crm'),
-                     menuSubItem('MonoPP Haiti Type Model', tabName = 'monoPP_haiti')
+                     menuSubItem('Chill Roll Mill Model', tabName = 'crm')
                      
             ),
-            menuItem('Beauty & Personal Care', tabName = 'BCP'
-                     ,menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner')
-                     ,menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
+            menuItem('Beauty & Personal Care', tabName = 'BCP',
+                     menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner'),
+                     menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
+                     
+            ),
+            menuItem('Packaging', tabName = 'pack',
+                     menuSubItem('MonoPP Haiti Type Model', tabName = 'monoPP_haiti')
+                     
             ),
             menuItem('Food & Refreshment', tabName = 'fr')
         ),
@@ -75,7 +79,7 @@ ui <- function(request){
                 tabItem(tabName = "skin", Facial_MoisturizerUI("Facial_Moisturizermodel")),
                 tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI")),
                 tabItem(tabName = "crm", chillrollUI("chillrollmodel")),
-                tabItem(tabName = "monoPP_haiti", monoPP_HaitiUI("monoPP_Haitimodel") )
+                tabItem(tabName = "monoPP_haiti", monoPP_HaitiUI("monoPP_Haitimodel"))
             ),
             
         )
