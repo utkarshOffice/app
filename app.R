@@ -42,6 +42,8 @@ ui <- function(request){
             menuItem('Beauty & Personal Care', tabName = 'BCP',
                      menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner'),
                      menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
+                     ,menuSubItem("Soap Lather Volume", tabName = "soap_lather")
+                     ,menuSubItem("Soap Bar Hardness", tabName = "soap_hardness")
                      
             )
             ),
@@ -81,7 +83,9 @@ ui <- function(request){
                 tabItem(tabName = "skin", Facial_MoisturizerUI("Facial_Moisturizermodel")),
                 tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI")),
                 tabItem(tabName = "crm", chillrollUI("chillrollmodel")),
-                tabItem(tabName = "monoPP_haiti", monoPP_HaitiUI("monoPP_Haitimodel"))
+                tabItem(tabName = "monoPP_haiti", monoPP_HaitiUI("monoPP_Haitimodel")),
+                tabItem(tabName = "soap_lather", lather_volumeUI("latherVolumeUI")),
+                tabItem(tabName = "soap_hardness", Soap_HardnessUI("soapHardnessUI"))
             ),
             
         )
@@ -100,6 +104,8 @@ server <-  function(input, output, session) {
     Facial_MoisturizerServer("Facial_Moisturizermodel", top_session=session)
     chillrollServer("chillrollmodel", top_session=session)
     monoPP_HaitiServer("monoPP_Haitimodel", top_session=session)
+    lather_volumeServer("latherVolumeUI", top_session=session)
+    Soap_hardnessServer("soapHardnessUI", top_session=session)
     
     
     observe({
