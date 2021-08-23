@@ -120,7 +120,7 @@ lather_volumeUI <- function(id){
                                                 )),
                                        tabPanel("Imported Data Simulation",
                                                 uiOutput(ns("simulation_result_uday_sd2")),
-                                                column(4,dataTableOutput(ns("modeltable2_uday_sd"))),
+                                                dataTableOutput(ns("modeltable2_uday_sd")),
                                                 br(),
                                                 actionButton(ns("simulate2_uday_sd"),"Simulate on Imported Data",style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
                                                 downloadButton(ns("download2_uday_sd"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
