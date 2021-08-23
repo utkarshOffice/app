@@ -71,18 +71,34 @@ monoPP_HaitiServer <- function(id, top_session){
       # profiler renderings
       observeEvent(req(input$profiler_Sealing_Pressure),{
         
-        eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure - 50)/25) + 
+        eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure() - 50)/25) + 
                 (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
-                (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure - 50)/25)*((Sealing_Time() - 475)/275) + 
-                (0.1653191326)*((Sealing_Pressure - 50)/25)*((Layer_Thickness() - 35)/5) - 
+                (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure() - 50)/25)*((Sealing_Time() - 475)/275) + 
+                (0.1653191326)*((Sealing_Pressure() - 50)/25)*((Layer_Thickness() - 35)/5) - 
                 (0.190088312)*((Sealing_Time()-475)/275)*((Layer_Thickness() - 35)/5) - 
                 (0.227255444)*((Layer_Thickness() - 35)/5)*((Sealing_Temperature() - 120)/20) - 
-                (0.438383433)*((Sealing_Pressure - 50)/25)*((Sealing_Pressure - 50)/25) + 
+                (0.438383433)*((Sealing_Pressure() - 50)/25)*((Sealing_Pressure() - 50)/25) + 
                 (0.422789614)*((Sealing_Time()-475)/275)*((Sealing_Time()-475)/275)"
+        
+        "(10.085043285) + (0.143476202)*((Sealing_Pressure_list) - 50)/25) +    
+        (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) -      
+        (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure_list) - 50)/25)*((Sealing_Time() - 475)/275) +     
+        (0.1653191326)*((Sealing_Pressure_list) - 50)/25)*((Layer_Thickness() - 35)/5) -             
+        (0.190088312)*((Sealing_Time()-475)/275)*((Layer_Thickness() - 35)/5) -       
+        (0.227255444)*((Layer_Thickness() - 35)/5)*((Sealing_Temperature() - 120)/20) -          
+        (0.438383433)*((Sealing_Pressure_list) - 50)/25)*((Sealing_Pressure_list) - 50)/25) +   
+        (0.422789614)*((Sealing_Time()-475)/275)*((Sealing_Time()-475)/275)"
         
         eqn1 <- gsub("\n","",eqn1) 
         
-        Sealing_Pressure <- round(seq(from  = 30, to = 70, length.out = 100),2)
+        # initializing lists
+        Sealing_Pressure_list <- round(seq(from  = 30, to = 70, length.out = 41),2)
+        Sealing_Time_list <- round(seq(from  = 200, to = 700, length.out = 501),2)
+        Sealing_Temperature_list <- round(seq(from  = 100, to = 140, length.out = 141),2)
+        Layer_Thickness_list <- round(seq(from  = 30, to = 40, length.out = 11),2)
+        
+        # initializing reactive variables 
+        Sealing_Pressure <- reactive(input$profiler_Sealing_Pressure)
         Sealing_Time <- reactive(input$profiler_Sealing_Time)
         Sealing_Temperature <- reactive(input$profiler_Sealing_Temperature)
         Layer_Thickness <- reactive(input$profiler_Layer_Thickness)
@@ -95,22 +111,50 @@ monoPP_HaitiServer <- function(id, top_session){
         
         observeEvent(input$profiler_Sealing_Time | input$profiler_Sealing_Temperature | input$profiler_Layer_Thickness | input$profiler_Sealing_Pressure ,
                      {
-                       Mean_Seal_Strn_Pr <- reactive(eval(parse(text = eqn1)))
+                       Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn1)
+                       Mean_Seal_Strnt_Pr <- reactive(eval(parse(text = Pr_eqn1)))
+                        
 
                        output$plot1 <- renderPlot({
-                         Mean_Seal_Strength <- Mean_Seal_Strn_Pr()
-                         ggplot(data=data.frame(Sealing_Pressure, Mean_Seal_Strength), aes(x=Sealing_Pressure, y= Mean_Seal_Strength)) +
+                         Mean_Seal_Strength <- Mean_Seal_Strnt_Pr()
+                         
+                         ggplot(data=data.frame(Sealing_Pressure_list, Mean_Seal_Strength), aes(x=Sealing_Pressure_list, y= Mean_Seal_Strength)) +
                            geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                           gghighlight(Sealing_Pressure == input$profiler_Sealing_Pressure)
-                         
-                         
-                      # Mean_Seal_Strnt <- reactive(eval(parse(text = eqn1)))
-                      # 
-                      # output$plot1 <- renderPlot({
-                      #   Mean_Seal_Strength <- Mean_Seal_Strn_Pr()
-                      #   ggplot(data=data.frame(Sealing_Pressure, Mean_Seal_Strength), aes(x=Sealing_Pressure, y= Mean_Seal_Strength)) +
-                      #     geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                      #     gghighlight(Sealing_Pressure == input$profiler_Sealing_Pressure)
+                           gghighlight(Sealing_Pressure_list == input$profiler_Sealing_Pressure) + ylim(8, 13)
+                       })
+                       
+                       
+                       Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn1)
+                       Mean_Seal_Strnt_Time <- reactive(eval(parse(text = Ti_eqn1)))
+                       
+                       output$plot2 <- renderPlot({
+                         Mean_Seal_Strength <- Mean_Seal_Strnt_Time()
+                         ggplot(data=data.frame(Sealing_Time_list, Mean_Seal_Strength), aes(x=Sealing_Time_list, y= Mean_Seal_Strength)) +
+                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank()) + 
+                           gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time) + ylim(8, 13)
+                       })
+                       
+                       
+                       Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn1)
+                       Mean_Seal_Strnt_Temp <- reactive(eval(parse(text = Te_eqn1)))
+                       
+                       output$plot3 <- renderPlot({
+                         Mean_Seal_Strength <- Mean_Seal_Strnt_Temp()
+                         ggplot(data=data.frame(Sealing_Temperature_list, Mean_Seal_Strength), aes(x=Sealing_Temperature_list, y= Mean_Seal_Strength)) +
+                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
+                           gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature) + ylim(8, 13)
+                       })
+                   
+                       
+                       Lt_eqn1 <- gsub("Layer_Thickness[(][)]","Layer_Thickness_list",eqn1)
+                       Mean_Seal_Strnt_LT<- reactive(eval(parse(text = Lt_eqn1)))
+                       
+                       output$plot4 <- renderPlot({
+                         Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
+                         ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
+                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
+                           gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness)  + ylim(8, 13) 
+                       })
                          
                       })
                        
@@ -135,7 +179,7 @@ monoPP_HaitiServer <- function(id, top_session){
                        #     gghighlight(Layer_Thickness == input$profiler_Layer_Thickness)
                        # })
        
-                     })
+                     
       })
       
       

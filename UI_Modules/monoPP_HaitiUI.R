@@ -135,17 +135,12 @@ It can be used to identify optimal sealing parameters that would deliver the des
                                                column(width = 3,plotOutput(ns("plot3"))),
                                                column(width = 3,plotOutput(ns("plot4"))),
                                       ),
-                                      fluidRow(column(width = 3,
-                                                      sliderInput(ns("profiler_Sealing_Pressure"),"Sealing_Pressure:", min = 30, max = 70, value = 50),
-                                                      sliderInput(ns("profiler_Sealing_Time"),"Sealing_Time:", min = 200, max = 700, value = 475)
-                                                     
-                                      ),
-                                       column(width = 3,
-                                              sliderInput(ns("profiler_Sealing_Temperature"),"Sealing_Temperature:", min = 100, max = 140, value = 120),
-                                              sliderInput(ns("profiler_Layer_Thickness"),"Layer_Thickness:", min = 30, max = 40, value = 35)
+                                      fluidRow(column(width = 3,sliderInput(ns("profiler_Sealing_Pressure"),"Sealing_Pressure:", min = 30, max = 70, value = 50)),
+                                               column(width = 3,sliderInput(ns("profiler_Sealing_Time"),"Sealing_Time:", min = 200, max = 700, value = 475)),
+                                               column(width = 3,sliderInput(ns("profiler_Sealing_Temperature"),"Sealing_Temperature:", min = 100, max = 140, value = 120)),
+                                               column(width = 3,sliderInput(ns("profiler_Layer_Thickness"),"Layer_Thickness:", min = 30, max = 40, value = 35))
                                       ))
-                                    )),
-                           
+                                    ),
                            
                            tabPanel("Imported Data Simulation",
                                     uiOutput(ns("heading_ashutosh")),
