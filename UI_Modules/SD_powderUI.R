@@ -5,12 +5,8 @@ SD_powderUI <- function(id){
     {
       tabsetPanel(id = "tabs_uday_sd",tabPanel("Model Introduction",
         h1("Finished Goods Bulk Density(SD Powder) Model"),
-                                               em("Model Owner: Uday Baviskar"),
-                                               
-      ),
-                  
-                  
-                  tabPanel("Model & Data Import",
+                                               em("Model Owner: Uday Baviskar")),
+                                    tabPanel("Model & Data Import",
                                                wellPanel(
                                                 # h1("Finished Goods Bulk Density(SD Powder) Model"),
                                                 # em("Model Owner: Uday Baviskar"),
