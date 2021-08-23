@@ -95,33 +95,32 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
       #visualization page renderings
       observeEvent(req(input$datacall_uday_sd),
                    {data_uday_sd <- reactive(read_excel(input$datacall_uday_sd$datapath))
-                   #data <- reactive(data()[,-(which(colSums(data())==0))])
-                   #View(data_uday)
+
                    updateSelectInput(session, "y_axis_sd", choices = colnames(data_uday_sd()), selected = colnames(data_uday_sd())[2])
                    updateSelectInput(session, "x_axis_sd", choices = colnames(data_uday_sd()))
-                   updateSelectInput(session, "x_line", choices = colnames(data_uday_sd()))
-                   updateSelectInput(session, "y_line", choices = colnames(data_uday_sd()))
                    updateSelectInput(session, "hist_choice_uday_sd", choices = colnames(data_uday_sd()))
                    
-                   output$simulationdata1 <- renderDataTable(data_uday_sd())
-                   output$scatterplot_uday_sd <- renderPlot(
-                     if(length(input$y_axis_sd) == 1){
-                       plot(x= data_uday_sd()[[input$x_axis_sd]], y = data_uday_sd()[[input$y_axis_sd]],
-                            xlab = input$x_axis_sd, ylab = input$y_axis_sd, col = "blue")
-                       abline(lm(data_uday_sd()[[input$y_axis_sd]]~data_uday_sd()[[input$x_axis_sd]]), col = "blue")
-                     }
-                     else{if(length(input$y_axis_sd) > 4){
-                       showModal(modalDialog("Maximum 4 selections are allowed."))
-                     }else{
-                       plot(x= data_uday_sd()[[input$x_axis_sd]], y = data_uday_sd()[[input$y_axis_sd[1]]],
-                            xlab = input$x_axis_sd, ylab = input$y_axis_sd, col = "blue")
-                       abline(lm(data_uday_sd()[[input$y_axis_sd[1]]]~data_uday_sd()[[input$x_axis_sd]]), col = "blue")
-                       for(i in 2:length(input$y_axis_sd)){
-                         points(x= data_uday_sd()[[input$x_axis_sd]], y = data_uday_sd()[[input$y_axis_sd[i]]], col = colors[i])
-                         abline(lm(data_uday_sd()[[input$y_axis_sd[i]]]~data_uday_sd()[[input$x_axis_sd]]), col = colors[i])
-                       }
-                     }
-                     } )
+                   output$simulationdata_uday_sd <- renderDataTable(data_uday_sd())
+                   
+                   # output$scatterplot_uday_sd <- renderPlot(
+                   #   if(length(input$y_axis_sd) == 1){
+                   #     plot(x= data_uday_sd()[[input$x_axis_sd]], y = data_uday_sd()[[input$y_axis_sd]],
+                   #          xlab = input$x_axis_sd, ylab = input$y_axis_sd, col = "blue")
+                   #     abline(lm(data_uday_sd()[[input$y_axis_sd]]~data_uday_sd()[[input$x_axis_sd]]), col = "blue")
+                   #   }
+                   #   else{if(length(input$y_axis_sd) > 4){
+                   #     showModal(modalDialog("Maximum 4 selections are allowed."))
+                   #   }else{
+                   #     plot(x= data_uday_sd()[[input$x_axis_sd]], y = data_uday_sd()[[input$y_axis_sd[1]]],
+                   #          xlab = input$x_axis_sd, ylab = input$y_axis_sd, col = "blue")
+                   #     abline(lm(data_uday_sd()[[input$y_axis_sd[1]]]~data_uday_sd()[[input$x_axis_sd]]), col = "blue")
+                   #     for(i in 2:length(input$y_axis_sd)){
+                   #       points(x= data_uday_sd()[[input$x_axis_sd]], y = data_uday_sd()[[input$y_axis_sd[i]]], col = colors[i])
+                   #       abline(lm(data_uday_sd()[[input$y_axis_sd[i]]]~data_uday_sd()[[input$x_axis_sd]]), col = colors[i])
+                   #     }
+                   #   }
+                   #   } )
+                   
                    output$ggsmooth_uday_sd<- renderPlot({
                      if(input$smooth2_uday_sd){
                        if(length(input$y_axis_sd) == 1){
