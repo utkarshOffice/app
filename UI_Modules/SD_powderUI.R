@@ -122,23 +122,14 @@ SD_powderUI <- function(id){
                                                 downloadButton(ns("download2_uday_sd"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                                                 
                                                 
-                                       ))
+                                       )),
+                           tabPanel("Optimisation",
+                                    h3("Non linear optimisation under works")
+                                    )
                            
-                  ),
-                  tabPanel("Optimization", 
-                           h2("Since the equation is non-linear, optimization is pending."),
-                           wellPanel(
-                             h2("Global Download"),
-                             h4("Download all the results that have been generated throughout the app"),
-                             actionButton(ns("downloadresults_uday_sd"),"Proceed to download all Results", 
-                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                             uiOutput(ns("Download_Values_uday_sd"))
-                             
-                             
-                             #downloadButton(ns("download_all"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                             
-                           ))
-      )
+                  )
+                  )
+      
     }
   )
 }

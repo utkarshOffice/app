@@ -4,8 +4,9 @@ SD_slurryServer <- function(id, top_session){
     function(input, output, session) {
       
       uday_proxy <- DT::dataTableProxy('optimiser_table1_uday')
-      opt<-reactiveValues(tab_1=NULL) 
+      uday_proxy_non_linear <- DT::dataTableProxy('optimiser_table1_uday_non_linear')
       
+      opt<-reactiveValues(tab_1=NULL,tab_2=NULL) 
       
       manualinput_uday <- reactiveVal(NULL)
       manual_uday <- reactiveVal(NULL)
@@ -13,8 +14,10 @@ SD_slurryServer <- function(id, top_session){
       optimise_uday <- reactiveVal(NULL)
       optimise1_uday <- reactiveVal(NULL)
       optimise2_uday <- reactiveVal(NULL)
-      
-      x_uday <- data.frame(Models_uday <- c("Pred Formula Low Sheer Viscosity = 69.1536246310703*((Target SMC-0.29)/0.315)+177.928009032322*((NaLAS in Slurry-0.09)/0.315)+110.938848553557*((LSA in Slurry-0.13)/0.315)-19.3532538435312*((Sulphate in Slurry-0.12)/0.315)+200.241313148041*((AlkSilicate in Slurry-0.054)/0.315)+84.026446932*((CP5 in Slurry-0.001)/0.315)-133.9508143*(SCMC in Slurry/0.315)+((Target SMC-0.29)/0.315)*(((NaLAS in Slurry-0.09)/0.315)*-617.616933895298)+((Target in SMC-0.29)/0.315)*(((LSA in Slurry-0.13)/0.315)*-390.462090953345)+((Target SMC-0.29)/0.315)*(((Alk Silicate in Slurry -0.054)/0.315)*-764.6979746)+((LSA in Slurry-0.13)/0.315)*(((CP5 in Slurry-0.001)/0.315)*-1142.960714+((LSA in Slurry-0.13)/0.135)*((SCMC in Slurry/0.315)*2249.8386364))"
+      weight_one <- reactiveVal(NULL)
+      weight_two <- reactiveVal(NULL)
+
+            x_uday <- data.frame(Models_uday <- c("Pred Formula Low Sheer Viscosity = 69.1536246310703*((Target SMC-0.29)/0.315)+177.928009032322*((NaLAS in Slurry-0.09)/0.315)+110.938848553557*((LSA in Slurry-0.13)/0.315)-19.3532538435312*((Sulphate in Slurry-0.12)/0.315)+200.241313148041*((AlkSilicate in Slurry-0.054)/0.315)+84.026446932*((CP5 in Slurry-0.001)/0.315)-133.9508143*(SCMC in Slurry/0.315)+((Target SMC-0.29)/0.315)*(((NaLAS in Slurry-0.09)/0.315)*-617.616933895298)+((Target in SMC-0.29)/0.315)*(((LSA in Slurry-0.13)/0.315)*-390.462090953345)+((Target SMC-0.29)/0.315)*(((Alk Silicate in Slurry -0.054)/0.315)*-764.6979746)+((LSA in Slurry-0.13)/0.315)*(((CP5 in Slurry-0.001)/0.315)*-1142.960714+((LSA in Slurry-0.13)/0.135)*((SCMC in Slurry/0.315)*2249.8386364))"
                                             ,"Torque = -869.69157979082*TargetSMC+ 275.811033852585*NaLAS in Slurry+-640.1501097706*Alk Silicate in Slurry+668.418092332803*CP5 in Slurry+ 318.358001206768*LSA in Slurry+1671.3734983827 *SCMC in Slurry + 388.721602050357*Sulphate in Slurry+Target SMC*(Target SMC*1310.48156368694)+NaLAS in Slurry*(NaLAS in Slurry*212.536004289529)+Sulphate in Slurry*(Sulphate in Slurry*-384.589140519452)+LSA in Slurry*(LSA in Slurry*-17.9351176105554)+AlkSilicate in Slurry*(AlkSilicate in Slurry*6523.70048980465)+CP5 in Slurry*(CP5 in Slurry*-19394.6828836579)+SCMC in Slurry*(SCMC in Slurry*-216978.610667717)"
                                             , 
                                             " Drying Prediction =1.64652727504537 *TargetSMC+ -0.340054974118285 *NaLAS
@@ -762,7 +765,7 @@ SD_slurryServer <- function(id, top_session){
                          updateSelectInput(session,"inequality_selection_uday",selected = "less than or equal to")
                          updateNumericInput(session,"numeric_input_uday",value = .32)
                          updateRadioButtons(session,"radio_button_uday",selected = "min")
-                         predictors_in_model3_uday<-c("TargetSMC_[0.287,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
+                         predictors_in_model3_uday<-c("TargetSMC_[0.29,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
                                                       "CP5_[0,0.03]", "LSA_[0.17,0.45]",
                                                       "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
                          zero_vector<-rep(1,length(predictors_in_model3_uday))
@@ -792,13 +795,280 @@ SD_slurryServer <- function(id, top_session){
             filename = function() { "All Results.xlsx"},
             content = function(file) {
               write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Drying Prediction Optimisation" = nrdata3), file)
-            }
-          )
+            
+          })
         })
       })
       
+      #non linear optimisation for Udays model
+      observeEvent(req(x_uday),{
+        
+        predictor_names_torque <- c("TargetSMC_[0.29,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
+                                    "CP5_[0.001,0.03]", "LSA_[0.17,0.45]",
+                                    "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
+        zero_vector<-rep(1,length(predictor_names_torque))
+        min_vector <- c(0.29,0.13,0.07,0.001,0.17,0,0.17)
+        max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
+        coef_data2 <- data.frame(cbind(predictor_names_torque,zero_vector,min_vector,max_vector))
+        opt$tab_2 <- coef_data2
+        opt$tab_2[[3]]<- as.numeric(opt$tab_2[[3]])
+        opt$tab_2[[4]]<- as.numeric(opt$tab_2[[4]])
+        
+        #table 1
+        output$optimiser_table1_uday_non_linear <- renderDataTable({
+          DT::datatable(opt$tab_2,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
+        })
+        
+        #cell edit
+        observeEvent(input$optimiser_table1_uday_non_linear_cell_edit,{
+          info <- input$optimiser_table1_uday_non_linear_cell_edit
+          i <- info$row
+          j <- info$col
+          v <- info$value
+          if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
+            v <- as.numeric(v)
+            if(j==2 || ( j==3 && opt$tab_2[i, j+1] > v) || (j==4 && opt$tab_2[i, j-1] < v )){
+              opt$tab_2[i,j] <<- DT::coerceValue(v,opt$tab_2[i, j])
+            }
+          }
+          rep <- opt$tab_2
+          DT::replaceData(uday_proxy_non_linear, rep, resetPaging = FALSE)
+        })
+        
+        observeEvent(input$run_optimiser_non_linear,{
+          
+          target_torque <- input$numeric_input_uday_torque
+          inequality_selection_torque <- input$inequality_selection_uday_torque
+          weight_one <- input$weight_torque
+          
+          target_pred <- input$numeric_input_uday_pred
+          inequality_selection_pred <- input$inequality_selection_uday_pred
+          weight_two <- input$weight_pred
+          
+          opt$tab_2[[2]] <- as.numeric(opt$tab_2[[2]])
+          
+            constraint <- function(x){
+            
+            #equation one 
+            constant <- (x[2]+x[3]+x[4]+x[5]+x[6]+x[7])
+            # View(constant) #works
+            equation_one <- -869.69157979082*x[1] + 275.811033852585*(x[2]/constant * (1-x[1]))+
+              -640.1501097706*(x[3]/constant * (1-x[1])) +668.418092332803*(x[4]/constant * (1-x[1]))+
+              318.358001206768*(x[5]/constant * (1-x[1]))+ 1671.3734983827 *(x[6]/constant * (1-x[1])) +
+              388.721602050357*(x[7]/constant * (1-x[1]))+
+              x[1]*(x[1]*1310.48156368694) +
+              (x[2]/constant * (1-x[1]))*((x[2]/constant * (1-x[1]))*212.536004289529) +
+              (x[7]/constant * (1-x[1]))*((x[7]/constant * (1-x[1]))*-384.589140519452) + 
+              (x[5]/constant * (1-x[1]))*((x[5]/constant * (1-x[1]))*-17.9351176105554)+
+              (x[3]/constant * (1-x[1]))*((x[3]/constant * (1-x[1]))*6523.70048980465)+
+              (x[4]/constant * (1-x[1]))*((x[4]/constant * (1-x[1]))*-19394.6828836579)+
+              (x[6]/constant * (1-x[1]))*((x[6]/constant * (1-x[1]))*-216978.610667717) - target_torque 
+            
+            #equation two
+            equation_two <- 69.1536246310703*((x[1]-0.287)/0.315)+177.928009032322*(((x[2]/constant * (1-x[1]))-0.09)/0.315)+
+              110.938848553557*(((x[5]/constant * (1-x[1]))-0.13)/0.315)-19.3532538435312*(((x[7]/constant * (1-x[1]))-0.12)/0.315)+
+              200.241313148041*(((x[3]/constant * (1-x[1]))-0.054)/0.315)+84.026446932*(((x[4]/constant * (1-x[1]))-0.001)/0.315)-
+              133.9508143*((x[6]/constant * (1-x[1]))/0.315)+
+              ((x[1]-0.287)/0.315)*((((x[2]/constant * (1-x[1]))-0.09)/0.315)*-617.616933895298)+
+              ((x[1]-0.287)/0.315)*((((x[5]/constant * (1-x[1]))-0.13)/0.315)*-390.462090953345)+
+              ((x[1]-0.287)/0.315)*((((x[3]/constant * (1-x[1])) -0.054)/0.315)*-764.6979746)+
+              ((x[5]-0.13)/0.315)*((((x[4]/constant * (1-x[1]))-0.001)/0.315)*-1142.960714+
+              ((x[5]-0.13)/0.135)*(((x[6]/constant * (1-x[1]))/0.315)*2249.8386364)) - target_pred
+
+          #lesser than
+            if(inequality_selection_torque== "less than or equal to" & inequality_selection_pred=="less than or equal to"){
+              return(c(equation_one,equation_one+ target_torque-36,-1*(equation_one + target_torque)+19 ,equation_two))
+            }
+          
+            else if(inequality_selection_torque== "less than or equal to" & inequality_selection_pred=="greater than or equal to"){
+              return(c(equation_one,equation_one+ target_torque-36,-1*(equation_one + target_torque)+19,-1*equation_two))
+            }
+            
+            else if(inequality_selection_torque== "less than or equal to" & inequality_selection_pred=="equal to"){
+              return(c(equation_one,equation_one+ target_torque-36,-1*(equation_one + target_torque)+19,equation_two-0.0001,-1*equation_two-0.0001))
+            }
+            
+            #greater than
+            else if(inequality_selection_torque == "greater than or equal to" & inequality_selection_pred=="less than or equal to"){
+              return(c(-1*equation_one,equation_one+ target_torque-36,-1*(equation_one + target_torque)+19,equation_two))
+            }
+            
+            else if(inequality_selection_torque == "greater than or equal to" & inequality_selection_pred=="greater than or equal to"){
+              return(c(-1*equation_one,equation_one+ target_torque-36,-1*(equation_one + target_torque)+19,-1*equation_two))
+            }
+            
+            else if(inequality_selection_torque == "greater than or equal to" & inequality_selection_pred=="equal to"){
+              return(c(-1*equation_one,equation_one+ target_torque-36,-1*(equation_one + target_torque)+19,equation_two-0.0001,-1*equation_two-0.0001))
+            }
+            
+            #equal to 
+            else if(inequality_selection_torque == "equal to" & inequality_selection_pred=="less than or equal to"){
+              return(c(equation_one-0.0001,-1*equation_one-0.0001,equation_two))
+            }
+            
+            else if(inequality_selection_torque == "equal to" & inequality_selection_pred=="greater than or equal to"){
+              return(c(equation_one-0.0001,-1*equation_one-0.0001,-1*equation_two))
+            }
+            
+            else{
+              return(c(equation_one-0.0001,-1*equation_one-0.0001,equation_two-0.0001,-1*equation_two-0.0001))
+            }
+            
+            } #constraint function end
+
+            
+            obj<-function(x){
+              constant <- (x[2]+x[3]+x[4]+x[5]+x[6]+x[7])
+              eq_one <- weight_one*(opt$tab_2[1,2]*x[1]+opt$tab_2[2,2]*(x[2]/constant *(1-x[1])) +
+                                      opt$tab_2[3,2]*(x[3]/constant * (1-x[1]))+opt$tab_2[4,2]*(x[4]/constant * (1-x[1])) +
+                                      opt$tab_2[5,2]*(x[5]/constant * (1-x[1]))+opt$tab_2[6,2]*(x[6]/constant * (1-x[1])) +
+                                      opt$tab_2[7,2]*(x[7]/constant * (1-x[1]))+opt$tab_2[1,2]*x[1]*opt$tab_2[1,2]*x[1] +
+                                      opt$tab_2[2,2]*(x[2]/constant * (1-x[1]))*opt$tab_2[2,2]*(x[2]/constant * (1-x[1])) + 
+                                      opt$tab_2[7,2]*(x[7]/constant * (1-x[1]))*opt$tab_2[7,2]*(x[7]/constant * (1-x[1])) +
+                                      opt$tab_2[5,2]*(x[5]/constant * (1-x[1]))*opt$tab_2[5,2]*(x[5]/constant * (1-x[1])) +
+                                      opt$tab_2[3,2]*(x[3]/constant * (1-x[1]))*opt$tab_2[3,2]*(x[3]/constant * (1-x[1])) +
+                                      opt$tab_2[4,2]*(x[4]/constant * (1-x[1]))*opt$tab_2[4,2]*(x[4]/constant * (1-x[1])) +
+                                      opt$tab_2[6,2]*(x[6]/constant * (1-x[1]))*opt$tab_2[6,2]*(x[6]/constant * (1-x[1]))  
+                                   )
+              
+              eq_two <- weight_two*(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*(x[2]/constant * (1-x[1])) + 
+                                      opt$tab_2[5,2]*(x[5]/constant * (1-x[1])) +
+                                      opt$tab_2[7,2]*(x[7]/constant * (1-x[1])) + opt$tab_2[3,2]*(x[3]/constant * (1-x[1])) +
+                                      opt$tab_2[4,2]*(x[4]/constant * (1-x[1])) + opt$tab_2[6,2]*(x[6]/constant * (1-x[1])) +
+                                      opt$tab_2[1,2]*x[1]*opt$tab_2[2,2]*(x[2]/constant * (1-x[1])) +
+                                      opt$tab_2[1,2]*x[1]*opt$tab_2[5,2]*(x[5]/constant * (1-x[1])) + opt$tab_2[1,2]*x[1]*opt$tab_2[3,2]*(x[3]/constant * (1-x[1])) +
+                                      opt$tab_2[5,2]*(x[5]/constant * (1-x[1]))*(opt$tab_2[4,2]*(x[4]/constant * (1-x[1]))*opt$tab_2[5,2]*(x[5]/constant * (1-x[1]))*opt$tab_2[6,2]*(x[6]/constant * (1-x[1]))))
+                
+              if(input$radio_button_uday_torque == 'min' & input$radio_button_uday_pred == 'min'){
+                   return(eq_one+eq_two)
+              }
+              else if(input$radio_button_uday_torque == 'min' & input$radio_button_uday_pred == 'max'){
+                return(eq_one-eq_two)
+              }
+              
+              else if(input$radio_button_uday_torque == 'max' & input$radio_button_uday_pred == 'min'){
+                return(-1*eq_one+eq_two)
+              }
+              
+              else{
+                return(-1*eq_one-eq_two)
+              }
+              
+              } #objective function end
+            
+          x0 <- opt$tab_2[[3]]
+          lb <- opt$tab_2[[3]]
+          ub <- opt$tab_2[[4]]
+          
+          opts <- list("algorithm"="NLOPT_LN_COBYLA",
+                       "xtol_rel"=1.0e-8)
+          res<- nloptr(x0=x0,eval_f =  obj,
+                       eval_g_ineq = constraint,
+                       opts = opts,
+                       lb=lb, ub=ub)
+          
+          # optimiser output table 1
+          output$optimiser_table32_uday_torque <- renderDataTable({
+            df<-data.frame(Predictors = c("TargetSMC","NaLAS",	"AlkSilicate",	"CP5",
+                                          "LSA","SCMC","Sulphate"),
+                           Value = round(res$solution,3)
+            )
+            DT::datatable(df,selection ="none",rownames = FALSE )
+          })
+          # View(res$solution)
+          constraint_value <- function(x){
+            constant <- (x[2]+x[3]+x[4]+x[5]+x[6]+x[7])
+            
+            value <- -869.69157979082*x[1] + 275.811033852585*(x[2]/constant * (1-x[1]))+
+              -640.1501097706*(x[3]/constant * (1-x[1])) +668.418092332803*(x[4]/constant * (1-x[1]))+
+              318.358001206768*(x[5]/constant * (1-x[1]))+ 1671.3734983827 *(x[6]/constant * (1-x[1])) +
+              388.721602050357*(x[7]/constant * (1-x[1]))+
+              x[1]*(x[1]*1310.48156368694) +
+              (x[2]/constant * (1-x[1]))*((x[2]/constant * (1-x[1]))*212.536004289529) +
+              (x[7]/constant * (1-x[1]))*((x[7]/constant * (1-x[1]))*-384.589140519452) + 
+              (x[5]/constant * (1-x[1]))*((x[5]/constant * (1-x[1]))*-17.9351176105554)+
+              (x[3]/constant * (1-x[1]))*((x[3]/constant * (1-x[1]))*6523.70048980465)+
+              (x[4]/constant * (1-x[1]))*((x[4]/constant * (1-x[1]))*-19394.6828836579)+
+              (x[6]/constant * (1-x[1]))*((x[6]/constant * (1-x[1]))*-216978.610667717)
+            return(value)
+          }
+          
+          constraint_value2 <- function(x){
+            constant <- (x[2]+x[3]+x[4]+x[5]+x[6]+x[7])
+            
+            value <-  69.1536246310703*((x[1]-0.287)/0.315)+177.928009032322*(((x[2]/constant * (1-x[1]))-0.09)/0.315)+
+              110.938848553557*(((x[5]/constant * (1-x[1]))-0.13)/0.315)-19.3532538435312*(((x[7]/constant * (1-x[1]))-0.12)/0.315)+
+              200.241313148041*(((x[3]/constant * (1-x[1]))-0.054)/0.315)+84.026446932*(((x[4]/constant * (1-x[1]))-0.001)/0.315)-
+              133.9508143*((x[6]/constant * (1-x[1]))/0.315)+
+              ((x[1]-0.287)/0.315)*((((x[2]/constant * (1-x[1]))-0.09)/0.315)*-617.616933895298)+
+              ((x[1]-0.287)/0.315)*((((x[5]/constant * (1-x[1]))-0.13)/0.315)*-390.462090953345)+
+              ((x[1]-0.287)/0.315)*((((x[3]/constant * (1-x[1])) -0.054)/0.315)*-764.6979746)+
+              ((x[5]-0.13)/0.315)*((((x[4]/constant * (1-x[1]))-0.001)/0.315)*-1142.960714+
+              ((x[5]-0.13)/0.135)*(((x[6]/constant * (1-x[1]))/0.315)*2249.8386364))
+            
+            return(value)
+          }
+          
+          
+          # optimiser output table 2
+          output$optimiser_table22_uday_torque <- renderDataTable({
+            value1 <- round(constraint_value(res$solution),3)
+            value2 <- round(constraint_value2(res$solution),3)
+            val <- data.frame(Predictors = c("Torque","Pred Formula Low Sheer Viscosity value"),
+                              Value = as.data.frame(rbind(value1,value2)))
+            
+            DT::datatable(as.data.frame(rbind(round(constraint_value(res$solution),3),round(constraint_value2(res$solution),3))) 
+                          ,rownames = c("Torque","Pred Formula Low Sheer Viscosity value"), colnames =c("Target variable", "Value"))
+            # DT::datatable(val)#,rownames = c("Torque","Pred Formula Low Sheer Viscosity value"), colnames =c("Target variable", "Value"))
+          })
+          # View(round(constraint_value2(res$solution),3))
+          # View(round(constraint_value(res$solution),3))
+          # View(rbind(round(constraint_value(res$solution),3),round(constraint_value2(res$solution),3)))
+          
+          # optimiser output table 3
+          if(input$radio_button_uday_torque=='min'){
+            output$value_results_uday_torque<- renderUI({
+              ns <- session$ns
+              p(paste0("The objective function value resulting from the optimisation is : "),round(res$objective,3))
+            })
+          }
+          else{
+            output$value_results_uday_torque<- renderUI({
+              ns <- session$ns
+              p(paste0("The objective function value resulting from the optimisation is : "),round(-1*res$objective,3))
+            })
+            
+          }
+          
+          # View(res$objective)
+        }) #run optimiser non linear end
+        
+        
+      })#observeevent non linear optimisation end
+      
+      observeEvent(input$reset_non_linear,{
+        updateSelectInput(session,"inequality_selection_uday_torque",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_uday_torque",value = 28)
+        updateNumericInput(session,"weight_torque",value = 1)
+        updateRadioButtons(session,"radio_button_uday_torque",selected = "min")
+        
+        updateSelectInput(session,"inequality_selection_uday_pred",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_uday_pred",value = 33)
+        updateNumericInput(session,"weight_pred",value = 1)
+        updateRadioButtons(session,"radio_button_uday_pred",selected = "min")
+        
+        predictors_in_model2<-c("TargetSMC_[0.29,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
+                                "CP5_[0,0.03]", "LSA_[0.17,0.45]",
+                                "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
+        zero_vector<-rep(1,length(predictors_in_model2))
+        min_vector<- c(0.29,0.13,0.07,0,0.17,0,0.17)
+        max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
+        coef_data <- data.frame(cbind(predictors_in_model2,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
+        opt$tab_2 <- coef_data
+        opt$tab_2[[3]]<- as.numeric(opt$tab_2[[3]])
+        opt$tab_2[[4]]<- as.numeric(opt$tab_2[[4]])
+      })
       
       
-    }
-  )
-}
+    } 
+  )}
