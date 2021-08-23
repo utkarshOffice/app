@@ -88,20 +88,30 @@ monoPP_HaitiServer <- function(id, top_session){
         Layer_Thickness <- reactive(input$profiler_Layer_Thickness)
        
         # making sure all variables are changed to numeric
-        Sealing_Pressure <- as.numeric(Sealing_Pressure)
-        Sealing_Time <- as.numeric(Sealing_Time())
-        Sealing_Temperature <- as.numeric(Sealing_Temperature())
-        Layer_Thickness <- as.numeric(Layer_Thickness())
+        # Sealing_Pressure <- as.numeric(Sealing_Pressure)
+        # Sealing_Time <- as.numeric(Sealing_Time())
+        # Sealing_Temperature <- as.numeric(Sealing_Temperature())
+        # Layer_Thickness <- as.numeric(Layer_Thickness())
         
         observeEvent(input$profiler_Sealing_Time | input$profiler_Sealing_Temperature | input$profiler_Layer_Thickness | input$profiler_Sealing_Pressure ,
                      {
-                       Mean_Seal_Strnt <- reactive(eval(parse(text = eqn1)))
+                       Mean_Seal_Strn_Pr <- reactive(eval(parse(text = eqn1)))
 
                        output$plot1 <- renderPlot({
-                         Mean_Seal_Strength <- Mean_Seal_Strnt()
+                         Mean_Seal_Strength <- Mean_Seal_Strn_Pr()
                          ggplot(data=data.frame(Sealing_Pressure, Mean_Seal_Strength), aes(x=Sealing_Pressure, y= Mean_Seal_Strength)) +
                            geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                            gghighlight(Sealing_Pressure == input$profiler_Sealing_Pressure)
+                         
+                         
+                      # Mean_Seal_Strnt <- reactive(eval(parse(text = eqn1)))
+                      # 
+                      # output$plot1 <- renderPlot({
+                      #   Mean_Seal_Strength <- Mean_Seal_Strn_Pr()
+                      #   ggplot(data=data.frame(Sealing_Pressure, Mean_Seal_Strength), aes(x=Sealing_Pressure, y= Mean_Seal_Strength)) +
+                      #     geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
+                      #     gghighlight(Sealing_Pressure == input$profiler_Sealing_Pressure)
+                         
                       })
                        
                        # output$plot2 <- renderPlot({

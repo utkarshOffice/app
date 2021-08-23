@@ -65,8 +65,8 @@ chillrollServer <- function(id, top_session){
       # profiler renderings
       observeEvent(req(input$profiler_Film_thickness),{
         
-        eqn1 <- "(Cooling_seg_fraction())*(-45.5179701273954) + (Film_thickness)*(18.8956339477401) + ((Film_thickness)^2)*(6.67710528547635) + (Roll_Speed())*(7.21746209125386) + ((Roll_Speed())^2)*(1.27090332399397) + 20.3887470216993"
-        eqn2 <- "(Cooling_seg_fraction())*(-48.3757602771176) + ((T_ambient())**2)*(-0.0000431916784640458) + (T_flake_feed())*(0.339086502336415) + (T_chilled_water())*(0.529509608669907) + (Film_thickness*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + ((DEFI_Free_roll_length())**2)*(0.13197883988453) + (Roll_Speed())*(7.21191328015338) + ((Roll_Speed())**2)*(1.26186094993258) - (18.9553266806959)"
+        eqn1 <- "(Cooling_seg_fraction())*(-45.5179701273954) + (Film_thickness)*(18.8956339477401) + ((Film_thickness)^2)*(6.67710528547635) + Roll_Speed()*7.21746209125386 + (Roll_Speed()^2)*(1.27090332399397) + 20.3887470216993"
+        eqn2 <- "(Cooling_seg_fraction())*(-48.3757602771176) + (T_ambient()**2)*(-0.0000431916784640458) + T_flake_feed()*0.339086502336415 + T_chilled_water()*0.529509608669907 + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + (DEFI_Free_roll_length()**2)*(0.13197883988453) + Roll_Speed()*7.21191328015338 + (Roll_Speed()**2)*1.26186094993258 - (18.9553266806959)"
         
         
         Film_thickness <- round(seq(from  = 0.5, to = 2.0, length.out = 25),3)
@@ -77,17 +77,18 @@ chillrollServer <- function(id, top_session){
         Roll_Speed <- reactive(input$profiler_Roll_Speed)
         T_chilled_water <- reactive(input$profiler_T_chilled_water)
         
-        # making sure all variables are changed to numeric
-        Film_thickness <- as.numeric(Film_thickness)
-        Cooling_seg_fraction <- as.numeric(Cooling_seg_fraction())
-        T_ambient <- as.numeric(T_ambient())
-        T_flake_feed <- as.numeric(T_flake_feed())
-        DEFI_Free_roll_length <- as.numeric(DEFI_Free_roll_length())
-        Roll_Speed <- as.numeric(Roll_Speed())
-        T_chilled_water <- as.numeric(T_chilled_water())
+        # # making sure all variables are changed to numeric
+        # Film_thickness <- as.numeric(Film_thickness)
+        # Cooling_seg_fraction <- as.numeric(Cooling_seg_fraction())
+        # T_ambient <- as.numeric(T_ambient())
+        # T_flake_feed <- as.numeric(T_flake_feed())
+        # DEFI_Free_roll_length <- as.numeric(DEFI_Free_roll_length())
+        # Roll_Speed <- as.numeric(Roll_Speed())
+        # T_chilled_water <- as.numeric(T_chilled_water())
         
         observeEvent(input$profiler_Film_thickness | input$profiler_T_ambient | input$profiler_T_flake_feed | input$profiler_Cooling_seg_fraction |input$profiler_DEFI_Free_roll_length | input$profiler_T_chilled_water | input$profiler_Cooling_seg_fraction,
             {
+              
             Final_Flake_Temp_M1 <- reactive(eval(parse(text = eqn1)))
             Final_Flake_Temp_M2 <- reactive(eval(parse(text = eqn2)))
             

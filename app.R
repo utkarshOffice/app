@@ -30,24 +30,26 @@ ui <- function(request){
             )
         ),width = 320,
         sidebarMenu(
-            menuItem('Home Care', tabName = 'homecare',
-                     menuSubItem("Slurry Viscosity Drying Model", tabName = "slurry"),
-                     menuSubItem('SD Slurry Properties', tabName = 'bulkdensity'),
-                     menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
-                     menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2'),
-                     menuSubItem('Chill Roll Mill Model', tabName = 'crm')
-                     
-            ),
+            menuItem('Processing', tabName = 'proc',
+                    menuItem('Home Care', tabName = 'homecare',
+                             menuSubItem("Slurry Viscosity Drying Model", tabName = "slurry"),
+                             menuSubItem('SD Slurry Properties', tabName = 'bulkdensity'),
+                             menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
+                             menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2'),
+                             menuSubItem('Chill Roll Mill Model', tabName = 'crm')
+                             
+                    ),
             menuItem('Beauty & Personal Care', tabName = 'BCP',
                      menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner'),
                      menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
                      
+            )
             ),
             menuItem('Packaging', tabName = 'pack',
                      menuSubItem('MonoPP Haiti Type Model', tabName = 'monoPP_haiti')
                      
-            ),
-            menuItem('Food & Refreshment', tabName = 'fr')
+            )
+            # menuItem('Food & Refreshment', tabName = 'fr')
         ),
         br(),
         column(12,align = "left",offset = 0,
