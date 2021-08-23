@@ -1162,7 +1162,7 @@ slurryServer <- function(id, top_session){
       
       #non linear optimisation for aditi - torque
       observeEvent(req(x),{
-        predictor_names_torque<- c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
+        predictor_names_torque <- c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
                                    "CP5(Dry Basis)_[0,0.03]", "LSA(Dry Basis)_[0.17,0.45]",
                                    "SCMC(Dry Basis)_[0,0.01]","Sulphate(Dry Basis)_[0.17,0.52]")
         zero_vector <- rep(1,length(predictor_names_torque))
@@ -1364,7 +1364,7 @@ slurryServer <- function(id, top_session){
           output$optimiser_table32_adititorque <- renderDataTable({
             df<-data.frame(Predictors = c("TargetSMC","NaLAS(Dry Basis)",	"AlkSilicate(Dry Basis)",	"CP5(Dry Basis)",
                                           "LSA(Dry Basis)",	"SCMC(Dry Basis)","Sulphate(Dry Basis)"),
-                           Value = res$solution
+                           Value = round(res$solution,3)
             )
             DT::datatable(df,selection ="none",rownames = FALSE )
           })
@@ -1372,7 +1372,7 @@ slurryServer <- function(id, top_session){
           
           # optimiser output table 2
           output$optimiser_table22_adititorque <- renderDataTable({
-            Value <- data.frame(Torque=as.data.frame(constraint(res$solution)) )
+            Value <- data.frame(Torque=as.data.frame(round(constraint(res$solution),3)) )
             DT::datatable(Value,rownames = "Torque", colnames = "Value")
           })
           
@@ -1381,13 +1381,13 @@ slurryServer <- function(id, top_session){
           if(input$radio_button_adititorque=='min'){
             output$value_results_adititorque<- renderUI({
               ns <- session$ns
-              p(paste0("The objective value resulting from the optimisation is : "),res$objective)
+              p(paste0("The objective value resulting from the optimisation is : "),round(res$objective,3))
             })
           }
           else{
             output$value_results_adititorque<- renderUI({
               ns <- session$ns
-              p(paste0("The objective value resulting from the optimisation is : "),-1*res$objective)
+              p(paste0("The objective value resulting from the optimisation is : "),round(-1*res$objective,3))
             })
             
           }

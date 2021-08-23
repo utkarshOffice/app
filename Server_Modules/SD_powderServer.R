@@ -390,7 +390,45 @@ SD_powderServer <- function(id, top_session){
             write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
           }
         )
-      })
-    }
-  )
-}
+      }) #download end
+    
+      # non linear optimisation for Udays SD 
+      # observeEvent(req(x_uday_sd),{
+      #   predictor_names_sd <- c("Base_Factor","Filler_Sulphate_Salt_as_Balancing_ingredient",
+      #                           "Base_Powder_Bulk_Density","Post_Dosing_Ingredients_Majors",
+      #                           "Post_Dosing_Ingredients_Minors")
+      #   zero_vector<-rep(1,length(predictor_names_sd))
+      #   min_vector <- c(0.29,0.13,0.07,0.001,0.17,0,0.17)
+      #   max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
+      #   coef_data2 <- data.frame(cbind(predictor_names_torque,zero_vector,min_vector,max_vector))
+      #   opt$tab_2 <- coef_data2
+      #   opt$tab_2[[3]]<- as.numeric(opt$tab_2[[3]])
+      #   opt$tab_2[[4]]<- as.numeric(opt$tab_2[[4]])
+      #   
+      #   #table 1
+      #   output$optimiser_table1_uday_non_linear <- renderDataTable({
+      #     DT::datatable(opt$tab_2,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
+      #   })
+      #   
+      #   #cell edit
+      #   observeEvent(input$optimiser_table1_uday_non_linear_cell_edit,{
+      #     info <- input$optimiser_table1_uday_non_linear_cell_edit
+      #     i <- info$row
+      #     j <- info$col
+      #     v <- info$value
+      #     if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
+      #       v <- as.numeric(v)
+      #       if(j==2 || ( j==3 && opt$tab_2[i, j+1] > v) || (j==4 && opt$tab_2[i, j-1] < v )){
+      #         opt$tab_2[i,j] <<- DT::coerceValue(v,opt$tab_2[i, j])
+      #       }
+      #     }
+      #     rep <- opt$tab_2
+      #     DT::replaceData(uday_proxy_non_linear, rep, resetPaging = FALSE)
+      #   })
+      #   
+      # })
+      
+      
+      
+      }
+  )}

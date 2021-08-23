@@ -333,8 +333,6 @@ slurryUI <- function(id){
                           )#tabsetpanel end
                           
                  )#tabpanel end          
-    )
-    }
-  )
-}
+    )}
+  )}
 
