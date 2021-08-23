@@ -39,6 +39,8 @@ ui <- function(request){
             menuItem('Beauty & Personal Care', tabName = 'BCP'
                      ,menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner')
                      ,menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
+                     ,menuSubItem("Soap Lather Volume", tabName = "soap_lather")
+                     ,menuSubItem("Soap Bar Hardness", tabName = "soap_hardness")
             ),
             menuItem('Food & Refreshment', tabName = 'fr')
         ),
@@ -70,7 +72,9 @@ ui <- function(request){
                 tabItem(tabName = "bulkdensity1", SD_powderUI("SD_powdermodel")),
                 tabItem(tabName = "bulkdensity2", NTR_powderUI("NTR_powdermodel")),
                 tabItem(tabName = "skin", Facial_MoisturizerUI("Facial_Moisturizermodel")),
-                tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI") )
+                tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI") ),
+                tabItem(tabName = "soap_lather", lather_volumeUI("latherVolumeUI") ),
+                tabItem(tabName = "soap_hardness", Soap_HardnessUI("soapHardnessUI") )
             ),
             
         )
@@ -82,11 +86,14 @@ ui <- function(request){
 server <-  function(input, output, session) {
 
     slurryServer("slurrymodelUI", top_session=session)
-    conditionerServer("conditionermodelUI", top_session = session)
     SD_slurryServer("SD_slurrymodel", top_session=session)
     SD_powderServer("SD_powdermodel", top_session=session)
     NTR_powderServer("NTR_powdermodel", top_session=session)
     Facial_MoisturizerServer("Facial_Moisturizermodel", top_session=session)
+    conditionerServer("conditionermodelUI", top_session = session)
+    lather_volumeServer("latherVolumeUI", top_session=session)
+    Soap_hardnessServer("soapHardnessUI", top_session=session)
+    
     
     observe({
         reactiveValuesToList(input)
