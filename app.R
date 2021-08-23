@@ -30,19 +30,26 @@ ui <- function(request){
             )
         ),width = 320,
         sidebarMenu(
-            menuItem('Home Care', tabName = 'homecare',
-                     menuSubItem("Slurry Viscosity Drying Model", tabName = "slurry"),
-                     menuSubItem('SD Slurry Properties', tabName = 'bulkdensity'),
-                     menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
-                     menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2')
+            menuItem('Processing', tabName = 'proc',
+                    menuItem('Home Care', tabName = 'homecare',
+                             menuSubItem("Slurry Viscosity Drying Model", tabName = "slurry"),
+                             menuSubItem('SD Slurry Properties', tabName = 'bulkdensity'),
+                             menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
+                             menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2'),
+                             menuSubItem('Chill Roll Mill Model', tabName = 'crm')
+                             
+                    ),
+            menuItem('Beauty & Personal Care', tabName = 'BCP',
+                     menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner'),
+                     menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
+                     
+            )
             ),
-            menuItem('Beauty & Personal Care', tabName = 'BCP'
-                     ,menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner')
-                     ,menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
-                     ,menuSubItem("Soap Lather Volume", tabName = "soap_lather")
-                     ,menuSubItem("Soap Bar Hardness", tabName = "soap_hardness")
-            ),
-            menuItem('Food & Refreshment', tabName = 'fr')
+            menuItem('Packaging', tabName = 'pack',
+                     menuSubItem('MonoPP Haiti Type Model', tabName = 'monoPP_haiti')
+                     
+            )
+            # menuItem('Food & Refreshment', tabName = 'fr')
         ),
         br(),
         column(12,align = "left",offset = 0,
@@ -72,9 +79,9 @@ ui <- function(request){
                 tabItem(tabName = "bulkdensity1", SD_powderUI("SD_powdermodel")),
                 tabItem(tabName = "bulkdensity2", NTR_powderUI("NTR_powdermodel")),
                 tabItem(tabName = "skin", Facial_MoisturizerUI("Facial_Moisturizermodel")),
-                tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI") ),
-                tabItem(tabName = "soap_lather", lather_volumeUI("latherVolumeUI") ),
-                tabItem(tabName = "soap_hardness", Soap_HardnessUI("soapHardnessUI") )
+                tabItem(tabName = "conditioner", conditionerUI("conditionermodelUI")),
+                tabItem(tabName = "crm", chillrollUI("chillrollmodel")),
+                tabItem(tabName = "monoPP_haiti", monoPP_HaitiUI("monoPP_Haitimodel"))
             ),
             
         )
@@ -86,13 +93,13 @@ ui <- function(request){
 server <-  function(input, output, session) {
 
     slurryServer("slurrymodelUI", top_session=session)
+    conditionerServer("conditionermodelUI", top_session = session)
     SD_slurryServer("SD_slurrymodel", top_session=session)
     SD_powderServer("SD_powdermodel", top_session=session)
     NTR_powderServer("NTR_powdermodel", top_session=session)
     Facial_MoisturizerServer("Facial_Moisturizermodel", top_session=session)
-    conditionerServer("conditionermodelUI", top_session = session)
-    lather_volumeServer("latherVolumeUI", top_session=session)
-    Soap_hardnessServer("soapHardnessUI", top_session=session)
+    chillrollServer("chillrollmodel", top_session=session)
+    monoPP_HaitiServer("monoPP_Haitimodel", top_session=session)
     
     
     observe({
@@ -104,7 +111,4 @@ server <-  function(input, output, session) {
     }
 # Run the application
 shinyApp(ui, server, enableBookmarking = "url")
-
-
-
 
