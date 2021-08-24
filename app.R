@@ -37,14 +37,13 @@ ui <- function(request){
                         menuSubItem('Finished Good Bulk Density (SD Powder)', tabName = 'bulkdensity1'),
                         menuSubItem('Finished Good Bulk Density (NTR Powder)', tabName = 'bulkdensity2'),
                         menuSubItem('Chill Roll Mill Model', tabName = 'crm')
+                        ,menuSubItem("Soap Lather Volume", tabName = "soap_lather")
+                        ,menuSubItem("Soap Bar Hardness", tabName = "soap_hardness")
                         
                ),
                menuItem('Beauty & Personal Care', tabName = 'BCP',
                         menuSubItem('Hair Conditioner Quality - HW Chassis', tabName = 'conditioner'),
                         menuSubItem("Skin Care Facial Moisturizer L63", tabName = "skin")
-                        ,menuSubItem("Soap Lather Volume", tabName = "soap_lather")
-                        ,menuSubItem("Soap Bar Hardness", tabName = "soap_hardness")
-                        
                )
       ),
       menuItem('Packaging', tabName = 'pack',

@@ -59,6 +59,9 @@ ssmServer <- function(id, top_session){
       c_ashutosh <- c("sealingpressurencm2", "sealingtimems", "sealingtemperaturec" , "layer1thicknessum", "layer2thicknessum")
       d_ashutosh <- c("sealingpressurencm2", "sealingtimems", "sealingtemperaturec" , "layer1thicknessum", "layer2thicknessum")
       
+      models_ashutosh <- c('monoPP_Haiti','Paper_metOPP_70_100gsmPaper_18metOPP','Paper_metOPP_90gsmPaper_15_18metOPP','Paper_metOPP_100gsmPaper_18metOPP','Paper_metOPP_70gsmPaper_18metOPP','Paper_metOPP_90gsmPaper_15metOPP','Paper_metOPP_90gsmPaper_18metOPP')
+      
+      
       
       # model bank table output
       output$models_ashutosh <- renderDataTable({
@@ -254,17 +257,17 @@ ssmServer <- function(id, top_session){
                        
                        # reading only sheet in which predictors exist
                        xlfile <- read_excel(input$datacall_ashutosh$datapath, sheet='stack_3')
-                       colnames(xlfile) <- gsub("\\[.*?\\]","",colnames(xlfile))
-                       colnames(xlfile) <- gsub("_","",colnames(xlfile))
-                       colnames(xlfile) <- gsub(" ","",colnames(xlfile))
-                       colnames(xlfile) <- tolower(colnames(xlfile))
+                       # colnames(xlfile) <- gsub("\\[.*?\\]","",colnames(xlfile))
+                       # colnames(xlfile) <- gsub("_","",colnames(xlfile))
+                       # colnames(xlfile) <- gsub(" ","",colnames(xlfile))
+                       # colnames(xlfile) <- tolower(colnames(xlfile))
                        xlfile
                        
                      })
                      df2 <- ashutosh_data_slurry2()
                      finaldf <- as.data.frame(df2)
                      
-                     finaldf <- finaldf[c('sealingpressurencm2', 'sealingtimems', 'layer1thicknessum', 'sealingtemperaturec')]
+                     finaldf <- finaldf[c('Sealing_Pressure_N_cm2', 'Sealing_Time_ms', 'Layer_1_thickness_um', 'Sealing_Temperature_C')]
 
                      output$simulationdata_ashutosh <- renderDataTable({
                        ashutosh_data_slurry2()
@@ -564,17 +567,17 @@ ssmServer <- function(id, top_session){
           }
           
           
-          Mean_Seal_Strength_M1 <- eval(parse(text = eqn1))
-          Mean_Seal_Strength_M2 <- eval(parse(text = eqn2))
-          Mean_Seal_Strength_M3 <- eval(parse(text = eqn3))
-          Mean_Seal_Strength_M4<-  eval(parse(text = eqn4))
-          Mean_Seal_Strength_M5 <- eval(parse(text = eqn5))
-          Mean_Seal_Strength_M6 <- eval(parse(text = eqn6))
-          Mean_Seal_Strength_M7 <- eval(parse(text = eqn7))
+          monoPP_Haiti <- round(eval(parse(text = eqn1)),3)
+          Paper_metOPP_70_100gsmPaper_18metOPP <- round(eval(parse(text = eqn2)),3)
+          Paper_metOPP_90gsmPaper_15_18metOPP <- round(eval(parse(text = eqn3)),3)
+          Paper_metOPP_100gsmPaper_18metOPP<-  round(eval(parse(text = eqn4)),3)
+          Paper_metOPP_70gsmPaper_18metOPP <- round(eval(parse(text = eqn5)),3)
+          Paper_metOPP_90gsmPaper_15metOPP <- round(eval(parse(text = eqn6)),3)
+          Paper_metOPP_90gsmPaper_18metOPP <- round(eval(parse(text = eqn7)),3)
           
           
           # result table
-          tbl <- cbind(Mean_Seal_Strength_M1,Mean_Seal_Strength_M2,Mean_Seal_Strength_M3,Mean_Seal_Strength_M4,Mean_Seal_Strength_M5,Mean_Seal_Strength_M6,Mean_Seal_Strength_M7)
+          tbl <- cbind(monoPP_Haiti,Paper_metOPP_70_100gsmPaper_18metOPP,Paper_metOPP_90gsmPaper_15_18metOPP,Paper_metOPP_100gsmPaper_18metOPP,Paper_metOPP_70gsmPaper_18metOPP,Paper_metOPP_90gsmPaper_15metOPP,Paper_metOPP_90gsmPaper_18metOPP)
           
           # input table
           df1 <- x1_ashutosh$df
@@ -687,17 +690,17 @@ ssmServer <- function(id, top_session){
             }
             
             
-            Mean_Seal_Strength_M1 <- eval(parse(text = eqn1))
-            Mean_Seal_Strength_M2 <- eval(parse(text = eqn2))
-            Mean_Seal_Strength_M3 <- eval(parse(text = eqn3))
-            Mean_Seal_Strength_M4<-  eval(parse(text = eqn4))
-            Mean_Seal_Strength_M5 <- eval(parse(text = eqn5))
-            Mean_Seal_Strength_M6 <- eval(parse(text = eqn6))
-            Mean_Seal_Strength_M7 <- eval(parse(text = eqn7))
+            monoPP_Haiti <- round(eval(parse(text = eqn1)),3)
+            Paper_metOPP_70_100gsmPaper_18metOPP <- round(eval(parse(text = eqn2)),3)
+            Paper_metOPP_90gsmPaper_15_18metOPP <- round(eval(parse(text = eqn3)),3)
+            Paper_metOPP_100gsmPaper_18metOPP<-  round(eval(parse(text = eqn4)),3)
+            Paper_metOPP_70gsmPaper_18metOPP <- round(eval(parse(text = eqn5)),3)
+            Paper_metOPP_90gsmPaper_15metOPP <- round(eval(parse(text = eqn6)),3)
+            Paper_metOPP_90gsmPaper_18metOPP <- round(eval(parse(text = eqn7)),3)
             
             
             # result table
-            tbl <- cbind(Mean_Seal_Strength_M1,Mean_Seal_Strength_M2,Mean_Seal_Strength_M3,Mean_Seal_Strength_M4,Mean_Seal_Strength_M5,Mean_Seal_Strength_M6,Mean_Seal_Strength_M7)
+            tbl <- cbind(monoPP_Haiti,Paper_metOPP_70_100gsmPaper_18metOPP,Paper_metOPP_90gsmPaper_15_18metOPP,Paper_metOPP_100gsmPaper_18metOPP,Paper_metOPP_70gsmPaper_18metOPP,Paper_metOPP_90gsmPaper_15metOPP,Paper_metOPP_90gsmPaper_18metOPP)
             
             
             nrdata <- as.data.frame(tbl)
@@ -715,7 +718,7 @@ ssmServer <- function(id, top_session){
             })
             
             output$modeltable2_ashutosh <- renderDataTable({
-              DT::datatable(as.data.frame(cbind(Mean_Seal_Strength_M1,Mean_Seal_Strength_M2,Mean_Seal_Strength_M3,Mean_Seal_Strength_M4,Mean_Seal_Strength_M5,Mean_Seal_Strength_M6,Mean_Seal_Strength_M7)), rownames = FALSE)
+              DT::datatable(as.data.frame(cbind(monoPP_Haiti,Paper_metOPP_70_100gsmPaper_18metOPP,Paper_metOPP_90gsmPaper_15_18metOPP,Paper_metOPP_100gsmPaper_18metOPP,Paper_metOPP_70gsmPaper_18metOPP,Paper_metOPP_90gsmPaper_15metOPP,Paper_metOPP_90gsmPaper_18metOPP)), rownames = FALSE)
             })
           })
         })
