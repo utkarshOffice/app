@@ -1,12 +1,12 @@
-monoPP_HaitiUI <- function(id){
+ssmUI <- function(id){
   ns <- NS(id)
   
   tagList(
     {
       tabsetPanel(id = "tabs_ashutosh",tabPanel("Model Introduction",
-                                               h1("MonoPP Haiti Type Model"), 
+                                               h1("Seal-Strength Models"), 
                                                em("Model Owners: Ashutosh/ Wagner"), 
-                                               h4("Data-based sealing strength model"),
+                                               h4("Data-based sealing strength models"),
                                                h4("Model Introduction"),
                                                p("The data-based model predicts sealing strength of a flexible laminate material based on the sealing parameters – temperature, dwell time and pressure.
 It can be used to identify optimal sealing parameters that would deliver the desired seal strength under the applicable line constraints, for e.g. line speed setting etc.
@@ -130,16 +130,18 @@ It can be used to identify optimal sealing parameters that would deliver the des
                            tabPanel("Profiler",
                                     wellPanel(
                                       h1("Profiler"),
+                                      selectInput(ns("Profiler_model_select"), 'Select Packaging Model', choices = c(" "," "), width= "25%" )),
                                       fluidRow(column(width = 3,plotOutput(ns("plot1"))),
                                                column(width = 3,plotOutput(ns("plot2"))),
                                                column(width = 3,plotOutput(ns("plot3"))),
                                                column(width = 3,plotOutput(ns("plot4"))),
                                       ),
-                                      fluidRow(column(width = 3,sliderInput(ns("profiler_Sealing_Pressure"),"Sealing_Pressure:", min = 30, max = 70, value = 50)),
+                                      fluidRow(column(width = 3,sliderInput(ns("profiler_Sealing_Pressure"),"Sealing_Pressure:", min = 30, max = 110, value = 50)),
                                                column(width = 3,sliderInput(ns("profiler_Sealing_Time"),"Sealing_Time:", min = 200, max = 700, value = 475)),
-                                               column(width = 3,sliderInput(ns("profiler_Sealing_Temperature"),"Sealing_Temperature:", min = 100, max = 140, value = 120)),
-                                               column(width = 3,sliderInput(ns("profiler_Layer_Thickness"),"Layer_Thickness:", min = 30, max = 40, value = 35))
-                                      ))
+                                               column(width = 3,sliderInput(ns("profiler_Sealing_Temperature"),"Sealing_Temperature:", min = 100, max = 240, value = 120)),
+                                               column(width = 3,sliderInput(ns("profiler_Layer_Thickness"),"Layer_Thickness:", min = 15, max = 100, value = 35))
+                                      )
+                                      
                                     ),
                            
                            tabPanel("Imported Data Simulation",

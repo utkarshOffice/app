@@ -137,7 +137,7 @@ chillrollServer <- function(id, top_session){
                        # reading only range in which predictors exist
                        xlfile <- read_excel(input$datacall_santosh$datapath, sheet='Sensor', range='Sensor!D1:J502')
 
-                       xlfile
+                       xlfile <- round(xlfile,3)
 
                      })
                      df2 <- santosh_data_slurry2()
@@ -408,8 +408,8 @@ chillrollServer <- function(id, top_session){
           }
           
 
-          Final_Flake_Temp_M1 <- eval(parse(text = eqn1))
-          Final_Flake_Temp_M2 <- eval(parse(text = eqn2))
+          Final_Flake_Temp_M1 <- round(eval(parse(text = eqn1)),3)
+          Final_Flake_Temp_M2 <- round(eval(parse(text = eqn2)),3)
 
           # result table
           tbl <- cbind(Final_Flake_Temp_M1, Final_Flake_Temp_M2)
@@ -479,8 +479,8 @@ chillrollServer <- function(id, top_session){
             }
 
             
-            Final_Flake_Temp_M1 <- eval(parse(text = eqn1))
-            Final_Flake_Temp_M2 <- eval(parse(text = eqn2))
+            Final_Flake_Temp_M1 <- round(eval(parse(text = eqn1)),3)
+            Final_Flake_Temp_M2 <- round(eval(parse(text = eqn2)),3)
 
             tbl <- cbind(Final_Flake_Temp_M1, Final_Flake_Temp_M2)
             
