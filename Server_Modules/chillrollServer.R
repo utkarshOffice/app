@@ -137,7 +137,7 @@ chillrollServer <- function(id, top_session){
                        # reading only range in which predictors exist
                        xlfile <- read_excel(input$datacall_santosh$datapath, sheet='Sensor', range='Sensor!D1:J502')
 
-                       xlfile
+                       xlfile <- round(xlfile,2)
 
                      })
                      df2 <- santosh_data_slurry2()
