@@ -344,8 +344,8 @@ Facial_MoisturizerServer <- function(id, top_session){
             h3("Simulation Result")
           )
           
-          View(Viscosity_24hrs)
-          View(Viscosity_2hrs)
+          # View(Viscosity_24hrs)
+          # View(Viscosity_2hrs)
           tbl <- data.frame(Viscosity_24hrs,Viscosity_2hrs)
           
           df <- x1_skincare_kayla$df
@@ -449,170 +449,214 @@ Facial_MoisturizerServer <- function(id, top_session){
       
       #optimisation renderings for kayla
       
-      # observeEvent(req(x_skincare_kayla),{
-      #   
-      #   predictors_in_model_skincare_kayla<-c("2 Homo I PT100 (oC) Mean_[67,72]",
-      #                                         "3 Homo II Main recycle pipe flowmeter (kg/h) Mean_[486,955]",
-      #                                         "3 Homo II Silverson (Hz) Mean_[33,50]","3 Homo II Length_[3,13]",
-      #                                         "6 Cooling II Length_[10,50]", "7 Discharge PT100 (oC) Mean_[40,41]")
-      #   min_vector<- c(67,486,33,3,10,40)
-      #   max_vector<- c(72,955,50,13,50,41)
-      #   zero_vector<-rep(1,length(predictors_in_model_skincare_kayla))
-      #   coef_data <- data.frame(cbind(predictors_in_model_skincare_kayla,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
-      #   opt_kayla$tab_1 <- coef_data
-      #   opt_kayla$tab_1[[3]] <- as.numeric(opt_kayla$tab_1[[3]])
-      #   opt_kayla$tab_1[[4]] <- as.numeric(opt_kayla$tab_1[[4]])
-      #   
-      #   
-      #   #table 1 - objective function table
-      #   output$optimiser_table1_skincare_kayla<-renderDataTable({
-      #     DT::datatable(opt_kayla$tab_1,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)") )
-      #   })
-      #   
-      #   observeEvent(input$optimiser_table1_skincare_kayla_cell_edit,{
-      #     info <- input$optimiser_table1_skincare_kayla_cell_edit
-      #     
-      #     i <- info$row
-      #     j <- info$col
-      #     v <- info$value
-      #     # View(j) #correct col number
-      #     # View(v)
-      #     if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
-      #       v <- as.numeric(v)
-      #       if(j==2 || ( j==3 && opt_kayla$tab_1[i, j+1] > v) || (j==4 && opt_kayla$tab_1[i, j-1] < v )){
-      #         opt_kayla$tab_1[i,j] <- DT::coerceValue(v,opt_kayla$tab_1[i, j])
-      #       }
-      #     }
-      #     rep <- opt_kayla$tab_1
-      #     DT::replaceData(kayla_proxy, rep, resetPaging = FALSE)
-      #     
-      #   })
-      #   
-      #   observeEvent(input$run_optimiser_skincare_kayla,{
-      #     
-      #     predictors_in_model_skincare_kayla <- c("2 Homo I PT100 (oC) Mean","3 Homo II Main recycle pipe flowmeter (kg/h) Mean","3 Homo II Silverson (Hz) Mean","3 Homo II Length","6 Cooling II Length", "7 Discharge PT100 (oC) Mean")
-      #     reg_coeff_in_model_skincare_kayla <- c(-757.860416353529,21.943031882607,313.651192927793,-1148.72296443766,-153.575970145004, 7534.34231013295)
-      #     if(input$inequality_selection_skincare_kayla=="less than or equal to"){
-      #       constr<-'<='
-      #     }
-      #     else if(input$inequality_selection_skincare_kayla=="greater than or equal to"){
-      #       constr<-'>='
-      #     }
-      #     else{
-      #       constr<-'='
-      #     }
-      #     # View(constr)#works
-      #     
-      #     target<-input$numeric_input_skincare_kayla
-      #     number.predictors<-length(predictors_in_model_skincare_kayla)
-      #     # View(opt$tab_1)
-      #     low.lims<-opt_kayla$tab_1[[3]]
-      #     upp.lims<-opt_kayla$tab_1[[4]]
-      #     objective.in<-opt_kayla$tab_1[[2]]
-      #     objective.in<-as.numeric(objective.in)
-      #     low.lims<-as.numeric(low.lims)
-      #     upp.lims<-as.numeric(upp.lims)
-      #     
-      #     obj.type<-input$radio_button_skincare_kayla
-      #     # View(objective.in)#works
-      #     # View(obj.type)
-      #     intercept <- as.numeric(-212433.522884953)
-      #     
-      #     lps.model <- make.lp(0,number.predictors)
-      #     add.constraint(lps.model,reg_coeff_in_model_skincare_kayla,constr,target-intercept)
-      #     
-      #     # Bounds for variables
-      #     set.bounds(lps.model,lower=low.lims)
-      #     set.bounds(lps.model,upper=upp.lims)
-      #     # View(low.lims)#works
-      #     # View(target)#works
-      #     # View(nrow(low.lims))
-      #     # View(obj.type) #works
-      #     #View(objective.in)#works
-      #     #View(opt_kayla$tab_1)#works
-      #     # View(number.predictors)#works gets 6 as output
-      #     
-      #     # Objective function
-      #     lp.control(lps.model,sense=obj.type) # min or max
-      #     # View(objective.in) #getting output
-      #     
-      #     set.objfn(lps.model,objective.in) # coefficients
-      #     # View(upp.lims) 
-      #     
-      #     # Apply solver
-      #     solution.status <- solve(lps.model)
-      #     # View(solution.status)
-      #     if(solution.status!=0){
-      #       showModal(modalDialog("Linear Optimisation could not find a solution for the given inputs. Please change the inputs and re-run."))
-      #     }
-      #     
-      #     #unpacking
-      #     solution.values <- get.primal.solution(lps.model)
-      #     # View(solution.values)
-      #     objective.function.value <- as.numeric(solution.values[1])
-      #     fitted.response <- as.numeric(solution.values[2])+intercept
-      #     solution.values <- as.numeric(solution.values[3:length(solution.values)])
-      #     # View(solution.values)
-      #     # View(objective.function.value)
-      #     #View(fitted.response)
-      #     
-      #     results<-data.frame(Value=fitted.response)
-      #     # colnames(results)<-""
-      #     row.names(results)<-"Viscosity Free Sample 4 CPS"
-      #     
-      #     #downloading
-      #     downresults <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Viscosity Free Sample 4 CPS"), Predicted_or_Optimal_Value= fitted.response)
-      #     downdf<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("2 Homo I PT100 (oC) Mean","3 Homo II Main recycle pipe flowmeter (kg/h) Mean","3 Homo II Silverson (Hz) Mean","3 Homo II Length","6 Cooling II Length", "7 Discharge PT100 (oC) Mean"),
-      #                        Predicted_or_Optimal_Value=solution.values)
-      #     downopt <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective func. Value"), Predicted_or_Optimal_Value = objective.function.value)
-      #     
-      #     final1 <- rbind(downresults,downdf,downopt)
-      #     optimise(final1)
-      #     output$download3_skincare_kayla <- downloadHandler(
-      #       filename = function() { "Optimisation for Viscosity Free Sample 4 CPS .xlsx"},
-      #       content = function(file) {
-      #         write_xlsx(list("Optimisation Result" = final1), file)
-      #       }
-      #     )
-      #     
-      #     # optmiser table2
-      #     output$optimiser_table2_skincare_kayla<-renderDataTable({
-      #       DT::datatable(results) })
-      #     
-      #     # optmiser table3
-      #     output$optimiser_table3_skincare_kayla<- renderDataTable({
-      #       df<-data.frame(Predictors=c("2 Homo I PT100 (oC) Mean","3 Homo II Main recycle pipe flowmeter (kg/h) Mean","3 Homo II Silverson (Hz) Mean","3 Homo II Length","6 Cooling II Length", "7 Discharge PT100 (oC) Mean"),
-      #                      Value=solution.values)
-      #       DT::datatable(df)
-      #       # DT::datatable(df)
-      #     })
-      #     
-      #     #optimiser textoutput
-      #     output$value_results_skincare_kayla<- renderUI({
-      #       # ns <- session$ns
-      #       p(paste0("The objective value resulting from the optimisation is : "),objective.function.value)
-      #     })
-      #     
-      #   })#observeEvent run optimiser ends
-      #   
-      #   # reset button
-      #   observeEvent(input$reset_skincare_kayla,{
-      #     updateSelectInput(session,"inequality_selection_skincare_kayla",selected = "less than or equal to")
-      #     updateNumericInput(session,"numeric_input_skincare_kayla",value = 56000)
-      #     updateRadioButtons(session,"radio_button_skincare_kayla",selected = "min")
-      #     predictors_in_model_skincare_kayla<-c("2 Homo I PT100 (oC) Mean_[67,72]",
-      #                                           "3 Homo II Main recycle pipe flowmeter (kg/h) Mean_[486,955]",
-      #                                           "3 Homo II Silverson (Hz) Mean_[33,50]","3 Homo II Length_[3,13]",
-      #                                           "6 Cooling II Length_[10,50]", "7 Discharge PT100 (oC) Mean_[40,41]")
-      #     min_vector<- c(67,486,33,3,10,40)
-      #     max_vector<- c(72,955,50,13,50,41)
-      #     zero_vector<-rep(1,length(predictors_in_model_skincare_kayla))
-      #     coef_data <- data.frame(cbind(predictors_in_model_skincare_kayla,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
-      #     opt_kayla$tab_1 <- coef_data
-      #   })
-      #   
-      #   
-      # })#observeEvent kayla end
+      observeEvent(req(x_skincare_kayla),{
+
+        predictors_in_model_skincare_kayla<-c("Initial Emulsification Temperature_[68,72]",
+                                              "Homogenization Speed_[33,50]",
+                                              "First Homogenization Time Length_[10,20]",
+                                              "Second Homogenization Time Length_[3,13]",
+                                              "First Cooling Time Length_[14,43]",
+                                              "Second Cooling Time Length_[10,52]",
+                                              "Discharge Temperature_[36,42]",
+                                              "Discharge Time Length_[3,26]"
+                                             )
+        min_vector<- c(68,33,10,3,14,10,36,3)
+        max_vector<- c(72,50,20,13,43,52,42,26)
+        zero_vector<-rep(1,length(predictors_in_model_skincare_kayla))
+        coef_data <- data.frame(cbind(predictors_in_model_skincare_kayla,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
+        opt_kayla$tab_1 <- coef_data
+        opt_kayla$tab_1[[3]] <- as.numeric(opt_kayla$tab_1[[3]])
+        opt_kayla$tab_1[[4]] <- as.numeric(opt_kayla$tab_1[[4]])
+
+
+        #table 1 - objective function table
+        output$optimiser_table1_skincare_kayla<-renderDataTable({
+          DT::datatable(opt_kayla$tab_1,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)") )
+        })
+
+        observeEvent(input$optimiser_table1_skincare_kayla_cell_edit,{
+          info <- input$optimiser_table1_skincare_kayla_cell_edit
+
+          i <- info$row
+          j <- info$col
+          v <- info$value
+          # View(j) #correct col number
+          # View(v)
+          if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
+            v <- as.numeric(v)
+            if(j==2 || ( j==3 && opt_kayla$tab_1[i, j+1] > v) || (j==4 && opt_kayla$tab_1[i, j-1] < v )){
+              opt_kayla$tab_1[i,j] <- DT::coerceValue(v,opt_kayla$tab_1[i, j])
+            }
+          }
+          rep <- opt_kayla$tab_1
+          DT::replaceData(kayla_proxy, rep, resetPaging = FALSE)
+
+        })
+
+        observeEvent(input$run_optimiser_skincare_kayla,{
+
+          predictors_in_model_skincare_kayla <- c("Initial Emulsification Temperature_[68,72]",
+                                                  "Homogenization Speed_[33,50]",
+                                                  "First Homogenization Time Length_[10,20]",
+                                                  "Second Homogenization Time Length_[3,13]",
+                                                  "First Cooling Time Length_[14,43]",
+                                                  "Second Cooling Time Length_[10,52]",
+                                                  "Discharge Temperature_[36,42]",
+                                                  "Discharge Time Length_[3,26]"
+                                                  )
+          reg_coeff_in_model_skincare_kayla_24 <- c(-572.345592886129,731.123144906604,-3593.54500381997,
+                                                       2041.84871782967, -1239.58504910869 ,-211.142485744822,
+                                                       -2217.51827004116 ,-1871.61581842917)
+          intercept_24 <- as.numeric(301654.351744948)
+          
+          reg_coeff_in_model_skincare_kayla_2 <- c(922.281708815879,887.110890789025,2042.97506366246,-2234.74100427201 ,
+                                                  53.2437206619529,-350.472374047041, 1694.80362126778 ,-1390.91117995195)
+          intercept_2 <- as.numeric(-75916.4225373359)
+          
+          if(input$inequality_selection_skincare_kayla_2=="less than or equal to"){
+            constr_2<-'<='
+          }
+          else if(input$inequality_selection_skincare_kayla_2=="greater than or equal to"){
+            constr_2<-'>='
+          }
+          else{
+            constr_2<-'='
+          }
+          
+          
+          if(input$inequality_selection_skincare_kayla_24=="less than or equal to"){
+            constr_24<-'<='
+          }
+          else if(input$inequality_selection_skincare_kayla_24=="greater than or equal to"){
+            constr_24<-'>='
+          }
+          else{
+            constr_24<-'='
+          }
+          # View(constr)#works
+
+          target_2 <- input$numeric_input_skincare_kayla_2
+          target_24 <- input$numeric_input_skincare_kayla_24
+          number.predictors<-length(predictors_in_model_skincare_kayla)
+          # View(number.predictors)
+          # View(opt$tab_1)
+          low.lims<-opt_kayla$tab_1[[3]]
+          upp.lims<-opt_kayla$tab_1[[4]]
+          objective.in<-opt_kayla$tab_1[[2]]
+          objective.in<-as.numeric(objective.in)
+          low.lims<-as.numeric(low.lims)
+          upp.lims<-as.numeric(upp.lims)
+
+          obj.type<-input$radio_button_skincare_kayla
+          # View(objective.in)#works
+          # View(obj.type)
+
+          lps.model <- make.lp(0,number.predictors)
+          
+          add.constraint(lps.model,reg_coeff_in_model_skincare_kayla_24,constr_24,target_24-intercept_24)
+          add.constraint(lps.model,reg_coeff_in_model_skincare_kayla_2,constr_2,target_2-intercept_2)
+          
+          # Bounds for variables
+          set.bounds(lps.model,lower=low.lims)
+          set.bounds(lps.model,upper=upp.lims)
+
+          # Objective function
+          lp.control(lps.model,sense=obj.type) # min or max
+
+          set.objfn(lps.model,objective.in) # coefficients
+
+          # Apply solver
+          solution.status <- solve(lps.model)
+          # View(solution.status)
+          if(solution.status!=0){
+            showModal(modalDialog("Linear Optimisation could not find a solution for the given inputs. Please change the inputs and re-run."))
+          }
+
+          #unpacking
+          solution.values <- get.primal.solution(lps.model)
+          View(solution.values)
+          objective.function.value <- as.numeric(solution.values[1])
+          fitted.response_24 <- round(as.numeric(solution.values[2])+intercept_24,3)
+          fitted.response_2<- round(as.numeric(solution.values[3])+intercept_2,3)
+          solution.values <- round(as.numeric(solution.values[4:length(solution.values)]),3)
+          # View(solution.values)
+          # View(objective.function.value)
+          #View(fitted.response)
+
+          results<-data.frame(Value=rbind(fitted.response_24,fitted.response_2))
+          row.names(results)<- c("Viscosity 24hrs","Viscosity 2hrs")
+
+          #downloading
+          # downresults <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Viscosity Free Sample 4 CPS"), Predicted_or_Optimal_Value= fitted.response)
+          # downdf<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("2 Homo I PT100 (oC) Mean","3 Homo II Main recycle pipe flowmeter (kg/h) Mean","3 Homo II Silverson (Hz) Mean","3 Homo II Length","6 Cooling II Length", "7 Discharge PT100 (oC) Mean"),
+          #                    Predicted_or_Optimal_Value=solution.values)
+          # downopt <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective func. Value"), Predicted_or_Optimal_Value = objective.function.value)
+          # 
+          # final1 <- rbind(downresults,downdf,downopt)
+          # optimise(final1)
+          # output$download3_skincare_kayla <- downloadHandler(
+          #   filename = function() { "Optimisation for Viscosity Free Sample 4 CPS .xlsx"},
+          #   content = function(file) {
+          #     write_xlsx(list("Optimisation Result" = final1), file)
+          #   }
+          # )
+
+          # optmiser table2
+          output$optimiser_table2_skincare_kayla<-renderDataTable({
+            DT::datatable(results) })
+
+          # optmiser table3
+          output$optimiser_table3_skincare_kayla<- renderDataTable({
+            df<-data.frame(Predictors=c("Initial Emulsification Temperature_[68,72]",
+                                        "Homogenization Speed_[33,50]",
+                                        "First Homogenization Time Length_[10,20]",
+                                        "Second Homogenization Time Length_[3,13]",
+                                        "First Cooling Time Length_[14,43]",
+                                        "Second Cooling Time Length_[10,52]",
+                                        "Discharge Temperature_[36,42]",
+                                        "Discharge Time Length_[3,26]"
+                                        ), Value=solution.values)
+            DT::datatable(df)
+            # DT::datatable(df)
+          })
+
+          #optimiser textoutput
+          output$value_results_skincare_kayla<- renderUI({
+            # ns <- session$ns
+            p(paste0("The objective value resulting from the optimisation is : "),objective.function.value)
+          })
+
+        })#observeEvent run optimiser ends
+
+        # reset button
+        observeEvent(input$reset_skincare_kayla,{
+          updateSelectInput(session,"inequality_selection_skincare_kayla_24",selected = "less than or equal to")
+          updateNumericInput(session,"numeric_input_skincare_kayla_2",value = 56000)
+          updateSelectInput(session,"inequality_selection_skincare_kayla_24",selected = "less than or equal to")
+          updateNumericInput(session,"numeric_input_skincare_kayla_2",value = 56000)
+          
+          updateRadioButtons(session,"radio_button_skincare_kayla",selected = "min")
+          predictors_in_model_skincare_kayla<-c("Initial Emulsification Temperature_[68,72]",
+                                                "Homogenization Speed_[33,50]",
+                                                "First Homogenization Time Length_[10,20]",
+                                                "Second Homogenization Time Length_[3,13]",
+                                                "First Cooling Time Length_[14,43]",
+                                                "Second Cooling Time Length_[10,52]",
+                                                "Discharge Temperature_[36,42]",
+                                                "Discharge Time Length_[3,26]"
+          )
+          min_vector<- c(68,33,10,3,14,10,36,3)
+          max_vector<- c(72,50,20,13,43,52,42,26)
+          zero_vector<-rep(1,length(predictors_in_model_skincare_kayla))
+          coef_data <- data.frame(cbind(predictors_in_model_skincare_kayla,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
+          opt_kayla$tab_1 <- coef_data
+          opt_kayla$tab_1[[3]] <- as.numeric(opt_kayla$tab_1[[3]])
+          opt_kayla$tab_1[[4]] <- as.numeric(opt_kayla$tab_1[[4]])
+          
+        })
+
+
+      })#observeEvent kayla end
       
       observeEvent(input$downloadresults_skincare_kayla,{
         
