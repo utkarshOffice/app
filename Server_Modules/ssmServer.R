@@ -84,8 +84,8 @@ ssmServer <- function(id, top_session){
         Advisory_table <- data.frame(Ingredients = c("Sealing_Pressure","Sealing_Time",
                                                      "Sealing_Temperature",
                                                      "Layer_Thickness"),
-                                     Lower_Level = c(30, 200, 100, 30),
-                                     Upper_Level = c(70, 700, 140, 40))
+                                     Lower_Level = c(30, 200, 100, 15),
+                                     Upper_Level = c(110, 700, 240, 100))
         datatable(Advisory_table)
       })
       
@@ -95,120 +95,173 @@ ssmServer <- function(id, top_session){
       # ------------------------------------------------ SIMULATION - PROFILER ------------------------------------------------------
       
       # profiler renderings
-      observeEvent(req(input$profiler_Sealing_Pressure),{
-        
-        updateSelectInput(session, "Profiler_model_select", choices = models_ashutosh, selected = models_ashutosh[1])
-        
-        
-        eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure() - 50)/25) + 
-                (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
-                (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure() - 50)/25)*((Sealing_Time() - 475)/275) + 
-                (0.1653191326)*((Sealing_Pressure() - 50)/25)*((Layer_Thickness() - 35)/5) - 
-                (0.190088312)*((Sealing_Time()-475)/275)*((Layer_Thickness() - 35)/5) - 
-                (0.227255444)*((Layer_Thickness() - 35)/5)*((Sealing_Temperature() - 120)/20) - 
-                (0.438383433)*((Sealing_Pressure() - 50)/25)*((Sealing_Pressure() - 50)/25) + 
-                (0.422789614)*((Sealing_Time()-475)/275)*((Sealing_Time()-475)/275)"
-        
-        eqn2 <-"(7.9283468534) - (1.744214002)*((Layer_Thickness - 85)/15)+
-                (2.0472868262)*((Sealing_Temperature - 180)/60) + (1.0299432676)*((Sealing_Time-475)/275) + 
-                (1.0456231626)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) - (0.085441804)*((Sealing_Pressure - 77)/38.5)"
-          
-        eqn3 <-"(7.5004364288) + (2.1104133638)*((Sealing_Temperature - 180)/60)+
-                (0.9519562501)*((Sealing_Time-475)/275) + (1.0656214205)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + 
-                (0.2754606935)*((Layer_Thickness - 16.5)/1.5) - (0.007364972)*((Sealing_Pressure - 77)/38.5)"
-                                                    
-        eqn4 <-"(8.2995281922) + (4.1535657286)*((Sealing_Temperature - 180)/60)+
-                (0.9568895775)*((Sealing_Time-475)/275) - (3.199586193)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) + 
-                (0.7476644958)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + (0.0536281149)*((Sealing_Pressure - 77)/38.5)"
-        
-        eqn5 <-"(9.544993865) + (2.6037874114)*((Sealing_Temperature - 180)/60)+
-                (1.8176938907)*((Sealing_Time-475)/275) + (1.96449116648)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) -
-                (0.489432036)*((Sealing_Pressure - 77)/38.5)"
-              
-        eqn6 <-"(6.3165820822) + (1.0534709536)*((Sealing_Temperature - 180)/60)+
-                (0.6532790282)*((Sealing_Time-475)/275) + (1.3296269584)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) + 
-                (0.7989598978)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + (0.1730372655)*((Sealing_Pressure - 77)/38.5)"
-        
-        eqn7 <-"(9.6899630181) + (0.5344405994)*((Sealing_Temperature - 180)/60)+
-                (1.1338418823)*((Sealing_Time-475)/275) - (1.76049007)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) -
-                (0.00534394)*((Sealing_Pressure - 77)/38.5)"
-        
-        eqn1 <- gsub("\n","",eqn1)
-        eqn2 <- gsub("\n","",eqn2)
-        eqn3 <- gsub("\n","",eqn3)
-        eqn4 <- gsub("\n","",eqn4)
-        eqn5 <- gsub("\n","",eqn5)
-        eqn6 <- gsub("\n","",eqn6)
-        eqn7 <- gsub("\n","",eqn7)
-        
-        # initializing lists
-        Sealing_Pressure_list <- round(seq(from  = 30, to = 70, length.out = 41),2)
-        Sealing_Time_list <- round(seq(from  = 200, to = 700, length.out = 501),2)
-        Sealing_Temperature_list <- round(seq(from  = 100, to = 140, length.out = 141),2)
-        Layer_Thickness_list <- round(seq(from  = 30, to = 40, length.out = 11),2)
-        
-        # initializing reactive variables 
-        Sealing_Pressure <- reactive(input$profiler_Sealing_Pressure)
-        Sealing_Time <- reactive(input$profiler_Sealing_Time)
-        Sealing_Temperature <- reactive(input$profiler_Sealing_Temperature)
-        Layer_Thickness <- reactive(input$profiler_Layer_Thickness)
-       
-        # making sure all variables are changed to numeric
-        # Sealing_Pressure <- as.numeric(Sealing_Pressure)
-        # Sealing_Time <- as.numeric(Sealing_Time())
-        # Sealing_Temperature <- as.numeric(Sealing_Temperature())
-        # Layer_Thickness <- as.numeric(Layer_Thickness())
-        
-        observeEvent(input$profiler_Sealing_Time | input$profiler_Sealing_Temperature | input$profiler_Layer_Thickness | input$profiler_Sealing_Pressure ,
-                     {
-                       Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn1)
-                       Mean_Seal_Strnt_Pr <- reactive(eval(parse(text = Pr_eqn1)))
-                        
-
-                       output$plot1 <- renderPlot({
-                         Mean_Seal_Strength <- Mean_Seal_Strnt_Pr()
-                         
-                         ggplot(data=data.frame(Sealing_Pressure_list, Mean_Seal_Strength), aes(x=Sealing_Pressure_list, y= Mean_Seal_Strength)) +
-                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                           gghighlight(Sealing_Pressure_list == input$profiler_Sealing_Pressure) + ylim(8, 13)
-                       })
-                       
-                       
-                       Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn1)
-                       Mean_Seal_Strnt_Time <- reactive(eval(parse(text = Ti_eqn1)))
-                       
-                       output$plot2 <- renderPlot({
-                         Mean_Seal_Strength <- Mean_Seal_Strnt_Time()
-                         ggplot(data=data.frame(Sealing_Time_list, Mean_Seal_Strength), aes(x=Sealing_Time_list, y= Mean_Seal_Strength)) +
-                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank()) + 
-                           gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time) + ylim(8, 13)
-                       })
-                       
-                       
-                       Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn1)
-                       Mean_Seal_Strnt_Temp <- reactive(eval(parse(text = Te_eqn1)))
-                       
-                       output$plot3 <- renderPlot({
-                         Mean_Seal_Strength <- Mean_Seal_Strnt_Temp()
-                         ggplot(data=data.frame(Sealing_Temperature_list, Mean_Seal_Strength), aes(x=Sealing_Temperature_list, y= Mean_Seal_Strength)) +
-                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
-                           gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature) + ylim(8, 13)
-                       })
-                   
-                       
-                       Lt_eqn1 <- gsub("Layer_Thickness[(][)]","Layer_Thickness_list",eqn1)
-                       Mean_Seal_Strnt_LT<- reactive(eval(parse(text = Lt_eqn1)))
-                       
-                       output$plot4 <- renderPlot({
-                         Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
-                         ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
-                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
-                           gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness)  + ylim(8, 13) 
-                       })
-                         
-                      })
+      updateSelectInput(session, "Profiler_model_select", choices = models_ashutosh, selected = models_ashutosh[1])
       
-      })
+      observeEvent(req(input$Profiler_model_select),{
+        
+        
+            eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure() - 50)/25) + 
+                    (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
+                    (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure() - 50)/25)*((Sealing_Time() - 475)/275) + 
+                    (0.1653191326)*((Sealing_Pressure() - 50)/25)*((Layer_Thickness() - 35)/5) - 
+                    (0.190088312)*((Sealing_Time()-475)/275)*((Layer_Thickness() - 35)/5) - 
+                    (0.227255444)*((Layer_Thickness() - 35)/5)*((Sealing_Temperature() - 120)/20) - 
+                    (0.438383433)*((Sealing_Pressure() - 50)/25)*((Sealing_Pressure() - 50)/25) + 
+                    (0.422789614)*((Sealing_Time()-475)/275)*((Sealing_Time()-475)/275)"
+            
+            eqn2 <-"(7.9283468534) - (1.744214002)*((Layer_Thickness() - 85)/15)+
+                    (2.0472868262)*((Sealing_Temperature() - 180)/60) + (1.0299432676)*((Sealing_Time()-475)/275) + 
+                    (1.0456231626)*((Sealing_Temperature() - 180)/60)*((Sealing_Time()-475)/275) - (0.085441804)*((Sealing_Pressure() - 77)/38.5)"
+              
+            eqn3 <-"(7.5004364288) + (2.1104133638)*((Sealing_Temperature() - 180)/60)+
+                    (0.9519562501)*((Sealing_Time()-475)/275) + (1.0656214205)*((Sealing_Temperature() - 180)/60)*((Sealing_Time()-475)/275) + 
+                    (0.2754606935)*((Layer_Thickness() - 16.5)/1.5) - (0.007364972)*((Sealing_Pressure() - 77)/38.5)"
+                                                        
+            eqn4 <-"(8.2995281922) + (4.1535657286)*((Sealing_Temperature() - 180)/60)+
+                    (0.9568895775)*((Sealing_Time()-475)/275) - (3.199586193)*((Sealing_Temperature() - 180)/60)*((Sealing_Temperature() - 180)/60) + 
+                    (0.7476644958)*((Sealing_Temperature() - 180)/60)*((Sealing_Time()-475)/275) + (0.0536281149)*((Sealing_Pressure() - 77)/38.5)"
+            
+            eqn5 <-"(9.544993865) + (2.6037874114)*((Sealing_Temperature() - 180)/60)+
+                    (1.8176938907)*((Sealing_Time()-475)/275) + (1.96449116648)*((Sealing_Temperature() - 180)/60)*((Sealing_Time()-475)/275) -
+                    (0.489432036)*((Sealing_Pressure() - 77)/38.5)"
+                  
+            eqn6 <-"(6.3165820822) + (1.0534709536)*((Sealing_Temperature() - 180)/60)+
+                    (0.6532790282)*((Sealing_Time()-475)/275) + (1.3296269584)*((Sealing_Temperature() - 180)/60)*((Sealing_Temperature() - 180)/60) + 
+                    (0.7989598978)*((Sealing_Temperature() - 180)/60)*((Sealing_Time()-475)/275) + (0.1730372655)*((Sealing_Pressure() - 77)/38.5)"
+            
+            eqn7 <-"(9.6899630181) + (0.5344405994)*((Sealing_Temperature() - 180)/60)+
+                    (1.1338418823)*((Sealing_Time()-475)/275) - (1.76049007)*((Sealing_Temperature() - 180)/60)*((Sealing_Temperature() - 180)/60) -
+                    (0.00534394)*((Sealing_Pressure() - 77)/38.5)"
+            
+            eqn1 <- gsub("\n","",eqn1)
+            eqn2 <- gsub("\n","",eqn2)
+            eqn3 <- gsub("\n","",eqn3)
+            eqn4 <- gsub("\n","",eqn4)
+            eqn5 <- gsub("\n","",eqn5)
+            eqn6 <- gsub("\n","",eqn6)
+            eqn7 <- gsub("\n","",eqn7)
+            
+            # initializing lists
+            Sealing_Pressure_list <- round(seq(from  = 30, to = 110, length.out = 81),2)
+            Sealing_Time_list <- round(seq(from  = 200, to = 700, length.out = 501),2)
+            Sealing_Temperature_list <- round(seq(from  = 100, to = 240, length.out = 141),2)
+            Layer_Thickness_list <- round(seq(from  = 15, to = 100, length.out = 86),2)
+            
+            # initializing reactive variables 
+            Sealing_Pressure <- reactive(input$profiler_Sealing_Pressure)
+            Sealing_Time <- reactive(input$profiler_Sealing_Time)
+            Sealing_Temperature <- reactive(input$profiler_Sealing_Temperature)
+            Layer_Thickness <- reactive(input$profiler_Layer_Thickness)
+           
+            # making sure all variables are changed to numeric
+            # Sealing_Pressure <- as.numeric(Sealing_Pressure)
+            # Sealing_Time <- as.numeric(Sealing_Time())
+            # Sealing_Temperature <- as.numeric(Sealing_Temperature())
+            # Layer_Thickness <- as.numeric(Layer_Thickness())
+            
+            observeEvent(input$profiler_Sealing_Time | input$profiler_Sealing_Temperature | input$profiler_Layer_Thickness | input$profiler_Sealing_Pressure ,
+                         {
+                           
+                           if(input$Profiler_model_select == 'monoPP_Haiti')
+                           {
+                             Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn1)
+                             Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn1)
+                             Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn1)
+                             Lt_eqn1 <- gsub("Layer_Thickness[(][)]","Layer_Thickness_list",eqn1)
+                           }
+                           
+                           if(input$Profiler_model_select == 'Paper_metOPP_70_100gsmPaper_18metOPP')
+                           {
+                             Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn2)
+                             Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn2)
+                             Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn2)
+                             Lt_eqn1 <- gsub("Layer_Thickness[(][)]","Layer_Thickness_list",eqn2)
+                           }
+                           
+                           if(input$Profiler_model_select == 'Paper_metOPP_90gsmPaper_15_18metOPP')
+                           {
+                             Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn3)
+                             Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn3)
+                             Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn3)
+                             Lt_eqn1 <- gsub("Layer_Thickness[(][)]","Layer_Thickness_list",eqn3)
+                           }
+                           
+                           if(input$Profiler_model_select == 'Paper_metOPP_100gsmPaper_18metOPP')
+                           {
+                             Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn4)
+                             Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn4)
+                             Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn4)
+                           }
+                           
+                           if(input$Profiler_model_select == 'Paper_metOPP_70gsmPaper_18metOPP')
+                           {
+                             Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn5)
+                             Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn5)
+                             Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn5)
+                           }
+                           
+                           if(input$Profiler_model_select == 'Paper_metOPP_90gsmPaper_15metOPP')
+                           {
+                             Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn6)
+                             Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn6)
+                             Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn6)
+                           }
+                           
+                           if(input$Profiler_model_select == 'Paper_metOPP_90gsmPaper_18metOPP')
+                           {
+                             Pr_eqn1 <- gsub("Sealing_Pressure[(][)]","Sealing_Pressure_list",eqn7)
+                             Ti_eqn1 <- gsub("Sealing_Time[(][)]","Sealing_Time_list",eqn7)
+                             Te_eqn1 <- gsub("Sealing_Temperature[(][)]","Sealing_Temperature_list",eqn7)
+                           }
+                            
+                           Mean_Seal_Strnt_Pr <- reactive(eval(parse(text = Pr_eqn1)))
+                        
+                           output$plot1 <- renderPlot({
+                             Mean_Seal_Strength <- Mean_Seal_Strnt_Pr()
+                             
+                             ggplot(data=data.frame(Sealing_Pressure_list, Mean_Seal_Strength), aes(x=Sealing_Pressure_list, y= Mean_Seal_Strength)) +
+                               geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
+                               gghighlight(Sealing_Pressure_list == input$profiler_Sealing_Pressure) + ylim(0, 15)
+                           })
+                           
+                           
+                           Mean_Seal_Strnt_Time <- reactive(eval(parse(text = Ti_eqn1)))
+                           
+                           output$plot2 <- renderPlot({
+                             Mean_Seal_Strength <- Mean_Seal_Strnt_Time()
+                             ggplot(data=data.frame(Sealing_Time_list, Mean_Seal_Strength), aes(x=Sealing_Time_list, y= Mean_Seal_Strength)) +
+                               geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank()) + 
+                               gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time) + ylim(0, 15)
+                           })
+                           
+                           
+                           Mean_Seal_Strnt_Temp <- reactive(eval(parse(text = Te_eqn1)))
+                           
+                           output$plot3 <- renderPlot({
+                             Mean_Seal_Strength <- Mean_Seal_Strnt_Temp()
+                             ggplot(data=data.frame(Sealing_Temperature_list, Mean_Seal_Strength), aes(x=Sealing_Temperature_list, y= Mean_Seal_Strength)) +
+                               geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
+                               gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature) + ylim(0, 15)
+                           })
+                            
+                           output$plot4 <- renderPlot({ggplot()+ theme(axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())})
+                           
+                           if(input$Profiler_model_select == 'monoPP_Haiti' | input$Profiler_model_select == 'Paper_metOPP_70_100gsmPaper_18metOPP' | input$Profiler_model_select == 'Paper_metOPP_90gsmPaper_15_18metOPP')
+                           {
+                               Mean_Seal_Strnt_LT<- reactive(eval(parse(text = Lt_eqn1)))
+                               
+                               output$plot4 <- renderPlot({
+                                 Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
+                                 ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
+                                   geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
+                                   gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness)  + ylim(0, 15)
+                               })
+                           } 
+                          })
+                       
+          
+          })
+      
       
       
       # --------------------------------------------- VISUALIZATION ------------------------------------------------------
