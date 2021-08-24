@@ -574,7 +574,7 @@ Facial_MoisturizerServer <- function(id, top_session){
 
           #unpacking
           solution.values <- get.primal.solution(lps.model)
-          View(solution.values)
+          # View(solution.values)
           objective.function.value <- as.numeric(solution.values[1])
           fitted.response_24 <- round(as.numeric(solution.values[2])+intercept_24,3)
           fitted.response_2<- round(as.numeric(solution.values[3])+intercept_2,3)
