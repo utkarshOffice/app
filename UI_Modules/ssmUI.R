@@ -1,4 +1,4 @@
-monoPP_HaitiUI <- function(id){
+ssmUI <- function(id){
   ns <- NS(id)
   
   tagList(
@@ -130,6 +130,7 @@ It can be used to identify optimal sealing parameters that would deliver the des
                            tabPanel("Profiler",
                                     wellPanel(
                                       h1("Profiler"),
+                                      
                                       fluidRow(column(width = 3,plotOutput(ns("plot1"))),
                                                column(width = 3,plotOutput(ns("plot2"))),
                                                column(width = 3,plotOutput(ns("plot3"))),
@@ -139,7 +140,8 @@ It can be used to identify optimal sealing parameters that would deliver the des
                                                column(width = 3,sliderInput(ns("profiler_Sealing_Time"),"Sealing_Time:", min = 200, max = 700, value = 475)),
                                                column(width = 3,sliderInput(ns("profiler_Sealing_Temperature"),"Sealing_Temperature:", min = 100, max = 140, value = 120)),
                                                column(width = 3,sliderInput(ns("profiler_Layer_Thickness"),"Layer_Thickness:", min = 30, max = 40, value = 35))
-                                      ))
+                                      ),
+                                      selectInput(ns("Profiler_model_select"), 'Select Packaging Model', choices = c(" "," "), width= "30%" ))
                                     ),
                            
                            tabPanel("Imported Data Simulation",

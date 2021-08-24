@@ -97,6 +97,9 @@ ssmServer <- function(id, top_session){
       # profiler renderings
       observeEvent(req(input$profiler_Sealing_Pressure),{
         
+        updateSelectInput(session, "Profiler_model_select", choices = models_ashutosh, selected = models_ashutosh[1])
+        
+        
         eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure() - 50)/25) + 
                 (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
                 (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure() - 50)/25)*((Sealing_Time() - 475)/275) + 
@@ -204,29 +207,7 @@ ssmServer <- function(id, top_session){
                        })
                          
                       })
-                       
-                       # output$plot2 <- renderPlot({
-                       #   Mean_Seal_Strength <- Mean_Seal_Strnt()
-                       #   ggplot(data=data.frame(Sealing_Time, Mean_Seal_Strength), aes(x=Sealing_Time, y= Mean_Seal_Strength)) +
-                       #     geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                       #     gghighlight(Sealing_Time == input$profiler_Sealing_Time)
-                       # })
-                       # 
-                       # output$plot3 <- renderPlot({
-                       #   Mean_Seal_Strength <- Mean_Seal_Strnt()
-                       #   ggplot(data=data.frame(Sealing_Temperature, Mean_Seal_Strength), aes(x=Sealing_Temperature, y= Mean_Seal_Strength)) +
-                       #     geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                       #     gghighlight(Sealing_Temperature == input$profiler_Sealing_Temperature)
-                       # })
-                       # 
-                       # output$plot4 <- renderPlot({
-                       #   Mean_Seal_Strength <- Mean_Seal_Strnt()
-                       #   ggplot(data=data.frame(Layer_Thickness, Mean_Seal_Strength), aes(x=Layer_Thickness, y= Mean_Seal_Strength)) +
-                       #     geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                       #     gghighlight(Layer_Thickness == input$profiler_Layer_Thickness)
-                       # })
-       
-                     
+      
       })
       
       
