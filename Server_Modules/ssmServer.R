@@ -56,8 +56,8 @@ ssmServer <- function(id, top_session){
       all_vars_ashutosh <-c("Sealing_Pressure", "Sealing_Time", "Sealing_Temperature" , "Layer_Thickness")
       
       # lists for excel file column names
-      c_ashutosh <- c("sealingpressurencm2", "sealingtimems", "sealingtemperaturec" , "layer1thicknessum")
-      d_ashutosh <- c("sealingpressurencm2", "sealingtimems", "sealingtemperaturec" , "layer1thicknessum")
+      c_ashutosh <- c("sealingpressurencm2", "sealingtimems", "sealingtemperaturec" , "layer1thicknessum", "layer2thicknessum")
+      d_ashutosh <- c("sealingpressurencm2", "sealingtimems", "sealingtemperaturec" , "layer1thicknessum", "layer2thicknessum")
       
       
       # model bank table output
@@ -630,7 +630,7 @@ ssmServer <- function(id, top_session){
           
           df1 <- ashutosh_data_slurry()
           
-          df1 <- df1[c('sealingpressurencm2', 'sealingtimems', 'layer1thicknessum', 'sealingtemperaturec')]
+          df1 <- df1[c('sealingpressurencm2', 'sealingtimems', 'layer1thicknessum','layer2thicknessum','sealingtemperaturec')]
           
           observeEvent(req(input$simulate2_ashutosh),{
             
@@ -643,17 +643,62 @@ ssmServer <- function(id, top_session){
                 (0.438383433)*((sealingpressurencm2 - 50)/25)*((sealingpressurencm2 - 50)/25) + 
                 (0.422789614)*((sealingtimems-475)/275)*((sealingtimems-475)/275)"
             
+            eqn2 <-"(7.9283468534) - (1.744214002)*((layer2thicknessum - 85)/15)+
+                (2.0472868262)*((sealingtemperaturec - 180)/60) + (1.0299432676)*((sealingtimems-475)/275) + 
+                (1.0456231626)*((sealingtemperaturec - 180)/60)*((sealingtimems-475)/275) - (0.085441804)*((sealingpressurencm2 - 77)/38.5)"
+            
+            eqn3 <-"(7.5004364288) + (2.1104133638)*((sealingtemperaturec - 180)/60)+
+                (0.9519562501)*((sealingtimems-475)/275) + (1.0656214205)*((sealingtemperaturec - 180)/60)*((sealingtimems-475)/275) + 
+                (0.2754606935)*((layer2thicknessum - 16.5)/1.5) - (0.007364972)*((sealingpressurencm2 - 77)/38.5)"
+            
+            eqn4 <-"(8.2995281922) + (4.1535657286)*((sealingtemperaturec - 180)/60)+
+                (0.9568895775)*((sealingtimems-475)/275) - (3.199586193)*((sealingtemperaturec - 180)/60)*((sealingtemperaturec - 180)/60) + 
+                (0.7476644958)*((sealingtemperaturec - 180)/60)*((sealingtimems-475)/275) + (0.0536281149)*((sealingpressurencm2 - 77)/38.5)"
+            
+            eqn5 <-"(9.544993865) + (2.6037874114)*((sealingtemperaturec - 180)/60)+
+                (1.8176938907)*((sealingtimems-475)/275) + (1.96449116648)*((sealingtemperaturec - 180)/60)*((sealingtimems-475)/275) -
+                (0.489432036)*((sealingpressurencm2 - 77)/38.5)"
+            
+            eqn6 <-"(6.3165820822) + (1.0534709536)*((sealingtemperaturec - 180)/60)+
+                (0.6532790282)*((sealingtimems-475)/275) + (1.3296269584)*((sealingtemperaturec - 180)/60)*((sealingtemperaturec - 180)/60) + 
+                (0.7989598978)*((sealingtemperaturec - 180)/60)*((sealingtimems-475)/275) + (0.1730372655)*((sealingpressurencm2 - 77)/38.5)"
+            
+            eqn7 <-"(9.6899630181) + (0.5344405994)*((sealingtemperaturec - 180)/60)+
+                (1.1338418823)*((sealingtimems-475)/275) - (1.76049007)*((sealingtemperaturec - 180)/60)*((sealingtemperaturec - 180)/60) -
+                (0.00534394)*((sealingpressurencm2 - 77)/38.5)"
+            
             eqn1 <- gsub("\n","",eqn1)
+            eqn2 <- gsub("\n","",eqn2)
+            eqn3 <- gsub("\n","",eqn3)
+            eqn4 <- gsub("\n","",eqn4)
+            eqn5 <- gsub("\n","",eqn5)
+            eqn6 <- gsub("\n","",eqn6)
+            eqn7 <- gsub("\n","",eqn7)
             
             # prefixing 'df1' to column_names in equations
             for(i in c_ashutosh){
               eqn1 <- gsub(i, paste0("df1$",i), eqn1)
+              eqn2 <- gsub(i, paste0("df1$",i), eqn2)
+              eqn3 <- gsub(i, paste0("df1$",i), eqn3)
+              eqn4 <- gsub(i, paste0("df1$",i), eqn4)
+              eqn5 <- gsub(i, paste0("df1$",i), eqn5)
+              eqn6 <- gsub(i, paste0("df1$",i), eqn6)
+              eqn7 <- gsub(i, paste0("df1$",i), eqn7)
             }
             
             
-            Mean_Seal_Strength <- eval(parse(text = eqn1))
-
-            tbl <- cbind(Mean_Seal_Strength)
+            Mean_Seal_Strength_M1 <- eval(parse(text = eqn1))
+            Mean_Seal_Strength_M2 <- eval(parse(text = eqn2))
+            Mean_Seal_Strength_M3 <- eval(parse(text = eqn3))
+            Mean_Seal_Strength_M4<-  eval(parse(text = eqn4))
+            Mean_Seal_Strength_M5 <- eval(parse(text = eqn5))
+            Mean_Seal_Strength_M6 <- eval(parse(text = eqn6))
+            Mean_Seal_Strength_M7 <- eval(parse(text = eqn7))
+            
+            
+            # result table
+            tbl <- cbind(Mean_Seal_Strength_M1,Mean_Seal_Strength_M2,Mean_Seal_Strength_M3,Mean_Seal_Strength_M4,Mean_Seal_Strength_M5,Mean_Seal_Strength_M6,Mean_Seal_Strength_M7)
+            
             
             nrdata <- as.data.frame(tbl)
             importresults_ashutosh(tbl)
@@ -670,7 +715,7 @@ ssmServer <- function(id, top_session){
             })
             
             output$modeltable2_ashutosh <- renderDataTable({
-              DT::datatable(as.data.frame(cbind(Mean_Seal_Strength)), rownames = FALSE)
+              DT::datatable(as.data.frame(cbind(Mean_Seal_Strength_M1,Mean_Seal_Strength_M2,Mean_Seal_Strength_M3,Mean_Seal_Strength_M4,Mean_Seal_Strength_M5,Mean_Seal_Strength_M6,Mean_Seal_Strength_M7)), rownames = FALSE)
             })
           })
         })
