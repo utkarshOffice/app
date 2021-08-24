@@ -10,6 +10,8 @@ library(writexl)
 library(nloptr)
 library(ggplot2)
 library(gghighlight)
+library(shinyjs)
+
 
 #source all files in back_end
 for(f in list.files(path=c("./UI_Modules/","./Server_Modules/"),
