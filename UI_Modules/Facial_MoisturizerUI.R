@@ -172,32 +172,36 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                            
                   ),
       tabPanel("Optimisation",
-               fluidRow(
+               # fluidRow(
                  wellPanel(
                    tags$ul(
-                     h2("Process Optimiser for Viscosity fresh Sample 4 Cps (mPas) "),
+                     h2("Process Optimiser "),
                      br(),
-                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Viscosity fresh Sample 4 Cps (mPas) value."),
+                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specific value of Viscosity_24hrs and Viscosity_2hrs."),
                      tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
                      tags$li("Objective function is defined as a linear combination of model predictors."),
                      tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
                      tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
-                     tags$li("Input the desired value of Viscosity fresh Sample 4 Cps (mPas), by default it is set to 56000. ")
+                     tags$li("Input the desired values of Viscosity_24hrs and Viscosity_2hrs. ")
                    ),
                    
                    br()),
-                 wellPanel(fluidRow(
+                 wellPanel(
                    radioButtons(ns("radio_button_skincare_kayla"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
                    br(),
-                   column(2,selectInput(ns("inequality_selection_skincare_kayla"),"Select the inequality type",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                   # h3("Target Quality Measure "),
-                   column(2,offset= 3,numericInput(ns("numeric_input_skincare_kayla"),"Enter the Quality Measure Value",56000))),
-                   wellPanel(
+                   fluidRow(
+                   column(2,selectInput(ns("inequality_selection_skincare_kayla_24"),"Select the inequality type for Viscosity_24hrs",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                   br(),
+                   column(2,numericInput(ns("numeric_input_skincare_kayla_24"),"Enter the target Viscosity_24hrs value",56000)),
+                   # fluidRow(
+                   column(2,selectInput(ns("inequality_selection_skincare_kayla_2"),"Select the inequality type for Viscosity_2hrs",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                   br(),
+                    column(2,numericInput(ns("numeric_input_skincare_kayla_2"),"Enter the target Viscosity_2hrs value",56000))),
                      h2("Objective Function Table"), br(),
                      tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
                      tags$li("The objective function is defined as a linear combination of the predictors whose coefficients are given in the 'obj coeff' column. "),
                      tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
-                     tags$li("Press the 'Run optimiser' button to generate the optimal solution.")),
+                     tags$li("Press the 'Run optimiser' button to generate the optimal solution."),
                    br(),
                    dataTableOutput(ns("optimiser_table1_skincare_kayla"))),
                  
@@ -223,7 +227,7 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                    uiOutput(ns("Download_Values_skincare_kayla"))
                  )
                  
-               ) #fluidrow end
+               # ) #fluidrow end
       )#tabpanel optimisation end
       
       )}

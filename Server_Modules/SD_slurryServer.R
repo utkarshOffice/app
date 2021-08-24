@@ -939,17 +939,10 @@ SD_slurryServer <- function(id, top_session){
                                       opt$tab_2[1,2]*x[1]*opt$tab_2[5,2]*(x[5]/constant * (1-x[1])) + opt$tab_2[1,2]*x[1]*opt$tab_2[3,2]*(x[3]/constant * (1-x[1])) +
                                       opt$tab_2[5,2]*(x[5]/constant * (1-x[1]))*(opt$tab_2[4,2]*(x[4]/constant * (1-x[1]))*opt$tab_2[5,2]*(x[5]/constant * (1-x[1]))*opt$tab_2[6,2]*(x[6]/constant * (1-x[1]))))
                 
-              if(input$radio_button_uday_torque == 'min' & input$radio_button_uday_pred == 'min'){
+              if(input$radio_button_uday_nonlinear == 'min'){
                    return(eq_one+eq_two)
               }
-              else if(input$radio_button_uday_torque == 'min' & input$radio_button_uday_pred == 'max'){
-                return(eq_one-eq_two)
-              }
-              
-              else if(input$radio_button_uday_torque == 'max' & input$radio_button_uday_pred == 'min'){
-                return(-1*eq_one+eq_two)
-              }
-              
+
               else{
                 return(-1*eq_one-eq_two)
               }
@@ -1026,7 +1019,7 @@ SD_slurryServer <- function(id, top_session){
           # View(rbind(round(constraint_value(res$solution),3),round(constraint_value2(res$solution),3)))
           
           # optimiser output table 3
-          if(input$radio_button_uday_torque=='min'){
+          if(input$radio_button_uday_nonlinear=='min'){
             output$value_results_uday_torque<- renderUI({
               ns <- session$ns
               p(paste0("The objective function value resulting from the optimisation is : "),round(res$objective,3))
@@ -1050,12 +1043,11 @@ SD_slurryServer <- function(id, top_session){
         updateSelectInput(session,"inequality_selection_uday_torque",selected = "less than or equal to")
         updateNumericInput(session,"numeric_input_uday_torque",value = 28)
         updateNumericInput(session,"weight_torque",value = 1)
-        updateRadioButtons(session,"radio_button_uday_torque",selected = "min")
+        updateRadioButtons(session,"radio_button_uday_nonlinear",selected = "min")
         
         updateSelectInput(session,"inequality_selection_uday_pred",selected = "less than or equal to")
         updateNumericInput(session,"numeric_input_uday_pred",value = 33)
         updateNumericInput(session,"weight_pred",value = 1)
-        updateRadioButtons(session,"radio_button_uday_pred",selected = "min")
         
         predictors_in_model2<-c("TargetSMC_[0.29,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
                                 "CP5_[0,0.03]", "LSA_[0.17,0.45]",
