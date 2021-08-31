@@ -185,10 +185,11 @@ slurryUI <- function(id){
                  ),
                  tabPanel("Optimisation", 
                           tabsetPanel(tabPanel("Linear Optimisation",
-                                               fluidRow(
+                                               # fluidRow(
                                                  wellPanel(
                                                    tags$ul(
-                                                     h2("Process Optimiser for TurningPoint "),
+                                                     h2("Process Optimiser (Linear Optimisation) "),br(),
+                                                     h4("Target Variable : Turning Point"),
                                                      br(),
                                                      h5("-Non Linear optimisation ought to be used for the equation based on Torque"),
                                                      tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Turning Point value."),
@@ -200,19 +201,20 @@ slurryUI <- function(id){
                                                    ),
                                                    
                                                    br()),
-                                                 wellPanel(fluidRow(
+                                                 wellPanel(
                                                    radioButtons(ns("radio_button"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
                                                    br(),
+                                                   fluidRow(
                                                    column(2,selectInput(ns("inequality_selection"),"Select the inequality type",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
                                                    # h3("Target Turning Point"),
-                                                   column(2,offset= 3,numericInput(ns("numeric_input"),"Enter the target Turning Point value",0.32))),
+                                                   column(2,offset= 3,numericInput(ns("numeric_input"),"Enter the target Turning Point value",0.32))),br(),
                                                    
-                                                   wellPanel(
+                                                   # wellPanel(
                                                      h2("Objective Function Table"), br(),
                                                      tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
                                                      tags$li("The objective function is defined as a linear combination of the predictors whose coefficients are given in the 'obj coeff' column. "),
                                                      tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
-                                                     tags$li("Press the 'Run optimiser' button to generate the optimal solution.")),
+                                                     tags$li("Press the 'Run optimiser' button to generate the optimal solution."),
                                                    br(),
                                                    dataTableOutput(ns("optimiser_table1"))),
                                                  fluidRow(column(2,actionButton(ns("run_optimiser"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
@@ -232,7 +234,7 @@ slurryUI <- function(id){
                                                    
                                                  ), #optimisation part 1 end
                                                  
-                                                 fluidRow(
+                                                 # fluidRow(
                                                    wellPanel(
                                                      tags$ul(
                                                        h2("Linear Optimisation of Turning Point based on Categories"),
@@ -272,14 +274,15 @@ slurryUI <- function(id){
                                                      downloadButton(ns("download4"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                                                      
                                                    ) #wellpanel end
-                                                 )#fluidrow end
-                                               ) #wellpanel end
+                                                 # )#fluidrow end
+                                               # ) #wellpanel end
                           ),
                           tabPanel("Non Linear Optimisation" ,
-                                   fluidRow(
+                                   # fluidRow(
                                      wellPanel(
                                        tags$ul(
-                                         h2("Process Optimiser for Torque")
+                                         h2("Process Optimiser (Non Linear Optimisation)"),br(),
+                                         h4("Target Variable : Torque")
                                          ,br(),
                                          tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Torque value."),
                                          tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
@@ -297,12 +300,12 @@ slurryUI <- function(id){
                                        # h3("Target Turning Point"),
                                        column(2,offset= 3,numericInput(ns("numeric_input_adititorque"),"Enter the target Torque value",28))),
                                        
-                                       wellPanel(
+                                       # wellPanel(
                                          h2("Objective Function Table"), br(),
                                          tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
                                          tags$li("The objective function is defined as a linear combination of the predictors whose coefficients are given in the 'obj coeff' column. "),
                                          tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
-                                         tags$li("Press the 'Run optimiser' button to generate the optimal solution.")),
+                                         tags$li("Press the 'Run optimiser' button to generate the optimal solution."),
                                        br(),
                                        dataTableOutput(ns("optimiser_table1_adititorque"))),
                                      fluidRow(column(2,actionButton(ns("run_optimiser12"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
@@ -327,7 +330,7 @@ slurryUI <- function(id){
                                        uiOutput(ns("Download_Values"))
                                      )
                                      
-                                   )#fluidrow end
+                                   # )#fluidrow end
                                    
                           )#tabpanel non linear opt end
                           )#tabsetpanel end

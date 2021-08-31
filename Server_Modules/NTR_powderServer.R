@@ -3,13 +3,15 @@ NTR_powderServer <- function(id, top_session){
     id,
     function(input, output, session) {
       
-      uday_proxy <- DT::dataTableProxy('optimiser_table1_uday')
+      uday_proxy_ntr <- DT::dataTableProxy('optimiser_table1_uday_ntr')
       manualinput <- reactiveVal(NULL)
       manual <- reactiveVal(NULL)
       importresults <- reactiveVal(NULL)
       optimise <- reactiveVal(NULL)
       optimise1 <- reactiveVal(NULL)
       optimise2 <- reactiveVal(NULL)
+      opt <- reactiveValues(tab_1=NULL)
+      
       x_uday_ntr <- data.frame(Models <- c("BD_Prediction_by_Model  =132.314+0.00874* Base_Factor *Base_Powder_Bulk_Density +8.812*Filler (Sulphate/ Salt as Balancing ingredient)+8.602*Post_Dosing_Ingredients_Majors_( >1% in FG other than Filler)+9.003*Post_Dosing_Ingredient_Minor_ (<1% in FG other than Filler)"
       ))  
       # function for parsing the equations
@@ -389,12 +391,160 @@ NTR_powderServer <- function(id, top_session){
             write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
           }
         )
+      })#download end
+      
+      # optimisation for uday ntr
+      observeEvent(req(x_uday_ntr),{
+        predictor_names_ntr <- c("Base_Factor_[65.5,99.5]","Base_Powder_Bulk_Density_[547,992]",
+                                 "Filler_Sulphate_Salt_as_Balancing_ingredient_[0,23.34]",
+                                "Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)_[0,18.87]",
+                                "Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)_[0.5,4.52]")
+        zero_vector<-rep(1,length(predictor_names_ntr))
+        min_vector <- c(65.5,547,0,0,0.5)
+        max_vector <- c(99.5,992,23.34,18.87,4.52)
+        coef_data2 <- data.frame(cbind(predictor_names_ntr,zero_vector,min_vector,max_vector))
+        opt$tab_1 <- coef_data2
+        opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
+        opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
+
+        #table 1
+        output$optimiser_table1_uday_ntr <- renderDataTable({
+          DT::datatable(opt$tab_1,selection="none",editable=TRUE,
+                        colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
+        })
+
+        #cell edit
+        observeEvent(input$optimiser_table1_uday_ntr_cell_edit,{
+          info <- input$optimiser_table1_uday_ntr_cell_edit
+          i <- info$row
+          j <- info$col
+          v <- info$value
+          if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
+            v <- as.numeric(v)
+            if(j==2 || ( j==3 && opt$tab_1[i, j+1] > v) || (j==4 && opt$tab_1[i, j-1] < v )){
+              opt$tab_1[i,j] <<- DT::coerceValue(v,opt$tab_1[i, j])
+            }
+          }
+          rep <- opt$tab_1
+          DT::replaceData(uday_proxy_ntr, rep, resetPaging = FALSE)
+        })
+
+
+        observeEvent(input$run_optimiser_uday_ntr,{
+
+          target_ntr <- input$numeric_input_uday_ntr
+          inequality_selection_ntr <- input$inequality_selection_uday_ntr
+
+          opt$tab_1[[2]] <- as.numeric(opt$tab_1[[2]])
+
+          constraint <- function(x){
+            equation <-  132.314+0.00874*x[1]*x[2]+8.812*x[3]+8.602*x[4]+9.003*x[5]-target_ntr
+
+            if(inequality_selection_ntr=="less than or equal to"){
+              return(equation)
+            }
+
+            else if(inequality_selection_ntr=="greater than or equal to"){
+              return(-1*equation)
+            }
+
+            else{
+              return(c(equation-0.001,-1*equation-0.001))
+            }
+
+          }# constraint ends
+
+          obj <- function(x){
+
+            eq <- opt$tab_1[1,2]*x[1]*opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3] + opt$tab_1[4,2]*x[4]+ opt$tab_1[5,2]*x[5]
+
+            if(input$radio_button_uday_ntr=='min'){
+              return(eq)
+            }
+
+            else{
+              return(-1*eq)
+            }
+
+          }#obj end
+
+          x0 <- opt$tab_1[[3]]
+          lb <- opt$tab_1[[3]]
+          ub <- opt$tab_1[[4]]
+
+          opts <- list("algorithm"="NLOPT_LN_COBYLA",
+                       "xtol_rel"=1.0e-8)
+          res<- nloptr(x0=x0,eval_f =  obj,
+                       eval_g_ineq = constraint,
+                       opts = opts,
+                       lb=lb, ub=ub)
+
+          # optimiser output table 1
+          output$optimiser_table32_uday_ntr <- renderDataTable({
+            df<-data.frame(Predictors = c("Base_Factor","Base_Powder_Bulk_Density",
+                                          "Filler_Sulphate_Salt_as_Balancing_ingredient",
+                                          "Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)",
+                                          "Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)"),
+                           Value = round(res$solution,3)
+            )
+            DT::datatable(df,selection ="none",rownames = FALSE)
+          })
+
+          constraint_value <- function(x){
+            return(132.314+0.00874*x[1]*x[2]+8.812*x[3]+8.602*x[4]+9.003*x[5])
+          }
+          # View(res$solution)
+          # optimiser output table 2
+          output$optimiser_table22_uday_ntr <- renderDataTable({
+            value1 <- round(constraint_value(res$solution),3)
+            val <- data.frame(Predictors = c("BD_Prediction_by_Model"),
+                              Value = as.data.frame(value1))
+
+            DT::datatable(as.data.frame(round(constraint_value(res$solution),3))
+                          ,rownames = c("BD_Prediction_by_Model"), colnames =c("Target variable", "Value"))
+          })
+  
+          
+          # optimiser output table 3
+          if(input$radio_button_uday_ntr=='min'){
+            output$value_results_uday_ntr<- renderUI({
+              ns <- session$ns
+              p(paste0("The objective function value resulting from the optimisation is : "),round(res$objective,3))
+            })
+          }
+          else{
+            output$value_results_uday_ntr<- renderUI({
+              ns <- session$ns
+              p(paste0("The objective function value resulting from the optimisation is : "),round(-1*res$objective,3))
+            })
+            
+          }
+
+        })#observeevent run optimiser ends
+
+      })#observeevent opt end
+      
+      observeEvent(input$reset_uday_ntr,{
+        updateSelectInput(session,"inequality_selection_uday_ntr",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_uday_ntr",value = 900)
+        updateRadioButtons(session,"radio_button_uday_ntr",selected = "min")
+        predictors_in_model2<-c("Base_Factor_[65.5,99.5]","Base_Powder_Bulk_Density_[547,992]",
+                                "Filler_Sulphate_Salt_as_Balancing_ingredient_[0,23.34]",
+                                "Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)_[0,18.87]",
+                                "Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)_[0.5,4.52]")
+        zero_vector<-rep(1,length(predictors_in_model2))
+        min_vector <- c(65.5,547,0,0,0.5)
+        max_vector <- c(99.5,992,23.34,18.87,4.52)
+        coef_data <- data.frame(cbind(predictors_in_model2,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
+        opt$tab_1 <- coef_data
+        opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
+        opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
       })
       
       
+      
     }
-  )
-}
+  )}
 
 
 

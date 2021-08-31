@@ -4,7 +4,7 @@ chillrollServer <- function(id, top_session){
     function(input, output, session) {
       
       # initializing some variables which will be used later
-      santosh_proxy <- DT::dataTableProxy('optimiser_table1_santosh')
+      santosh_proxy <- DT::dataTableProxy('optimiser_table1_chill')
       opt<-reactiveValues(tab_1=NULL) 
       manualinput_santosh <- reactiveVal(NULL)
       manual_santosh <- reactiveVal(NULL)
@@ -12,7 +12,8 @@ chillrollServer <- function(id, top_session){
       optimise_santosh <- reactiveVal(NULL)
       optimise1_santosh <- reactiveVal(NULL)
       optimise2_santosh <- reactiveVal(NULL)
-      
+      weight_one <- reactiveVal(NULL)
+      weight_two <- reactiveVal(NULL)
       
       # ---------------------------------------------------- MODEL & DATA IMPORT --------------------------------------------------------
       
@@ -508,28 +509,28 @@ chillrollServer <- function(id, top_session){
         
         # --------------------------------------------- OPTIMIZATION ------------------------------------------------------
         
-        #optimisation renderings for santosh(SD slurry props- drying prediction)
+        #optimisation renderings for santosh - chillpowder
         observeEvent(req(x_santosh),
                      {
-                       predictors_in_model3_santosh<-c("TargetSMC_[0.287,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                                    "CP5_[0,0.03]", "LSA_[0.17,0.45]",
-                                                    "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
-                       zero_vector<-rep(1,length(predictors_in_model3_santosh))
-                       min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
-                       max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
-                       coef_data <- data.frame(cbind(predictors_in_model3_santosh,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
+                       predictors_in_model_chill <-c("Film_thickness_[0.5,2]", "Cooling_seg_fraction_[0.25,0.875]", "T_flake_feed_[100,130]" , 
+                                               "T_ambient_[15,40]","T_chilled_water_[-5,15]" ,"DEFI_Free_roll_length_[0.001,0.1]",
+                                               "Roll_Speed_[1,4]")
+                       
+                       zero_vector<-rep(1,length(predictors_in_model_chill))
+                       min_vector <- c(.5,.25,100,15,-5,.001,1)
+                       max_vector <- c(2,.875,130,140,15,.1,4)
+                       coef_data <- data.frame(cbind(predictors_in_model_chill,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
                        opt$tab_1 <- coef_data
                        opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
                        opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
                        
                        #table 1
-                       output$optimiser_table1_santosh<-renderDataTable({
+                       output$optimiser_table1_chill<-renderDataTable({
                          DT::datatable(opt$tab_1,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
                        })
                        
-                       observeEvent(input$optimiser_table1_santosh_cell_edit,{
-                         info <- input$optimiser_table1_santosh_cell_edit
-                         # View(opt$tab_1)
+                       observeEvent(input$optimiser_table1_chill_cell_edit,{
+                         info <- input$optimiser_table1_chill_cell_edit
                          i <- info$row
                          j <- info$col
                          v <- info$value
@@ -543,120 +544,182 @@ chillrollServer <- function(id, top_session){
                          DT::replaceData(santosh_proxy, rep, resetPaging = FALSE)
                        })
                        
-                       observeEvent(input$run_optimiser_santosh,{
+                       observeEvent(input$run_optimiser_chill,{
                          
-                         predictors_in_model3_santosh<-c("TargetSMC","NaLAS","AlkSilicate","CP5","LSA","SCMC","Sulphate")
-                         reg_coeff_in_model3_santosh<-c(1.64652727504537,-0.340054974118285,0.0349876142645199,-0.26064073764549,-0.0575389664392278,-1.17237663840093,-0.298363251134605)
-                         if(input$inequality_selection_santosh=="less than or equal to"){
-                           constr_santosh<-'<='
-                         }
-                         else if(input$inequality_selection_santosh=="greater than or equal to"){
-                           constr_santosh<-'>='
+                         target_one <- input$numeric_input_one
+                         inequality_selection_one <- input$inequality_selection_one
+                         weight_one <- input$weight_one
+                         
+                         target_two <- input$numeric_input_two
+                         inequality_selection_two <- input$inequality_selection_two
+                         weight_two <- input$weight_two
+                         
+                         opt$tab_1[[2]] <- as.numeric(opt$tab_1[[2]])
+                         
+                         constraint <- function(x){
+                         
+                           equation_one <- (x[2])*(-45.5179701273954) + (x[1])*(18.8956339477401) +
+                             (x[1]*x[1])*(6.67710528547635) + x[7]*(7.21746209125386) + 
+                             (x[7]*x[7])*(1.27090332399397) + 20.3887470216993 - target_one
+                           
+                           equation_two <-  (x[2])*(-48.3757602771176) + (x[4]*x[4])*(-0.0000431916784640458) + 
+                             (x[3])*(0.339086502336415) + (x[5])*0.529509608669907 +
+                             (x[1])*(18.6709859995675) + (x[1]*x[1])*(6.55116697694696) + 
+                             (x[6]*x[6])*(0.13197883988453) + (x[7])*7.21191328015338 +
+                             (x[7]*x[7])*1.26186094993258 - 18.9553266806959 - target_two
+                           
+                           #lesser than
+                           if(inequality_selection_one== "less than or equal to" & inequality_selection_two=="less than or equal to"){
+                             return(c(equation_one,equation_two))
+                           }
+                           
+                           else if(inequality_selection_one== "less than or equal to" & inequality_selection_two=="greater than or equal to"){
+                             return(c(equation_one,-1*equation_two))
+                           }
+                           
+                           else if(inequality_selection_one== "less than or equal to" & inequality_selection_two=="equal to"){
+                             return(c(equation_one,equation_two-0.0001,-1*equation_two-0.0001))
+                           }
+                           
+                           #greater than
+                           else if(inequality_selection_one == "greater than or equal to" & inequality_selection_two=="less than or equal to"){
+                             return(c(-1*equation_one,equation_two))
+                           }
+                           
+                           else if(inequality_selection_one == "greater than or equal to" & inequality_selection_two=="greater than or equal to"){
+                             return(c(-1*equation_one,-1*equation_two))
+                           }
+                           
+                           else if(inequality_selection_one == "greater than or equal to" & inequality_selection_two=="equal to"){
+                             return(c(-1*equation_one,equation_two-0.0001,-1*equation_two-0.0001))
+                           }
+                           
+                           #equal to 
+                           else if(inequality_selection_one == "equal to" & inequality_selection_two=="less than or equal to"){
+                             return(c(equation_one-0.0001,-1*equation_one-0.0001,equation_two))
+                           }
+                           
+                           else if(inequality_selection_one == "equal to" & inequality_selection_two=="greater than or equal to"){
+                             return(c(equation_one-0.0001,-1*equation_one-0.0001,-1*equation_two))
+                           }
+                           
+                           else{
+                             return(c(equation_one-0.0001,-1*equation_one-0.0001,equation_two-0.0001,-1*equation_two-0.0001))
+                           }
+                           
+
+                           }#constraint end
+                           
+                         obj<-function(x){
+                           eq_one <- weight_one*(opt$tab_1[2,2]*x[2]+ opt$tab_1[1,2]*x[1] + opt$tab_1[1,2]*x[1]*opt$tab_1[1,2]*x[1] +
+                                                   opt$tab_1[7,2]*x[7] + opt$tab_1[7,2]*x[7]*opt$tab_1[7,2]*x[7] )
+                           
+                           eq_two <- weight_two*(opt$tab_1[2,2]*x[2] + opt$tab_1[4,2]*x[4]*opt$tab_1[4,2]*x[4] +
+                                                   opt$tab_1[3,2]*x[3] + opt$tab_1[5,2]*x[5] + opt$tab_1[1,2]*x[1] + 
+                                                   opt$tab_1[1,2]*x[1]*opt$tab_1[1,2]*x[1] +
+                                                   opt$tab_1[6,2]*x[6]*opt$tab_1[6,2]*x[6] + opt$tab_1[7,2]*x[7] + 
+                                                   opt$tab_1[7,2]*x[7]*opt$tab_1[7,2]*x[7] 
+                                                   )
+                           
+                           
+                           if(input$radio_button_chill == 'min'){
+                             return(eq_one+eq_two)
+                           }
+                           
+                           else{
+                             return(-eq_one-eq_two)
+                           }
+                           
+                         } #objective function end
+                         
+                         x0 <- opt$tab_1[[3]]
+                         lb <- opt$tab_1[[3]]
+                         ub <- opt$tab_1[[4]]
+                         
+                         opts <- list("algorithm"="NLOPT_LN_COBYLA",
+                                      "xtol_rel"=1.0e-8)
+                         res<- nloptr(x0=x0,eval_f =  obj,
+                                      eval_g_ineq = constraint,
+                                      opts = opts,
+                                      lb=lb, ub=ub)
+                         
+                         # optimiser output table 1
+                         output$optimiser_table32_chill <- renderDataTable({
+                           df<-data.frame(Predictors = c("Film_thickness", "Cooling_seg_fraction", "T_flake_feed" , 
+                                                         "T_ambient","T_chilled_water" ,"DEFI_Free_roll_length",
+                                                         "Roll_Speed"),
+                                          Value = round(res$solution,3)
+                           )
+                           DT::datatable(df,selection ="none",rownames = FALSE )
+                         })
+                         
+                         constraint_value <- function(x){
+                            
+                           e <- (x[2])*(-45.5179701273954) + (x[1])*(18.8956339477401) +
+                             (x[1]*x[1])*(6.67710528547635) + x[7]*(7.21746209125386) + 
+                             (x[7]*x[7])*(1.27090332399397) + 20.3887470216993
+                           return(e)}
+                           
+                         constraint_value2 <- function(x){
+                           eq <-  (x[2])*(-48.3757602771176) + (x[4]*x[4])*(-0.0000431916784640458) + 
+                             (x[3])*(0.339086502336415) + (x[5])*0.529509608669907 +
+                             (x[1])*(18.6709859995675) + (x[1]*x[1])*(6.55116697694696) + 
+                             (x[6]*x[6])*(0.13197883988453) + (x[7])*7.21191328015338 +
+                             (x[7]*x[7])*1.26186094993258 - 18.9553266806959
+                           return(eq)
+                           }
+                         
+                         # optimiser output table 2
+                         output$optimiser_table22_chill <- renderDataTable({
+                           value1 <- round(constraint_value(res$solution),3)
+                           value2 <- round(constraint_value2(res$solution),3)
+                           # val <- data.frame(Predictors = c("	Flake Final Temp (Model 1)","	Flake Final Temp (Model 2)"),
+                           #                   Value = as.data.frame(rbind(value1,value2)))
+                           
+                           DT::datatable(as.data.frame(rbind(round(constraint_value(res$solution),3),round(constraint_value2(res$solution),3))) 
+                                         ,rownames = c("Flake Final Temp (Model 1)","	Flake Final Temp (Model 2)"), colnames =c("Target variable", "Value"))
+                         })
+                         
+                         
+                         # optimiser output table 3
+                         if(input$radio_button_chill=='min'){
+                           output$value_results_chill<- renderUI({
+                             ns <- session$ns
+                             p(paste0("The objective function value resulting from the optimisation is : "),round(res$objective,3))
+                           })
                          }
                          else{
-                           constr_santosh<-'='
+                           output$value_results_chill<- renderUI({
+                             ns <- session$ns
+                             p(paste0("The objective function value resulting from the optimisation is : "),round(-1*res$objective,3))
+                           })
+                           
                          }
-                         # View(constr)#works
-                         
-                         target_santosh<-input$numeric_input_santosh
-                         number.predictors_santosh<-length(predictors_in_model3_santosh)
-                         # View(opt$tab_1)
-                         low.lims_santosh<-opt$tab_1[[3]]
-                         upp.lims_santosh<-opt$tab_1[[4]]
-                         objective.in_santosh<-opt$tab_1[[2]]
-                         objective.in_santosh<-as.numeric(objective.in_santosh)
-                         obj.type_santosh<-input$radio_button_santosh
-                         # View(objective.in)#works
-                         
-                         lps.model_santosh <- make.lp(0,number.predictors_santosh)
-                         add.constraint(lps.model_santosh,reg_coeff_in_model3_santosh,constr_santosh,target_santosh)
-                         
-                         # Bounds for variables
-                         set.bounds(lps.model_santosh,lower=low.lims_santosh)
-                         set.bounds(lps.model_santosh,upper=upp.lims_santosh)
-                         # View(low.lims)
-                         # View(nrow(low.lims))
-                         # View(obj.type_santosh)
-                         # View(objective.in)
-                         
-                         # Objective function
-                         lp.control(lps.model_santosh,sense=obj.type_santosh) # min or max
-                         # View(objective.in) #getting output
-                         
-                         set.objfn(lps.model_santosh,objective.in_santosh) # coefficients
-                         # View(upp.lims)
-                         
-                         # Apply solver
-                         solution.status <- solve(lps.model_santosh)
-                         # View(solution.status)
-                         if(solution.status!=0){
-                           showModal(modalDialog("Linear Optimisation could not find a solution for the given inputs. Please change the inputs and re-run."))
-                         }
-                         #unpacking
-                         solution.values_santosh <- get.primal.solution(lps.model_santosh)
-                         # View(solution.values_santosh)
-                         objective.function.value_santosh <- solution.values_santosh[1]
-                         fitted.response_santosh <- solution.values_santosh[2]
-                         solution.values_santosh <- solution.values_santosh[3:length(solution.values_santosh)]
-                         
-                         results_santosh<-data.frame(Value = fitted.response_santosh)
-                         # colnames(results)<-""
-                         row.names(results_santosh)<-"Drying Prediction"
-                         
-                         #dopwnload
-                         downresults <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Drying Prediction"), Predicted_or_Optimal_Value= fitted.response_santosh)
-                         downdf<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("TargetSMC","NaLAS","AlkSilicate","CP5","LSA","SCMC","Sulphate"),
-                                            Predicted_or_Optimal_Value=solution.values_santosh)
-                         downopt <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective func. Value"), Predicted_or_Optimal_Value = objective.function.value_santosh)
-                         
-                         
-                         final1 <- rbind(downresults,downdf,downopt)
-                         #View(final1)
-                         optimise_santosh(final1)
-                         output$download3_santosh <- downloadHandler(
-                           filename = function() { "Optimisation for Drying Prediction .xlsx"},
-                           content = function(file) {
-                             write_xlsx(list("Optimisation Result" = final1), file)
-                           }
-                         )
-                         
-                         # optmiser table2
-                         output$optimiser_table2_santosh<-renderDataTable({
-                           DT::datatable(results_santosh) })
-                         
-                         # optmiser table3
-                         output$optimiser_table3_santosh<- renderDataTable({
-                           df_santosh<-data.frame(Predictors=c("TargetSMC","NaLAS","AlkSilicate","CP5","LSA","SCMC","Sulphate"),
-                                               Value=solution.values_santosh)
-                           DT::datatable(df_santosh,rownames=FALSE)
-                           # DT::datatable(df)
-                         })
-                         
-                         #optimiser textoutput
-                         output$value_results_santosh<- renderUI({
-                           p(paste0("The objective value resulting from the optimisation is : "),round(objective.function.value_santosh),4)
-                         })
-                         
                          
                          
                        })#observeEvent run optimiser ends
                        
                        # reset button
-                       observeEvent(input$reset_santosh,{
-                         updateSelectInput(session,"inequality_selection_santosh",selected = "less than or equal to")
-                         updateNumericInput(session,"numeric_input_santosh",value = .32)
-                         updateRadioButtons(session,"radio_button_santosh",selected = "min")
-                         predictors_in_model3_santosh<-c("TargetSMC_[0.287,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                                      "CP5_[0,0.03]", "LSA_[0.17,0.45]",
-                                                      "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
+                       observeEvent(input$reset_chill,{
+                         
+                         updateSelectInput(session,"inequality_selection_one",selected = "less than or equal to")
+                         updateNumericInput(session,"numeric_input_one",value = 45)
+                         updateNumericInput(session,"weight_one",value = 1)
+                         updateRadioButtons(session,"radio_button_chill",selected = "min")
+                         
+                         updateSelectInput(session,"inequality_selection_two",selected = "less than or equal to")
+                         updateNumericInput(session,"numeric_input_two",value = 45)
+                         updateNumericInput(session,"weight_two",value = 1)
+                         predictors_in_model3_santosh<-c("Film_thickness_[0.5,2]", "Cooling_seg_fraction_[0.25,0.875]", "T_flake_feed_[100,130]" , 
+                                                         "T_ambient_[15,40]","T_chilled_water_[-5,15]" ,"DEFI_Free_roll_length_[0.001,0.1]",
+                                                         "Roll_Speed_[1,4]")
                          zero_vector<-rep(1,length(predictors_in_model3_santosh))
-                         min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
-                         max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
-                         coef_data <- data.frame(cbind(predictors_in_model3_santosh,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
+                         min_vector <- c(.5,.25,100,15,-5,.001,1)
+                         max_vector <- c(2,.875,130,140,15,.1,4)
+                         coef_data <- data.frame(cbind(predictors_in_model_chill,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
                          opt$tab_1 <- coef_data
                          opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
-                         opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
-                         
+                         opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]]) 
                        })
                        
                      })#observeevent datacall close
