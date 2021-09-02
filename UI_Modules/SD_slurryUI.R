@@ -208,7 +208,8 @@ SD_slurryUI <- function(id){
                                           tags$li("Objective function is defined as a linear combination of model predictors."),
                                           tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
                                           tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
-                                          tags$li("Input the desired value of Torque and Pred Formula Low Sheer Viscosity. ")
+                                          tags$li("Input the desired value of Torque and Pred Formula Low Sheer Viscosity. "),
+                                          tags$li("Enter the weights (relative importance) of the Target variables; by default it is 1.")
                                           
                                         ),br()),
                                       

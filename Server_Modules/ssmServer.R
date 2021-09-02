@@ -4,8 +4,8 @@ ssmServer <- function(id, top_session){
     function(input, output, session) {
       
       # initializing some variables which will be used later
-      ashutosh_proxy <- DT::dataTableProxy('optimiser_table1_ashutosh')
-      opt<-reactiveValues(tab_1=NULL) 
+      proxy_seal <- DT::dataTableProxy('optimiser_table1_seal')
+      opt <- reactiveValues(tab_1=NULL) 
       manualinput_ashutosh <- reactiveVal(NULL)
       manual_ashutosh <- reactiveVal(NULL)
       importresults_ashutosh <- reactiveVal(NULL)
@@ -766,158 +766,328 @@ ssmServer <- function(id, top_session){
         
         # --------------------------------------------- OPTIMIZATION ------------------------------------------------------
         
-        #optimisation renderings for ashutosh(SD slurry props- drying prediction)
-        observeEvent(req(x_ashutosh),
-                     {
-                       predictors_in_model3_ashutosh<-c("TargetSMC_[0.287,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                                       "CP5_[0,0.03]", "LSA_[0.17,0.45]",
-                                                       "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
-                       zero_vector<-rep(1,length(predictors_in_model3_ashutosh))
-                       min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
-                       max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
-                       coef_data <- data.frame(cbind(predictors_in_model3_ashutosh,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
-                       opt$tab_1 <- coef_data
-                       opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
-                       opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
-                       
-                       #table 1
-                       output$optimiser_table1_ashutosh<-renderDataTable({
-                         DT::datatable(opt$tab_1,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
-                       })
-                       
-                       observeEvent(input$optimiser_table1_ashutosh_cell_edit,{
-                         info <- input$optimiser_table1_ashutosh_cell_edit
-                         # View(opt$tab_1)
-                         i <- info$row
-                         j <- info$col
-                         v <- info$value
-                         if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
-                           v <- as.numeric(v)
-                           if(j==2 || ( j==3 && opt$tab_1[i, j+1] > v) || (j==4 && opt$tab_1[i, j-1] < v )){
-                             opt$tab_1[i,j] <<- DT::coerceValue(v,opt$tab_1[i, j])
-                           }
-                         }
-                         rep <- opt$tab_1
-                         DT::replaceData(ashutosh_proxy, rep, resetPaging = FALSE)
-                       })
-                       
-                       observeEvent(input$run_optimiser_ashutosh,{
-                         
-                         predictors_in_model3_ashutosh<-c("TargetSMC","NaLAS","AlkSilicate","CP5","LSA","SCMC","Sulphate")
-                         reg_coeff_in_model3_ashutosh<-c(1.64652727504537,-0.340054974118285,0.0349876142645199,-0.26064073764549,-0.0575389664392278,-1.17237663840093,-0.298363251134605)
-                         if(input$inequality_selection_ashutosh=="less than or equal to"){
-                           constr_ashutosh<-'<='
-                         }
-                         else if(input$inequality_selection_ashutosh=="greater than or equal to"){
-                           constr_ashutosh<-'>='
-                         }
-                         else{
-                           constr_ashutosh<-'='
-                         }
-                         # View(constr)#works
-                         
-                         target_ashutosh<-input$numeric_input_ashutosh
-                         number.predictors_ashutosh<-length(predictors_in_model3_ashutosh)
-                         # View(opt$tab_1)
-                         low.lims_ashutosh<-opt$tab_1[[3]]
-                         upp.lims_ashutosh<-opt$tab_1[[4]]
-                         objective.in_ashutosh<-opt$tab_1[[2]]
-                         objective.in_ashutosh<-as.numeric(objective.in_ashutosh)
-                         obj.type_ashutosh<-input$radio_button_ashutosh
-                         # View(objective.in)#works
-                         
-                         lps.model_ashutosh <- make.lp(0,number.predictors_ashutosh)
-                         add.constraint(lps.model_ashutosh,reg_coeff_in_model3_ashutosh,constr_ashutosh,target_ashutosh)
-                         
-                         # Bounds for variables
-                         set.bounds(lps.model_ashutosh,lower=low.lims_ashutosh)
-                         set.bounds(lps.model_ashutosh,upper=upp.lims_ashutosh)
-                         # View(low.lims)
-                         # View(nrow(low.lims))
-                         # View(obj.type_ashutosh)
-                         # View(objective.in)
-                         
-                         # Objective function
-                         lp.control(lps.model_ashutosh,sense=obj.type_ashutosh) # min or max
-                         # View(objective.in) #getting output
-                         
-                         set.objfn(lps.model_ashutosh,objective.in_ashutosh) # coefficients
-                         # View(upp.lims)
-                         
-                         # Apply solver
-                         solution.status <- solve(lps.model_ashutosh)
-                         # View(solution.status)
-                         if(solution.status!=0){
-                           showModal(modalDialog("Linear Optimisation could not find a solution for the given inputs. Please change the inputs and re-run."))
-                         }
-                         #unpacking
-                         solution.values_ashutosh <- get.primal.solution(lps.model_ashutosh)
-                         # View(solution.values_ashutosh)
-                         objective.function.value_ashutosh <- solution.values_ashutosh[1]
-                         fitted.response_ashutosh <- solution.values_ashutosh[2]
-                         solution.values_ashutosh <- solution.values_ashutosh[3:length(solution.values_ashutosh)]
-                         
-                         results_ashutosh<-data.frame(Value = fitted.response_ashutosh)
-                         # colnames(results)<-""
-                         row.names(results_ashutosh)<-"Drying Prediction"
-                         
-                         #dopwnload
-                         downresults <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Drying Prediction"), Predicted_or_Optimal_Value= fitted.response_ashutosh)
-                         downdf<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("TargetSMC","NaLAS","AlkSilicate","CP5","LSA","SCMC","Sulphate"),
-                                            Predicted_or_Optimal_Value=solution.values_ashutosh)
-                         downopt <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective func. Value"), Predicted_or_Optimal_Value = objective.function.value_ashutosh)
-                         
-                         
-                         final1 <- rbind(downresults,downdf,downopt)
-                         #View(final1)
-                         optimise_ashutosh(final1)
-                         output$download3_ashutosh <- downloadHandler(
-                           filename = function() { "Optimisation for Drying Prediction .xlsx"},
-                           content = function(file) {
-                             write_xlsx(list("Optimisation Result" = final1), file)
-                           }
-                         )
-                         
-                         # optmiser table2
-                         output$optimiser_table2_ashutosh<-renderDataTable({
-                           DT::datatable(results_ashutosh) })
-                         
-                         # optmiser table3
-                         output$optimiser_table3_ashutosh<- renderDataTable({
-                           df_ashutosh<-data.frame(Predictors=c("TargetSMC","NaLAS","AlkSilicate","CP5","LSA","SCMC","Sulphate"),
-                                                  Value=solution.values_ashutosh)
-                           DT::datatable(df_ashutosh,rownames=FALSE)
-                           # DT::datatable(df)
-                         })
-                         
-                         #optimiser textoutput
-                         output$value_results_ashutosh<- renderUI({
-                           p(paste0("The objective value resulting from the optimisation is : "),round(objective.function.value_ashutosh),4)
-                         })
-                         
-                         
-                         
-                       })#observeEvent run optimiser ends
-                       
-                       # reset button
-                       observeEvent(input$reset_ashutosh,{
-                         updateSelectInput(session,"inequality_selection_ashutosh",selected = "less than or equal to")
-                         updateNumericInput(session,"numeric_input_ashutosh",value = .32)
-                         updateRadioButtons(session,"radio_button_ashutosh",selected = "min")
-                         predictors_in_model3_ashutosh<-c("TargetSMC_[0.287,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                                         "CP5_[0,0.03]", "LSA_[0.17,0.45]",
-                                                         "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
-                         zero_vector<-rep(1,length(predictors_in_model3_ashutosh))
-                         min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
-                         max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
-                         coef_data <- data.frame(cbind(predictors_in_model3_ashutosh,zero_vector,min_vector,max_vector),stringsAsFactors = FALSE)
-                         opt$tab_1 <- coef_data
-                         opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
-                         opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
-                         
-                       })
-                       
-                     })#observeevent datacall close
+        #optimisation renderings for ashutosh
+        observeEvent(req(x_ashutosh),{
+          predictor_names_sd <- c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
+                                  "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]")
+          zero_vector<-rep(1,length(predictor_names_sd))
+          min_vector <- c(30,200,100,15)
+          max_vector <- c(110,700,240,100)
+          coef_data2 <- data.frame(cbind(predictor_names_sd,zero_vector,min_vector,max_vector))
+          opt$tab_1 <- coef_data2
+          opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
+          opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
+          
+          #table 1
+          output$optimiser_table1_seal <- renderDataTable({
+            DT::datatable(opt$tab_1,selection="none",editable=TRUE,
+                          colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
+          })
+          
+          #cell edit
+          observeEvent(input$optimiser_table1_seal_cell_edit,{
+            info <- input$optimiser_table1_seal_cell_edit
+            i <- info$row
+            j <- info$col
+            v <- info$value
+            if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
+              v <- as.numeric(v)
+              if(j==2 || ( j==3 && opt$tab_1[i, j+1] > v) || (j==4 && opt$tab_1[i, j-1] < v )){
+                opt$tab_1[i,j] <<- DT::coerceValue(v,opt$tab_1[i, j])
+              }
+            }
+            rep <- opt$tab_1
+            DT::replaceData(proxy_seal, rep, resetPaging = FALSE)
+          })
+          
+          
+          observeEvent(input$run_optimiser_seal,{
+            
+            target_sd <- input$numeric_input_seal
+            inequality_selection_sd <- input$inequality_selection_seal
+            eq_chosen <- input$equation_seal
+            
+            opt$tab_1[[2]] <- as.numeric(opt$tab_1[[2]])
+            
+            constraint <- function(x){
+              
+              equation_1 <-  (10.085043285)+ (0.143476202)*((x[1] - 50)/25) +
+                (0.5005544208)*((x[2] - 475)/275) + (1.1487322096)*((x[3] - 120)/20) -
+                (0.265927563)*((x[4] - 35)/5) - (0.214751072)*((x[1] - 50)/25)*((x[2] - 475)/275) + 
+                (0.1653191326)*((x[1] - 50)/25)*((x[4] - 35)/5) - (0.190088312)*((x[2]-475)/275)*((x[4] - 35)/5) - 
+                (0.227255444)*((x[4] - 35)/5)*((x[3] - 120)/20) - 
+                (0.438383433)*((x[1] - 50)/25)*((x[1] - 50)/25) + 
+                (0.422789614)*((x[2]-475)/275)*((x[2]-475)/275)
+              
+              equation_2 <- (7.9283468534) - (1.744214002)*((x[4] - 85)/15)+
+                (2.0472868262)*((x[3] - 180)/60) + (1.0299432676)*((x[2]-475)/275) +
+                (1.0456231626)*((x[3] - 180)/60)*((x[2]-475)/275) -
+                (0.085441804)*((x[1] - 77)/38.5)
+              
+              equation_3 <- (7.5004364288) + (2.1104133638)*((x[3] - 180)/60)+ 
+                (0.9519562501)*((x[2]-475)/275) + 
+                (1.0656214205)*((x[3] - 180)/60)*((x[2]-475)/275) + 
+                (0.2754606935)*((x[4] - 16.5)/1.5) - (0.007364972)*((x[1] - 77)/38.5)
+              
+              equation_4 <- (8.2995281922) + (4.1535657286)*((x[3] - 180)/60)+
+                (0.9568895775)*((x[2]-475)/275) - (3.199586193)*((x[3] - 180)/60)*((x[3] - 180)/60) + 
+                (0.7476644958)*((x[3] - 180)/60)*((x[2]-475)/275) +
+                (0.0536281149)*((x[1] - 77)/38.5)
+              
+              equation_5 <- (9.544993865) + (2.6037874114)*((x[3] - 180)/60)+ 
+                (1.8176938907)*((x[2]-475)/275) + 
+                (1.96449116648)*((x[3] - 180)/60)*((x[2]-475)/275) - 
+                (0.489432036)*((x[1] - 77)/38.5)
+              
+              equation_6 <-  (6.3165820822) + (1.0534709536)*((x[3] - 180)/60)+ 
+                (0.6532790282)*((x[2]-475)/275) +
+                (1.3296269584)*((x[3] - 180)/60)*((x[3] - 180)/60) + 
+                (0.7989598978)*((x[3] - 180)/60)*((x[2]-475)/275) +
+                (0.1730372655)*((x[1] - 77)/38.5)
+              
+              equation_7 <- (9.6899630181) + (0.5344405994)*((x[3] - 180)/60)+ 
+                (1.1338418823)*((x[2]-475)/275) -
+                (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
+                (0.00534394)*((x[1] - 77)/38.5)
+              
+              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+                equation <- equation_1
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+                equation <- equation_2
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+                equation <- equation_3
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+                equation <- equation_4
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+                equation <- equation_5
+              }
+              
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+                equation <- equation_6
+              }
+              
+              
+              else {
+                equation <- equation_7
+              }
+              
+              
+              if(inequality_selection_sd=="less than or equal to"){
+                return(equation-target_sd)
+              }
+              
+              else if(inequality_selection_sd=="greater than or equal to"){
+                return(-1*(equation-target_sd))
+              }
+              
+              else{
+                return(c(equation-target_sd-0.001,-1*(equation-target_sd)-0.001))
+              }
+              
+            }# constraint ends
+            
+            obj <- function(x){
+              
+              
+              eq_1 <- x[1] + x[2]+ x[3]+ x[4] + x[1]*x[2] + x[1]*x[4]+ x[2]*x[4]+ x[4]*x[3] + x[1]*x[1]+ x[2]*x[2]
+              
+              eq_2 <- x[4] + x[3] + x[2] + x[3]*x[2] + x[1]  
+              
+              eq_3 <- x[3] + x[2] + x[3]*x[2] + x[4]*x[1]
+              
+              eq_4 <- x[3] + x[2] + x[3]*x[3] + x[3]*x[2] + x[1]    
+              
+              eq_5 <- x[3] + x[2] + x[3]*x[2] + x[1]   
+              
+              eq_6 <- x[3] + x[2] + x[3]*x[3] + x[3]*x[2] + x[1]
+              
+              eq_7 <- x[3] + x[2] + x[3]*x[3] + x[1] 
+              
+              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+                eq <- eq_1
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+                eq <- eq_2
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+                eq <- eq_3
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+                eq <- eq_4
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+                eq <- eq_5
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+                eq <- eq_6
+              }
+              
+              else {
+                eq <- eq_7
+              }
+              
+              
+              if(input$radio_button_seal=='min'){
+                return(eq)
+              }
+              
+              else{
+                return(-1*eq)
+              }
+              
+            }#obj end
+            
+            x0 <- opt$tab_1[[3]]
+            lb <- opt$tab_1[[3]]
+            ub <- opt$tab_1[[4]]
+            
+            opts <- list("algorithm"="NLOPT_LN_COBYLA",
+                         "xtol_rel"=1.0e-8)
+            res<- nloptr(x0=x0,eval_f =  obj,
+                         eval_g_ineq = constraint,
+                         opts = opts,
+                         lb=lb, ub=ub)
+            
+            # optimiser output table 1
+            output$optimiser_table32_seal <- renderDataTable({
+              df<-data.frame(Predictors = c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
+                                            "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]"),
+                             Value = round(res$solution,3)
+              )
+              DT::datatable(df,selection ="none",rownames = FALSE )
+            })
+            
+            constraint_value <- function(x){
+              equation_1 <-  (10.085043285)+ (0.143476202)*((x[1] - 50)/25) +
+                (0.5005544208)*((x[2] - 475)/275) + (1.1487322096)*((x[3] - 120)/20) -
+                (0.265927563)*((x[4] - 35)/5) - (0.214751072)*((x[1] - 50)/25)*((x[2] - 475)/275) + 
+                (0.1653191326)*((x[1] - 50)/25)*((x[4] - 35)/5) - (0.190088312)*((x[2]-475)/275)*((x[4] - 35)/5) - 
+                (0.227255444)*((x[4] - 35)/5)*((x[3] - 120)/20) - 
+                (0.438383433)*((x[1] - 50)/25)*((x[1] - 50)/25) + 
+                (0.422789614)*((x[2]-475)/275)*((x[2]-475)/275)
+              
+              equation_2 <- (7.9283468534) - (1.744214002)*((x[4] - 85)/15)+
+                (2.0472868262)*((x[3] - 180)/60) + (1.0299432676)*((x[2]-475)/275) +
+                (1.0456231626)*((x[3] - 180)/60)*((x[2]-475)/275) -
+                (0.085441804)*((x[1] - 77)/38.5)
+              
+              equation_3 <- (7.5004364288) + (2.1104133638)*((x[3] - 180)/60)+ 
+                (0.9519562501)*((x[2]-475)/275) + 
+                (1.0656214205)*((x[3] - 180)/60)*((x[2]-475)/275) + 
+                (0.2754606935)*((x[4] - 16.5)/1.5) - (0.007364972)*((x[1] - 77)/38.5)
+              
+              equation_4 <- (8.2995281922) + (4.1535657286)*((x[3] - 180)/60)+
+                (0.9568895775)*((x[2]-475)/275) - (3.199586193)*((x[3] - 180)/60)*((x[3] - 180)/60) + 
+                (0.7476644958)*((x[3] - 180)/60)*((x[2]-475)/275) +
+                (0.0536281149)*((x[1] - 77)/38.5)
+              
+              equation_5 <- (9.544993865) + (2.6037874114)*((x[3] - 180)/60)+ 
+                (1.8176938907)*((x[2]-475)/275) + 
+                (1.96449116648)*((x[3] - 180)/60)*((x[2]-475)/275) - 
+                (0.489432036)*((x[1] - 77)/38.5)
+              
+              equation_6 <-  (6.3165820822) + (1.0534709536)*((x[3] - 180)/60)+ 
+                (0.6532790282)*((x[2]-475)/275) +
+                (1.3296269584)*((x[3] - 180)/60)*((x[3] - 180)/60) + 
+                (0.7989598978)*((x[3] - 180)/60)*((x[2]-475)/275) +
+                (0.1730372655)*((x[1] - 77)/38.5)
+              
+              equation_7 <- (9.6899630181) + (0.5344405994)*((x[3] - 180)/60)+ 
+                (1.1338418823)*((x[2]-475)/275) -
+                (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
+                (0.00534394)*((x[1] - 77)/38.5)
+              
+              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+                equ <- equation_1
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+                equ <- equation_2
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+                equ <- equation_3
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+                equ <- equation_4
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+                equ <- equation_5
+              }
+              
+              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+                equ <- equation_6
+              }
+              
+              else {
+                equ <- equation_7
+              }
+              
+              return(equ)
+            }
+            # View(res$solution)
+            # optimiser output table 2
+            output$optimiser_table22_seal <- renderDataTable({
+              value1 <- round(constraint_value(res$solution),3)
+              val <- data.frame(Predictors = eq_chosen,
+                                Value = as.data.frame(value1))
+              
+              DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
+                            ,rownames = eq_chosen, colnames =c("Target variable", "Value"))
+            })
+            
+            # optimiser output table 3
+            if(input$radio_button_seal=='min'){
+              output$value_results_seal<- renderUI({
+                ns <- session$ns
+                p(paste0("The objective function value resulting from the optimisation is : "),round(res$objective,3))
+              })
+            }
+            else{
+              output$value_results_seal<- renderUI({
+                ns <- session$ns
+                p(paste0("The objective function value resulting from the optimisation is : "),round(-1*res$objective,3))
+              })
+              
+            }
+            
+          })#observeevent run optimiser ends
+          
+        })#observeevent opt end
+        
+        observeEvent(input$reset_seal,{
+          updateSelectInput(session,"inequality_selection_seal",selected = "less than or equal to")
+          updateNumericInput(session,"numeric_input_seal",value = 10)
+          updateRadioButtons(session,"radio_button_seal",selected = "min")
+          predictor_names_sd <- c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
+                                  "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]")
+          zero_vector<-rep(1,length(predictor_names_sd))
+          min_vector <- c(30,200,100,15)
+          max_vector <- c(110,700,240,100)
+          coef_data2 <- data.frame(cbind(predictor_names_sd,zero_vector,min_vector,max_vector))
+          opt$tab_1 <- coef_data2
+          opt$tab_1[[3]]<- as.numeric(opt$tab_1[[3]])
+          opt$tab_1[[4]]<- as.numeric(opt$tab_1[[4]])
+          
+        })
+        
+        
         
         observeEvent(input$downloadresults_ashutosh,{
           

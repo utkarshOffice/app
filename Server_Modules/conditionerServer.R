@@ -12,6 +12,10 @@ conditionerServer <- function(id,top_session){
       weight_two <-reactiveVal(NULL)
       weight_three <-reactiveVal(NULL)
       weight_four <-reactiveVal(NULL)
+      target_one <- reactiveVal(NULL)
+      target_two <- reactiveVal(NULL)
+      target_three <- reactiveVal(NULL)
+      target_four <- reactiveVal(NULL)
       opt <- reactiveValues(tab_2=NULL)
       erin_proxy <- DT::dataTableProxy('optimiser_table1_erin')
 
@@ -552,25 +556,25 @@ conditionerServer <- function(id,top_session){
         observeEvent(input$run_optimiser_erin,{
           
           target_one <- input$numeric_input_erin_one
-          inequality_selection_one <- input$inequality_selection_erin_one
+          # inequality_selection_one <- input$inequality_selection_erin_one
           weight_one <- input$weight_erin_one
           
           target_two <- input$numeric_input_erin_two
-          inequality_selection_two <- input$inequality_selection_erin_two
+          # inequality_selection_two <- input$inequality_selection_erin_two
           weight_two <- input$weight_erin_two
           
           target_three <- input$numeric_input_erin_three
-          inequality_selection_three <- input$inequality_selection_erin_three
+          # inequality_selection_three <- input$inequality_selection_erin_three
           weight_three <- input$weight_erin_three
           
           target_four <- input$numeric_input_erin_four
-          inequality_selection_four <- input$inequality_selection_erin_four
+          # inequality_selection_four <- input$inequality_selection_erin_four
           weight_four <- input$weight_erin_four
           
           opt$tab_2[[2]] <- as.numeric(opt$tab_2[[2]])
           
           constraint <- function(x){
-            
+
             #equations
             equation_one <- -1.90929008775433 + 293.747340146854 * x[1] + 0.0185866446926401 *
                             (x[9]) + -0.221460924788289 * (x[10]) + 1.64713604618159 * (x[5]) +
@@ -598,12 +602,12 @@ conditionerServer <- function(id,top_session){
                             ((x[3]) - 10.5377695693782) * -0.443509372083955 + (x[1] - 0.889285714285715) * ((x[4]) - 11.690086036606) *
                             -14.3823974090446 + (x[1] - 0.889285714285715) * ((x[7]) - 58.5077556918568) * 15.7785498295843 +
                             ((x[7]) - 58.5077556918568) * ((x[8]) - 56.6174285714286) * -0.621838628323516 - target_four
-  
+            
             #eq1
             if(input$inequality_selection_erin_one =="less than or equal to"){
               equation1 <- c(equation_one)
             }
-            
+            View(inequality_selection_erin_one)
             else if(input$inequality_selection_erin_one =="greater than or equal to"){
               equation1 <- c(-1*equation_one)
             }
@@ -642,7 +646,7 @@ conditionerServer <- function(id,top_session){
               equation4 <- c(equation_four)
             }
             
-            else if(input$inequality_selection_erin_three =="greater than or equal to"){
+            else if(input$inequality_selection_erin_four =="greater than or equal to"){
               equation4 <- c(-1*equation_four)
             }
             else{
@@ -650,37 +654,43 @@ conditionerServer <- function(id,top_session){
             }
             
             return(c(equation1,equation2,equation3,equation4))
-            # return(c(as.integer(equation1),as.integer(equation2),as.integer(equation3),as.integer(equation4)))
-            
-            # View(c(equation1,equation2,equation3))
+
           }#end of constraint function
           
           obj <-function(x){
             
-            eq1 <- weight_one(opt$tab_2[1,2]*x[1] + opt$tab_2[9,2]*x[9] + opt$tab_2[10,2]*x[10] + opt$tab_2[5,2]*x[5] +
-                    opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
-                    opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
-            
-            eq2 <- weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
-                    opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
-           
-            eq3 <- weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
-                  opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
-            
-            eq4 <- weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
-                  opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
-                  opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
-                  opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])  
-              
             if(input$radio_button_erin == 'min'){
-              return(eq1+eq2+eq3+eq4)
+              
+              return(as.numeric(weight_one(opt$tab_2[1,2]*x[1] + opt$tab_2[9,2]*x[9] + opt$tab_2[10,2]*x[10] + opt$tab_2[5,2]*x[5] +
+                                  opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
+                                  opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
+                                + weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
+                                  opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
+                                + weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
+                                    opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
+                                + weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
+                                   opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
+                                   opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
+                                   opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
             }
             
             else{
-              return(-eq1-eq2-eq3-eq4)
+              
+              return( as.numeric(-weight_one(opt$tab_2[1,2]*x[1] + opt$tab_2[9,2]*x[9] + opt$tab_2[10,2]*x[10] + opt$tab_2[5,2]*x[5] +
+                                   opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
+                                   opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
+                                - weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
+                                     opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
+                                - weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
+                                     opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
+                                   - weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
+                                      opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
+                                      opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
+                                      opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
               # return(-1*(eq1+eq2+eq3+eq4))
             }
             
+            View(test)#no output
           }#objective function end
           
           x0 <- opt$tab_2[[3]]
@@ -744,20 +754,15 @@ conditionerServer <- function(id,top_session){
           
           
           # optimiser output table 2
-          output$optimiser_table22_uday_torque <- renderDataTable({
-            value1 <- round(constraint_val1(res$solution),3)
-            value2 <- round(constraint_val2(res$solution),3)
-            value3 <- round(constraint_val3(res$solution),3)
-            value4 <- round(constraint_val4(res$solution),3)
+          output$optimiser_table22_erin <- renderDataTable({
             
-            val <- data.frame(Predictors = c("Fresh Viscosity [Pa s]","24 hr Viscosity [Pa s]",
-                                             "24 hr Yiels Stress [Pa s]","1 Week Viscosity [Pa s]"),
-                              Value = as.data.frame(rbind(value1,value2,value3,value4)))
-            
-            DT::datatable(as.data.frame(rbind(round(constraint_value(res$solution),3),round(constraint_value2(res$solution),3))) 
-                          ,rownames = c("Fresh Viscosity [Pa s]","24 hr Viscosity [Pa s]",
-                                        "24 hr Yiels Stress [Pa s]","1 Week Viscosity [Pa s]"), colnames =c("Target variable", "Value"))
+            DT::datatable(as.data.frame(rbind(round(constraint_val1(res$solution),3),round(constraint_val2(res$solution),3),
+                                              round(constraint_val3(res$solution),3),round(constraint_val4(res$solution),3)))
+                                    ,rownames = c("Fresh Viscosity [Pa s]","24 hr Viscosity [Pa s]",
+                                      "24 hr Yiels Stress [Pa s]","1 Week Viscosity [Pa s]"), 
+                                      colnames =c("Target variable", "Value"))
           })
+
           # optimiser output table 3
           if(input$radio_button_erin=='min'){
             output$value_results_erin<- renderUI({
@@ -780,19 +785,19 @@ conditionerServer <- function(id,top_session){
       })#end of non linear observeevent
       observeEvent(input$reset_erin,{
         updateSelectInput(session,"inequality_selection_erin_one",selected = "less than or equal to")
-        updateNumericInput(session,"numeric_input_erin_one",value = 28)
+        updateNumericInput(session,"numeric_input_erin_one",value = 250)
         updateNumericInput(session,"weight_erin_one",value = 1)
         
         updateSelectInput(session,"inequality_selection_erin_two",selected = "less than or equal to")
-        updateNumericInput(session,"numeric_input_erin_two",value = 28)
+        updateNumericInput(session,"numeric_input_erin_two",value = 400)
         updateNumericInput(session,"weight_erin_two",value = 1)
         
         updateSelectInput(session,"inequality_selection_erin_three",selected = "less than or equal to")
-        updateNumericInput(session,"numeric_input_erin_three",value = 28)
+        updateNumericInput(session,"numeric_input_erin_three",value = 150)
         updateNumericInput(session,"weight_erin_three",value = 1)
         
         updateSelectInput(session,"inequality_selection_erin_four",selected = "less than or equal to")
-        updateNumericInput(session,"numeric_input_erin_four",value = 28)
+        updateNumericInput(session,"numeric_input_erin_four",value = 550)
         updateNumericInput(session,"weight_erin_four",value = 1)
         
         updateRadioButtons(session,"radio_button_erin",selected = "min")

@@ -137,7 +137,7 @@ conditionerUI <- function(id){
                                                 ))
                            
                   ),
-                  tabPanel("Optimization",
+                  tabPanel("Optimisation",
                            wellPanel(
                              h2("Process Optimiser (Non Linear Optimisation)"),
                              wellPanel(
@@ -151,38 +151,36 @@ conditionerUI <- function(id){
                                  tags$li("Objective function is defined as a linear combination of model predictors."),
                                  tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
                                  tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
-                                 tags$li("Input the desired values of the Target variables. ")
+                                 tags$li("Input the desired values of the Target variables. "),
+                                 tags$li("Enter the weights (relative importance) of the target variables; by default it is 1.")
 
                                ),br()),
 
                              wellPanel(
                                radioButtons(ns("radio_button_erin"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
                                br(),
-                               fluidRow(
-                                 column(2,selectInput(ns("inequality_selection_erin_one"),"Select the inequality type (one))",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_one"),"Enter the target value (one)",28)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_one"), "Enter the weight for the first equation",1)),
+                                 fluidRow(h3("Fresh Viscosity [mPas]"),br(),
+                                 column(2,selectInput(ns("inequality_selection_erin_one"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_one"),"Enter the target value",250)),
+                                 column(2, offset = 3, numericInput(ns("weight_erin_one"), "Enter the weight",1)),
                                  br()),
 
-
-                               fluidRow(
-                                 column(2,selectInput(ns("inequality_selection_erin_two"),"Select the inequality type (two))",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_two"),"Enter the target value (two)",28)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_two"), "Enter the weight for the second equation",1)),
+                               fluidRow( h3("24 Hour Viscosity [mPas]"),br(),
+                                 column(2,selectInput(ns("inequality_selection_erin_two"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_two"),"Enter the target value",400)),
+                                 column(2, offset = 3, numericInput(ns("weight_erin_two"), "Enter the weight",1)),
                                  br()),
 
-
-                               fluidRow(
-                                 column(2,selectInput(ns("inequality_selection_erin_three"),"Select the inequality type (3))",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_three"),"Enter the target value (3)",28)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_three"), "Enter the weight for the third equation",1)),
+                               fluidRow( h3(" 24 Hour Yield Stress [mPas]"),br(),
+                                 column(2,selectInput(ns("inequality_selection_erin_three"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_three"),"Enter the target value",150)),
+                                 column(2, offset = 3, numericInput(ns("weight_erin_three"), "Enter the weight",1)),
                                  br()),
 
-
-                               fluidRow(
-                                 column(2,selectInput(ns("inequality_selection_erin_four"),"Select the inequality type (four)",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_four"),"Enter the target value (four)",28)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_four"), "Enter the weight for the four equation",1)),
+                               fluidRow( h3(" 1 Week Viscosity [mPas]"),br(),
+                                 column(2,selectInput(ns("inequality_selection_erin_four"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_four"),"Enter the target value",550)),
+                                 column(2, offset = 3, numericInput(ns("weight_erin_four"), "Enter the weight",1)),
                                  br()),
 
                                # wellPanel(
