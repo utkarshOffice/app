@@ -84,7 +84,8 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
                        output$plot <- renderPlot({
                          Lather_volume <- Lather_volume()
                          ggplot(data=data.frame(perfume, Lather_volume), aes(x=perfume, y= Lather_volume)) +
-                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+
+                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+xlab("Perfume")+
+                           ylab("Soap lather volume")+
                            gghighlight(perfume == input$perfume)
                        })
                      })
