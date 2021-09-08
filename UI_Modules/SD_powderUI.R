@@ -165,16 +165,16 @@ SD_powderUI <- function(id){
                    dataTableOutput(ns("optimiser_table32_uday_sd")),
                    h4("Objective Function Value"),
                    uiOutput(ns("value_results_uday_sd")),
-                   downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                   downloadButton(ns("download5_uday_sd"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                    
+                 ),
+                 wellPanel(
+                   h2("Global Download"),
+                   h4("Download all the results that have been generated throughout the app"),
+                   actionButton(ns("downloadresults_uday_sd"),"Proceed to download all Results",
+                                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                   uiOutput(ns("Download_Values_uday_sd"))
                  )
-                 # wellPanel(
-                 #   h2("Global Download"),
-                 #   h4("Download all the results that have been generated throughout the app"),
-                 #   actionButton(ns("downloadresults"),"Proceed to download all Results",
-                 #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                 #   uiOutput(ns("Download_Values"))
-                 # )
                  
                  
         )#optimisation end

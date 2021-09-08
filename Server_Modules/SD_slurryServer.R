@@ -790,11 +790,12 @@ SD_slurryServer <- function(id, top_session){
           nrdata1 <- as.data.frame(manualinput_uday())
           nrdata2 <- as.data.frame(importresults_uday())
           nrdata3 <- as.data.frame(optimise_uday())
+          nrdata4 <- as.data.frame(optimise2_uday())
           
           output$download_all_uday <- downloadHandler(
             filename = function() { "All Results.xlsx"},
             content = function(file) {
-              write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Drying Prediction Optimisation" = nrdata3), file)
+              write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Drying Prediction Optimisation" = nrdata3, "Optimisation Torque and Pred Formula Low Sheer Viscosity value" = nrdata4), file)
             
           })
         })
@@ -1032,6 +1033,27 @@ SD_slurryServer <- function(id, top_session){
             })
             
           }
+          
+          downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Torque", "Pred Formula Low Sheer Viscosity value"), Predicted_or_Optimal_Value= c(constraint_value(res$solution), constraint_value2(res$solution)))
+          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("TargetSMC","NaLAS","AlkSilicate","CP5","LSA","SCMC","Sulphate"),
+                               Predicted_or_Optimal_Value=res$solution)
+          
+          if(input$radio_button_uday_nonlinear=='min'){
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+          }
+          else{
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+          }
+          
+          final123 <- rbind(downresults12,downdf12,downopt12)
+          
+          optimise2_uday(final123)
+          output$download5_uday <- downloadHandler(
+            filename = function() { "Optimisation BD Prediction by Model.xlsx"},
+            content = function(file) {
+              write_xlsx(list("Optimisation Result" = final123), file)
+            }
+          )
           
           # View(res$objective)
         }) #run optimiser non linear end

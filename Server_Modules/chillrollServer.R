@@ -695,6 +695,7 @@ chillrollServer <- function(id, top_session){
                            
                          }
                          
+#<<<<<<< subinoffice2
                          if((inequality_selection_one=='equal to' && abs(constraint_value(res$solution)-target_one)>.3)||
                             (inequality_selection_two=='equal to' && abs(constraint_value2(res$solution)-target_two)>.3)){
                            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
@@ -712,7 +713,31 @@ chillrollServer <- function(id, top_session){
                            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
                                   Please alter the inputs and re-run."))
                          }
+#=======
+                         downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Flake Final Temp(Model1)", "Flake Final Temp(Model2) "), Predicted_or_Optimal_Value= c(constraint_value(res$solution), constraint_value2(res$solution)))
+                         downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Film_thickness_[0.5,2]", "Cooling_seg_fraction_[0.25,0.875]", "T_flake_feed_[100,130]" , 
+                                                                                                   "T_ambient_[15,40]","T_chilled_water_[-5,15]" ,"DEFI_Free_roll_length_[0.001,0.1]",
+                                                                                                   "Roll_Speed_[1,4]"),
+                                              Predicted_or_Optimal_Value=res$solution)
+#>>>>>>> master
                          
+                         if(input$radio_button_chill=='min'){
+                           downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+                         }
+                         else{
+                           downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+                         }
+                         
+                         final123 <- rbind(downresults12,downdf12,downopt12)
+                         #View(final123)
+                         optimise2_santosh(final123)
+                         #optimise_uday_ntr(final123)
+                         output$download5_santosh <- downloadHandler(
+                           filename = function() { "Optimisation Flake Final Temp(Model1), Flake Final Temp(Model2) .xlsx"},
+                           content = function(file) {
+                             write_xlsx(list("Optimisation Result" = final123), file)
+                           }
+                         )
                        })#observeEvent run optimiser ends
                        
                        # reset button
@@ -749,12 +774,12 @@ chillrollServer <- function(id, top_session){
           nrdata <- as.data.frame(manual_santosh())
           nrdata1 <- as.data.frame(manualinput_santosh())
           nrdata2 <- as.data.frame(importresults_santosh())
-          nrdata3 <- as.data.frame(optimise_santosh())
+          nrdata3 <- as.data.frame(optimise2_santosh())
           
           output$download_all_santosh <- downloadHandler(
             filename = function() { "All Results.xlsx"},
             content = function(file) {
-              write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Drying Prediction Optimisation" = nrdata3), file)
+              write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Optimisation Flake Final Temp(Model1), Flake Final Temp(Model2)" = nrdata3), file)
             }
           )
         })

@@ -16,7 +16,7 @@ It can be used to identify optimal sealing parameters that would deliver the des
                                                h4("Scope of the Model"), 
                                                p("The model can be used for the sealing of 4-side-seal and 3-side-seal pouches. The laminates that are already a part of the model are listed below:  "), 
                                                
-                                               img(src= "seal_strength_img2.png"),
+                                               img(src= "seal_strength_img2.jpg"),
                                                
                                                h4("Note to all users:"), 
                                                p("We are constantly interested to increase the model, laminate material and pack format offering of this model. Please contact us with your interests, if they are not covered by the existing offering."),
