@@ -63,9 +63,9 @@ ui <- function(request){
     br(),
     column(12,align = "left",offset = 0,
            a("Download PAE Packaging Model Bank V1.0 Guide",
-             href="PAE Model Bank User Guide.pdf", 
+             href="PAE Packaging Model Bank User Guide.pdf", 
              download="PAE Packaging Model Bank User Guide.pdf",
-             class="dl2"))
+             class="dl2")) 
     #bookmarkButton()
     ),
     dashboardBody(
