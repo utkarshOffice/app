@@ -9,7 +9,7 @@ NTR_powderServer <- function(id, top_session){
       importresults <- reactiveVal(NULL)
       optimise <- reactiveVal(NULL)
       optimise1 <- reactiveVal(NULL)
-      optimise2 <- reactiveVal(NULL)
+      optimise2_uday_ntr <- reactiveVal(NULL)
       opt <- reactiveValues(tab_1=NULL)
       
       x_uday_ntr <- data.frame(Models <- c("BD_Prediction_by_Model  =132.314+0.00874* Base_Factor *Base_Powder_Bulk_Density +8.812*Filler (Sulphate/ Salt as Balancing ingredient)+8.602*Post_Dosing_Ingredients_Majors_( >1% in FG other than Filler)+9.003*Post_Dosing_Ingredient_Minor_ (<1% in FG other than Filler)"
@@ -378,7 +378,7 @@ NTR_powderServer <- function(id, top_session){
         nrdata2 <- as.data.frame(importresults())
         #nrdata3 <- as.data.frame(optimise())
         #nrdata4 <- as.data.frame(optimise1())
-        # nrdata5 <- as.data.frame(optimise2())
+        nrdata4 <- as.data.frame(optimise2_uday_ntr())
         
         
         #View(nrdata)
@@ -388,7 +388,7 @@ NTR_powderServer <- function(id, top_session){
         output$download_all_uday_ntr <- downloadHandler(
           filename = function() { "All Results.xlsx"},
           content = function(file) {
-            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
+            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "BD Prediction by Model Optimisation" = nrdata4), file)
           }
         )
       })#download end
@@ -519,6 +519,28 @@ NTR_powderServer <- function(id, top_session){
             })
             
           }
+          
+          downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("BD Prediction by Model"), Predicted_or_Optimal_Value= constraint_value(res$solution))
+          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Base_Factor","Filler_Sulphate_Salt_as_Balancing_ingredient","Base_Powder_Bulk_Density","Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)","Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)"),
+                               Predicted_or_Optimal_Value=res$solution)
+          
+          if(input$radio_button_uday_ntr=='min'){
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+          }
+          else{
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+          }
+          
+          final123 <- rbind(downresults12,downdf12,downopt12)
+          #View(final123)
+          
+          optimise2_uday_ntr(final123)
+          output$download5_uday_ntr <- downloadHandler(
+            filename = function() { "BD Prediction by Model Optimisation .xlsx"},
+            content = function(file) {
+              write_xlsx(list("Optimisation Result" = final123), file)
+            }
+          )
 
         })#observeevent run optimiser ends
 

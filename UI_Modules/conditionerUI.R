@@ -202,15 +202,15 @@ conditionerUI <- function(id){
                                dataTableOutput(ns("optimiser_table32_erin")),
                                h4("Objective Function Value"),
                                uiOutput(ns("value_results_erin")),
-                               downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                               downloadButton(ns("download5_erin"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
 
                              ),
                              wellPanel(
                                h2("Global Download"),
                                h4("Download all the results that have been generated throughout the app"),
-                               actionButton(ns("downloadresults"),"Proceed to download all Results",
+                               actionButton(ns("downloadresults_erin"),"Proceed to download all Results",
                                             style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                               uiOutput(ns("Download_Values"))
+                               uiOutput(ns("Download_Values_erin"))
                                      )
 
                            ))

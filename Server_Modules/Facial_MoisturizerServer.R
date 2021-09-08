@@ -587,19 +587,27 @@ Facial_MoisturizerServer <- function(id, top_session){
           row.names(results)<- c("Viscosity 24hrs","Viscosity 2hrs")
 
           #downloading
-          # downresults <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Viscosity Free Sample 4 CPS"), Predicted_or_Optimal_Value= fitted.response)
-          # downdf<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("2 Homo I PT100 (oC) Mean","3 Homo II Main recycle pipe flowmeter (kg/h) Mean","3 Homo II Silverson (Hz) Mean","3 Homo II Length","6 Cooling II Length", "7 Discharge PT100 (oC) Mean"),
-          #                    Predicted_or_Optimal_Value=solution.values)
-          # downopt <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective func. Value"), Predicted_or_Optimal_Value = objective.function.value)
-          # 
-          # final1 <- rbind(downresults,downdf,downopt)
-          # optimise(final1)
-          # output$download3_skincare_kayla <- downloadHandler(
-          #   filename = function() { "Optimisation for Viscosity Free Sample 4 CPS .xlsx"},
-          #   content = function(file) {
-          #     write_xlsx(list("Optimisation Result" = final1), file)
-          #   }
-          # )
+          downresults <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Viscosity 24hrs", "Viscosity 2hrs"), Predicted_or_Optimal_Value= c(fitted.response_24,fitted.response_2))
+          downdf<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Initial Emulsification Temperature_[68,72]",
+                                                                                  "Homogenization Speed_[33,50]",
+                                                                                  "First Homogenization Time Length_[10,20]",
+                                                                                  "Second Homogenization Time Length_[3,13]",
+                                                                                  "First Cooling Time Length_[14,43]",
+                                                                                  "Second Cooling Time Length_[10,52]",
+                                                                                  "Discharge Temperature_[36,42]",
+                                                                                  "Discharge Time Length_[3,26]"
+          ),
+                             Predicted_or_Optimal_Value=solution.values)
+          downopt <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective func. Value"), Predicted_or_Optimal_Value = objective.function.value)
+
+          final1 <- rbind(downresults,downdf,downopt)
+          optimise(final1)
+          output$download3_skincare_kayla <- downloadHandler(
+            filename = function() { "Optimisation Skincare.xlsx"},
+            content = function(file) {
+              write_xlsx(list("Optimisation Result" = final1), file)
+            }
+          )
 
           # optmiser table2
           output$optimiser_table2_skincare_kayla<-renderDataTable({

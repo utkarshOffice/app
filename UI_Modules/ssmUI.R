@@ -204,16 +204,16 @@ It can be used to identify optimal sealing parameters that would deliver the des
                  dataTableOutput(ns("optimiser_table32_seal")),
                  h4("Objective Function Value"),
                  uiOutput(ns("value_results_seal")),
-                 downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                 downloadButton(ns("download5_seal"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                  
+               ),
+               wellPanel(
+                 h2("Global Download"),
+                 h4("Download all the results that have been generated throughout the app"),
+                 actionButton(ns("downloadresults_seal"),"Proceed to download all Results",
+                              style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                 uiOutput(ns("Download_Values_seal"))
                )
-               # wellPanel(
-               #   h2("Global Download"),
-               #   h4("Download all the results that have been generated throughout the app"),
-               #   actionButton(ns("downloadresults"),"Proceed to download all Results",
-               #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-               #   uiOutput(ns("Download_Values"))
-               # )
                
                
       )#optimisation end
