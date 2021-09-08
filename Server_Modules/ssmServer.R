@@ -99,7 +99,7 @@ ssmServer <- function(id, top_session){
       
       observeEvent(req(input$Profiler_model_select),{
         
-        
+            
             eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure() - 50)/25) + 
                     (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
                     (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure() - 50)/25)*((Sealing_Time() - 475)/275) + 
@@ -244,13 +244,12 @@ ssmServer <- function(id, top_session){
                                gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature) + ylim(0, 15)
                            })
                            
-                           shinyjs::hide(id = "profiler_Layer_Thickness")
                            output$plot4 <- renderPlot({ggplot()+ theme(axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())})
                            
                            if(input$Profiler_model_select == 'monoPP_Haiti' | input$Profiler_model_select == 'Paper_metOPP_70_100gsmPaper_18metOPP' | input$Profiler_model_select == 'Paper_metOPP_90gsmPaper_15_18metOPP')
                            {
                                Mean_Seal_Strnt_LT<- reactive(eval(parse(text = Lt_eqn1)))
-                               shinyjs::show(id = "profiler_Layer_Thickness")
+                               # shinyjs::show(id = "profiler_Layer_Thickness", asis = TRUE)
                                output$plot4 <- renderPlot({
                                  Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
                                  ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
