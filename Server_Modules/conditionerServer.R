@@ -607,7 +607,7 @@ conditionerServer <- function(id,top_session){
             if(input$inequality_selection_erin_one =="less than or equal to"){
               equation1 <- c(equation_one)
             }
-            #View(inequality_selection_erin_one)
+
             else if(input$inequality_selection_erin_one =="greater than or equal to"){
               equation1 <- c(-1*equation_one)
             }

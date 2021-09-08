@@ -98,28 +98,35 @@ Soap_HardnessUI <- function(id){
                                        tabPanel("Profiler",
                                                 wellPanel(
                                                   h1("Profiler"),
-                                                  fluidRow(column(width = 10,plotOutput(ns("plot1"))),
+                                                  fluidRow(column(width = 4,plotOutput(ns("plot1"))),
+                                                           column(width = 4,
+                                                                  sliderInput(ns("billetmoistur"),"Billet Moisture:", min = 14, max = 29, value = 15.1),
+                                                                  sliderInput(ns("plodderbackpressuredegc"),"Plodder Back Pressure (30%) @ 40 degC:", min = 7, max = 17, value = 7.7),
+                                                                  sliderInput(ns("flowrate"),"Flow Rate (30%):", min = 3550, max = 7770, value = 3555),
+                                                                  sliderInput(ns("moisture"),"Moisture:", min = 15, max = 28, value = 16.1)
+                                                           ),
+                                                           column(width = 4,
+                                                                  sliderInput(ns("pkocontent"),"PKO Content:", min = 20.00, max = 24.00, value = 20.1),
+                                                                  sliderInput(ns("glycerine"),"Glycerine:", min = 0, max = 6, value = 1.1),
+                                                                  sliderInput(ns("carbopolesc"),"Carbopole SC200 (100%):", min = 0, max = 0.3, value = 0.1),
+                                                                  sliderInput(ns("sodiumchloride"),"Sodium Chloride:", min = 0.5, max = 1.2, value = 1.1))
                                                   ),
                                                   
-                                                  fluidRow(column(width = 6,
-                                                                  sliderInput(ns("billetmoistur"),"Billet Moisture:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("plodderbackpressuredegc"),"Plodder Back Pressure (30%) @ 40 degC:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("flowrate"),"Flow Rate (30%):", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("moisture"),"Moisture:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("pkocontent"),"PKO Content:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("glycerine"),"Glycerine:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("carbopolesc"),"Carbopole SC200 (100%):", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("sodiumchloride"),"Sodium Chloride:", min = 0, max = 100, value = 1)
+                                                  fluidRow(column(width = 4,
+                                                                  sliderInput(ns("soapmasstemperature"),"Soap Mass Temperature:", min = 40, max = 47, value = 40.1),
+                                                                  sliderInput(ns("iv"),"IV (Iodine Value):", min = 36, max = 42, value = 36.1),
+                                                                  sliderInput(ns("sodiumsulfate"),"Sodium Sulfate:", min = 0, max = 1.5, value = 1.1)
                                                   ),
-                                                  column(width = 6,
-                                                         sliderInput(ns("soapmasstemperature"),"Soap Mass Temperature:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("iv"),"IV (Iodine Value):", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("sodiumsulfate"),"Sodium Sulfate:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("sodiumsilicate"),"Sodium Silicate:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("petrolatumjelly"),"Petrolatum Jelly:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("amazonpolymer"),"Amazon Polymer:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("talc"),"Talc:", min = 0, max = 100, value = 1)
-                                                  ))
+                                                  column(width = 4,
+
+                                                         sliderInput(ns("sodiumsilicate"),"Sodium Silicate:", min = 0, max = 2.00, value = 0.5),
+                                                         sliderInput(ns("petrolatumjelly"),"Petrolatum Jelly:", min = 0, max = 1, value = 0.5)
+
+                                                  ),
+                                                  column(width = 4,
+                                                         sliderInput(ns("amazonpolymer"),"Amazon Polymer:", min = 0, max = 1, value = 0.5),
+                                                         sliderInput(ns("talc"),"Talc:", min = 0, max = 6, value = 1.1)
+                                                         ))
                                                 )),
                                        tabPanel("Imported Data Simulation",
                                                 uiOutput(ns("simulation_result_uday_sd2")),
