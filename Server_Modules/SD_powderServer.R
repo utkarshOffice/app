@@ -7,7 +7,7 @@ SD_powderServer <- function(id, top_session){
       importresults <- reactiveVal(NULL)
       optimise <- reactiveVal(NULL)
       optimise1 <- reactiveVal(NULL)
-      optimise2 <- reactiveVal(NULL)
+      optimise2_uday_sd <- reactiveVal(NULL)
       uday_proxy_sd <- DT::dataTableProxy('optimiser_table1_uday_sd')
       
       opt <- reactiveValues(tab_1=NULL)
@@ -377,7 +377,7 @@ SD_powderServer <- function(id, top_session){
         nrdata1 <- as.data.frame(manualinput())
         nrdata2 <- as.data.frame(importresults())
         #nrdata3 <- as.data.frame(optimise())
-        #nrdata4 <- as.data.frame(optimise1())
+        nrdata4 <- as.data.frame(optimise2_uday_sd())
        # nrdata5 <- as.data.frame(optimise2())
         
         
@@ -388,7 +388,7 @@ SD_powderServer <- function(id, top_session){
         output$download_all_uday_sd <- downloadHandler(
           filename = function() { "All Results.xlsx"},
           content = function(file) {
-            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
+            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Optimisation BD Prediction by Model" = nrdata4), file)
           }
         )
       }) #download end
@@ -517,7 +517,33 @@ SD_powderServer <- function(id, top_session){
             
           }
           
+          
+          downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("BD Prediction by Model"), Predicted_or_Optimal_Value= constraint_value(res$solution))
+          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Base_Factor","Filler_Sulphate_Salt_as_Balancing_ingredient","Base_Powder_Bulk_Density","Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)","Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)"),
+                               Predicted_or_Optimal_Value=res$solution)
+          
+          if(input$radio_button_uday_sd=='min'){
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+          }
+          else{
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+          }
+          
+          final123 <- rbind(downresults12,downdf12,downopt12)
+          #View(final123)
+          
+          optimise2_uday_sd(final123)
+          output$download5_uday_sd <- downloadHandler(
+            filename = function() { "BD Prediction by Model Optimisation.xlsx"},
+            content = function(file) {
+              write_xlsx(list("Optimisation Result" = final123), file)
+            }
+          )
+          
             })#observeevent run optimiser ends
+        
+        
+       
         
       })#observeevent opt end
       

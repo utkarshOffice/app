@@ -183,16 +183,16 @@ Soap_HardnessUI <- function(id){
                              dataTableOutput(ns("optimiser_table32_hardness")),
                              h4("Objective Function Value"),
                              uiOutput(ns("value_results_hardness")),
-                             downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                             downloadButton(ns("download5_soap"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                              
+                           ),
+                           wellPanel(
+                             h2("Global Download"),
+                             h4("Download all the results that have been generated throughout the app"),
+                             actionButton(ns("downloadresults_soap"),"Proceed to download all Results",
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                             uiOutput(ns("Download_Values_soap"))
                            )
-                           # wellPanel(
-                           #   h2("Global Download"),
-                           #   h4("Download all the results that have been generated throughout the app"),
-                           #   actionButton(ns("downloadresults"),"Proceed to download all Results",
-                           #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                           #   uiOutput(ns("Download_Values"))
-                           # )
                            
                            
                   )#optimisation end

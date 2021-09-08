@@ -11,7 +11,7 @@ ssmServer <- function(id, top_session){
       importresults_ashutosh <- reactiveVal(NULL)
       optimise_ashutosh <- reactiveVal(NULL)
       optimise1_ashutosh <- reactiveVal(NULL)
-      optimise2_ashutosh <- reactiveVal(NULL)
+      optimise2_seal <- reactiveVal(NULL)
       
       
       # ---------------------------------------------------- MODEL & DATA IMPORT --------------------------------------------------------
@@ -99,7 +99,7 @@ ssmServer <- function(id, top_session){
       
       observeEvent(req(input$Profiler_model_select),{
         
-        
+            
             eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure() - 50)/25) + 
                     (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
                     (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure() - 50)/25)*((Sealing_Time() - 475)/275) + 
@@ -244,13 +244,12 @@ ssmServer <- function(id, top_session){
                                gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature, label_key = Mean_Seal_Strength) + ylim(0, 15)
                            })
                            
-                           shinyjs::hide(id = "profiler_Layer_Thickness")
                            output$plot4 <- renderPlot({ggplot()+ theme(axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())})
                            
                            if(input$Profiler_model_select == 'monoPP_Haiti' | input$Profiler_model_select == 'Paper_metOPP_70_100gsmPaper_18metOPP' | input$Profiler_model_select == 'Paper_metOPP_90gsmPaper_15_18metOPP')
                            {
                                Mean_Seal_Strnt_LT<- reactive(eval(parse(text = Lt_eqn1)))
-                               shinyjs::show(id = "profiler_Layer_Thickness")
+                               # shinyjs::show(id = "profiler_Layer_Thickness", asis = TRUE)
                                output$plot4 <- renderPlot({
                                  Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
                                  ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
@@ -1067,6 +1066,30 @@ ssmServer <- function(id, top_session){
               
             }
             
+            downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Target Variable"), Predicted_or_Optimal_Value= constraint_value(res$solution))
+            downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
+                                                                                      "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]"),
+                                 Predicted_or_Optimal_Value=res$solution)
+            
+            if(input$radio_button_seal=='min'){
+              downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+            }
+            else{
+              downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+            }
+            
+            final123 <- rbind(downresults12,downdf12,downopt12)
+            #View(final123)
+            
+            optimise2_seal(final123)
+            output$download5_seal <- downloadHandler(
+              filename = function() { "Optimisation Seal Strength Model.xlsx"},
+              content = function(file) {
+                write_xlsx(list("Optimisation Result" = final123), file)
+              }
+            )
+            
+            
           })#observeevent run optimiser ends
           
         })#observeevent opt end
@@ -1089,18 +1112,18 @@ ssmServer <- function(id, top_session){
         
         
         
-        observeEvent(input$downloadresults_ashutosh,{
+        observeEvent(input$downloadresults_seal,{
           
-          output$Download_Values_ashutosh <- renderUI({
+          output$Download_Values_seal <- renderUI({
             ns <- session$ns
-            downloadButton(ns("download_all_ashutosh"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+            downloadButton(ns("download_all_seal"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
           })
           nrdata <- as.data.frame(manual_ashutosh())
           nrdata1 <- as.data.frame(manualinput_ashutosh())
           nrdata2 <- as.data.frame(importresults_ashutosh())
-          nrdata3 <- as.data.frame(optimise_ashutosh())
+          nrdata3 <- as.data.frame(optimise2_seal())
           
-          output$download_all_ashutosh <- downloadHandler(
+          output$download_all_seal <- downloadHandler(
             filename = function() { "All Results.xlsx"},
             content = function(file) {
               write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Drying Prediction Optimisation" = nrdata3), file)

@@ -7,7 +7,7 @@ lather_volumeServer <- function(id, top_session){
       importresults <- reactiveVal(NULL)
       optimise <- reactiveVal(NULL)
       optimise1 <- reactiveVal(NULL)
-      optimise2 <- reactiveVal(NULL)
+      optimise2_lather <- reactiveVal(NULL)
       opt <- reactiveValues(tab_1=NULL)
       proxy_lather <- DT::dataTableProxy('optimiser_table1_lather')
       
@@ -379,24 +379,25 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
           
         })
       })
-      observeEvent(input$downloadresults_uday_sd,{
+      observeEvent(input$downloadresults_lather,{
         
-        output$Download_Values_uday_sd <- renderUI({
+        output$Download_Values_lather <- renderUI({
           ns <- session$ns
-          downloadButton(ns("download_all_uday_sd"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+          downloadButton(ns("download_all_lather"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
         })
 
         
         nrdata <- as.data.frame(manual())
         nrdata1 <- as.data.frame(manualinput())
         nrdata2 <- as.data.frame(importresults())
+        nrdata4 <- as.data.frame(optimise2_lather())
         
 
         
-        output$download_all_uday_sd <- downloadHandler(
+        output$download_all_lather <- downloadHandler(
           filename = function() { "All Results.xlsx"},
           content = function(file) {
-            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
+            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Optimisation Lather Volume" = nrdata4), file)
           })
       })
       
@@ -567,6 +568,32 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
             })
             
           }
+          
+          downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Lather VOlume"), Predicted_or_Optimal_Value= constraint_value(res$solution))
+          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Sodium Chloride_[0.5,1.6]","Sodium Sulfate_[0,1.7]","Sodium Silicate_[0,1.5]",
+                                                                                    "FFA_Combined_[0,1]","Oxiflow-Oxiteno_[0,1.5]","Sodium Carbonate_[0,0.8]",
+                                                                                    "Sodium Citrate_[0,3]","PKO Content_[5,20]",
+                                                                                    "Titanium Dioxide_[0.4,0.5]","Tinopal CBS_[0.0001,0.001]","Perfume_[0.3,1.3]",
+                                                                                    "IV (Iodine Value)_[39,42]"),
+                               Predicted_or_Optimal_Value=res$solution)
+          
+          if(input$radio_button_lather=='min'){
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+          }
+          else{
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+          }
+          
+          final123 <- rbind(downresults12,downdf12,downopt12)
+          #View(final123)
+          optimise2_lather(final123)
+          #optimise_uday_ntr(final123)
+          output$download5_lather <- downloadHandler(
+            filename = function() { "Optimisation Lather Volume .xlsx"},
+            content = function(file) {
+              write_xlsx(list("Optimisation Result" = final123), file)
+            }
+          )
           
         })#observeevent run optimiser ends
         
