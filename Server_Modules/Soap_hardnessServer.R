@@ -7,7 +7,7 @@ Soap_hardnessServer <- function(id, top_session){
       importresults <- reactiveVal(NULL)
       optimise <- reactiveVal(NULL)
       optimise1 <- reactiveVal(NULL)
-      optimise2 <- reactiveVal(NULL)
+      optimise2_soap <- reactiveVal(NULL)
       opt <- reactiveValues(tab_1=NULL)
       proxy_hardness <- DT::dataTableProxy('optimiser_table1_hardness')
       
@@ -396,22 +396,23 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
         })
       })
       
-      observeEvent(input$downloadresults_uday_sd,{
+      observeEvent(input$downloadresults_soap,{
         
-        output$Download_Values_uday_sd <- renderUI({
+        output$Download_Values_soap <- renderUI({
           ns <- session$ns
-          downloadButton(ns("download_all_uday_sd"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+          downloadButton(ns("download_all_soap"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
         })
         
         nrdata <- as.data.frame(manual())
         nrdata1 <- as.data.frame(manualinput())
         nrdata2 <- as.data.frame(importresults())
+        nrdata4 <- as.data.frame(optimise2_soap())
 
         
-        output$download_all_uday_sd <- downloadHandler(
+        output$download_all_soap <- downloadHandler(
           filename = function() { "All Results.xlsx"},
           content = function(file) {
-            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
+            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Optimisation Soap Hardness" = nrdata4), file)
           }
         )
       })
@@ -612,6 +613,32 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
             
           }
           
+          downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Soap Bar Hardness"), Predicted_or_Optimal_Value= constraint_value(res$solution))
+          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Billet Moisture_[14.4,28.1]","Plodder Back Pressure (30%) @ 40 degC_[7.7,16.4]",
+                                                                                    "Flow Rate (30%)_[3550,7770]","Soap Mass Temperature_[40,46.8]",
+                                                                                    "IV (Iodine Value)_[36,42]","Moisture_[15.3,28]","PKO Content_[20,23.5]",
+                                                                                    "Glycerine_[0,6]","Sodium Chloride_[0.5,1.2]","Sodium Sulfate_[0,1.5]",
+                                                                                    "Sodium Silicate_[0,1.7]","Petrolatum Jelly_[0,0.8]","Amazon Polymer_[0,0.7]",
+                                                                                    "Carbopole SC200 (100%)_[0,0.3]","Talc_[0,6]"),
+                               Predicted_or_Optimal_Value=res$solution)
+          
+          if(input$radio_button_hardness=='min'){
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+          }
+          else{
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+          }
+          
+          final123 <- rbind(downresults12,downdf12,downopt12)
+          #View(final123)
+          
+          optimise2_soap(final123)
+          output$download5_soap <- downloadHandler(
+            filename = function() { "Optimisation Soap Hardness.xlsx"},
+            content = function(file) {
+              write_xlsx(list("Optimisation Result" = final123), file)
+            }
+          )
         })#observeevent run optimiser ends
         
       })#observeevent opt end

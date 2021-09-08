@@ -11,7 +11,7 @@ ssmServer <- function(id, top_session){
       importresults_ashutosh <- reactiveVal(NULL)
       optimise_ashutosh <- reactiveVal(NULL)
       optimise1_ashutosh <- reactiveVal(NULL)
-      optimise2_ashutosh <- reactiveVal(NULL)
+      optimise2_seal <- reactiveVal(NULL)
       
       
       # ---------------------------------------------------- MODEL & DATA IMPORT --------------------------------------------------------
@@ -1066,6 +1066,30 @@ ssmServer <- function(id, top_session){
               
             }
             
+            downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Target Variable"), Predicted_or_Optimal_Value= constraint_value(res$solution))
+            downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
+                                                                                      "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]"),
+                                 Predicted_or_Optimal_Value=res$solution)
+            
+            if(input$radio_button_seal=='min'){
+              downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+            }
+            else{
+              downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+            }
+            
+            final123 <- rbind(downresults12,downdf12,downopt12)
+            #View(final123)
+            
+            optimise2_seal(final123)
+            output$download5_seal <- downloadHandler(
+              filename = function() { "Optimisation Seal Strength Model.xlsx"},
+              content = function(file) {
+                write_xlsx(list("Optimisation Result" = final123), file)
+              }
+            )
+            
+            
           })#observeevent run optimiser ends
           
         })#observeevent opt end
@@ -1088,18 +1112,18 @@ ssmServer <- function(id, top_session){
         
         
         
-        observeEvent(input$downloadresults_ashutosh,{
+        observeEvent(input$downloadresults_seal,{
           
-          output$Download_Values_ashutosh <- renderUI({
+          output$Download_Values_seal <- renderUI({
             ns <- session$ns
-            downloadButton(ns("download_all_ashutosh"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+            downloadButton(ns("download_all_seal"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
           })
           nrdata <- as.data.frame(manual_ashutosh())
           nrdata1 <- as.data.frame(manualinput_ashutosh())
           nrdata2 <- as.data.frame(importresults_ashutosh())
-          nrdata3 <- as.data.frame(optimise_ashutosh())
+          nrdata3 <- as.data.frame(optimise2_seal())
           
-          output$download_all_ashutosh <- downloadHandler(
+          output$download_all_seal <- downloadHandler(
             filename = function() { "All Results.xlsx"},
             content = function(file) {
               write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Drying Prediction Optimisation" = nrdata3), file)

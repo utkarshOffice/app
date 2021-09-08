@@ -192,16 +192,16 @@ chillrollUI <- function(id){
                  dataTableOutput(ns("optimiser_table32_chill")),
                  h4("Objective Function Value"),
                  uiOutput(ns("value_results_chill")),
-                 downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                 downloadButton(ns("download5_santosh"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                  
+               ),
+               wellPanel(
+                 h2("Global Download"),
+                 h4("Download all the results that have been generated throughout the app"),
+                 actionButton(ns("downloadresults_santosh"),"Proceed to download all Results",
+                              style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                 uiOutput(ns("Download_Values_santosh"))
                )
-               # wellPanel(
-               #   h2("Global Download"),
-               #   h4("Download all the results that have been generated throughout the app"),
-               #   actionButton(ns("downloadresults"),"Proceed to download all Results",
-               #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-               #   uiOutput(ns("Download_Values"))
-               # )
                
                
       )#optimisation end
