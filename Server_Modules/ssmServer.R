@@ -1071,7 +1071,6 @@ ssmServer <- function(id, top_session){
               
             }
             
-#<<<<<<< subinoffice2
             if(inequality_selection_sd=="equal to" && abs(constraint_value(res$solution)-target_sd)>.2 ){
               showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
                                   Please alter the inputs and re-run."))
@@ -1088,7 +1087,6 @@ ssmServer <- function(id, top_session){
                                   Please alter the inputs and re-run."))
             }
             
-#=======
             downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Target Variable"), Predicted_or_Optimal_Value= constraint_value(res$solution))
             downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
                                                                                       "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]"),
@@ -1112,8 +1110,7 @@ ssmServer <- function(id, top_session){
               }
             )
             
-#>>>>>>> master
-            
+
           })#observeevent run optimiser ends
           
         })#observeevent opt end
