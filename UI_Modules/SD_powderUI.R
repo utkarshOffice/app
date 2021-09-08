@@ -127,7 +127,7 @@ SD_powderUI <- function(id){
                    tags$ul(
                      h4("Target Variable :	BD_Prediction_by_Model  ")
                      ,br(),
-                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
+                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specific Target variable."),
                      tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
                      tags$li("Objective function is defined as a linear combination of model predictors."),
                      tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),

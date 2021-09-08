@@ -531,12 +531,12 @@ conditionerServer <- function(id,top_session){
         opt$tab_2 <- coef_data2
         opt$tab_2[[3]]<- as.numeric(opt$tab_2[[3]])
         opt$tab_2[[4]]<- as.numeric(opt$tab_2[[4]])
-
+        
         #table 1
         output$optimiser_table1_erin <- renderDataTable({
           DT::datatable(opt$tab_2,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
         })
-
+        
         #cell edit
         observeEvent(input$optimiser_table1_erin_cell_edit,{
           info <- input$optimiser_table1_erin_cell_edit
@@ -574,55 +574,67 @@ conditionerServer <- function(id,top_session){
           opt$tab_2[[2]] <- as.numeric(opt$tab_2[[2]])
           
           constraint <- function(x){
-
+            
             #equations
             equation_one <- -1.90929008775433 + 293.747340146854 * x[1] + 0.0185866446926401 *
-                            (x[9]) + -0.221460924788289 * (x[10]) + 1.64713604618159 * (x[5]) +
-                            -2.25165790211731 * (x[11]) + -0.0301432004945295 *
-                            (x[7]) + 0.911630864596123 *(x[6]) + ((x[10]) -24.0511031746786) *
-                            ((x[11]) - 40.3160952380953) * -0.350152923119871 +
-                            (x[1] - 0.889285714285715) * ((x[7]) - 58.5077556918568) * 5.69749029830664 - target_one
-
-
+              (x[9]) + -0.221460924788289 * (x[10]) + 1.64713604618159 * (x[5]) +
+              -2.25165790211731 * (x[11]) + -0.0301432004945295 *
+              (x[7]) + 0.911630864596123 *(x[6]) + ((x[10]) -24.0511031746786) *
+              ((x[11]) - 40.3160952380953) * -0.350152923119871 +
+              (x[1] - 0.889285714285715) * ((x[7]) - 58.5077556918568) * 5.69749029830664 - target_one
+            
+            
             equation_two <- -63.1284043740373 + 360.506718384543 * x[1] + 0.0521562257371331 *
-                            (x[3]) + 0.0353296119308415 *(x[4]) + 3.27376326998214 *(x[5]) + 2.07763992027492 *
-                            (x[6]) + ( (x[4] ) - 11.690086036606) * ((x[4]) -11.690086036606) * -0.313650248085591 +
-                            ((x[3]) - 10.5377695693782) * ((x[5]) -11.6316630241121) * 0.0468925549996396 - target_two
-
-
+              (x[3]) + 0.0353296119308415 *(x[4]) + 3.27376326998214 *(x[5]) + 2.07763992027492 *
+              (x[6]) + ( (x[4] ) - 11.690086036606) * ((x[4]) -11.690086036606) * -0.313650248085591 +
+              ((x[3]) - 10.5377695693782) * ((x[5]) -11.6316630241121) * 0.0468925549996396 - target_two
+            
+            
             equation_three <-  8.93621729663531 + 196.247634160075 * x[1] + 0.39712728468703 *
-                              (x[4]) + 0.709966849477569 *(x[5]) + 0.169393285431812 * (x[7]) + -1.60593890352765 *
-                              (x[8]) + (x[1]-0.889285714285715) * ((x[7]) - 58.5077556918568)* 6.46419044816413 +
-                              ((x[8])-56.6174285714286) * ((x[8])-56.6174285714286) * -1.86801925904818 - target_three
-
-
+              (x[4]) + 0.709966849477569 *(x[5]) + 0.169393285431812 * (x[7]) + -1.60593890352765 *
+              (x[8]) + (x[1]-0.889285714285715) * ((x[7]) - 58.5077556918568)* 6.46419044816413 +
+              ((x[8])-56.6174285714286) * ((x[8])-56.6174285714286) * -1.86801925904818 - target_three
+            
+            
             equation_four <- 632.871957397762 + 353.212348019952 * x[1]
-                              + 1.85300874016657 *(x[2]) + -0.0492383896885823 * (x[3]) + 0.15817538864863 *(x[4]) + 2.66081552162148 *
-                              (x[5]) + -0.233420366808025 * (x[7]) + -8.57117901092962 *(x[8]) + ((x[3]) - 10.5377695693782) *
-                            ((x[3]) - 10.5377695693782) * -0.443509372083955 + (x[1] - 0.889285714285715) * ((x[4]) - 11.690086036606) *
-                            -14.3823974090446 + (x[1] - 0.889285714285715) * ((x[7]) - 58.5077556918568) * 15.7785498295843 +
-                            ((x[7]) - 58.5077556918568) * ((x[8]) - 56.6174285714286) * -0.621838628323516 - target_four
+            + 1.85300874016657 *(x[2]) + -0.0492383896885823 * (x[3]) + 0.15817538864863 *(x[4]) + 2.66081552162148 *
+              (x[5]) + -0.233420366808025 * (x[7]) + -8.57117901092962 *(x[8]) + ((x[3]) - 10.5377695693782) *
+              ((x[3]) - 10.5377695693782) * -0.443509372083955 + (x[1] - 0.889285714285715) * ((x[4]) - 11.690086036606) *
+              -14.3823974090446 + (x[1] - 0.889285714285715) * ((x[7]) - 58.5077556918568) * 15.7785498295843 +
+              ((x[7]) - 58.5077556918568) * ((x[8]) - 56.6174285714286) * -0.621838628323516 - target_four
+            
+            # View(input$inequality_selection_erin_one)#works
+            # View(target_one) #works
             
             #eq1
             if(input$inequality_selection_erin_one =="less than or equal to"){
-              equation1 <- c(equation_one)
+              # equation1 <- c(equation_one)
+              equation1 <- equation_one
             }
 
             else if(input$inequality_selection_erin_one =="greater than or equal to"){
-              equation1 <- c(-1*equation_one)
+              # equation1 <- c(-1*equation_one)
+              equation1 <- -1*equation_one
+              
             }
             
             else{
+              # equation1 <- c(equation_one-0.0001,-1*equation_one-0.0001)
               equation1 <- c(equation_one-0.0001,-1*equation_one-0.0001)
+              
             }
+            # View(equation1)
             
             #eq2
             if(input$inequality_selection_erin_two=="less than or equal to"){
-              equation2 <- c(equation_two)
+              # equation2 <- c(equation_two)
+              equation2 <- equation_two
+              
             }
             
             else if(input$inequality_selection_erin_two =="greater than or equal to"){
-              equation2 <- c(-1*equation_two)
+              # equation2 <- c(-1*equation_two)
+              equation2 <- -1*equation_two
             }
             
             else{
@@ -631,11 +643,13 @@ conditionerServer <- function(id,top_session){
             
             #eq3
             if(input$inequality_selection_erin_three =="less than or equal to"){
-              equation3 <- c(equation_three)
+              # equation3 <- c(equation_three)
+              equation3 <- equation_three
             }
             
             else if(input$inequality_selection_erin_three =="greater than or equal to"){
-              equation3 <- c(-1*equation_three)
+              # equation3 <- c(-1*equation_three)
+              equation3 <- -1*equation_three
             }
             else{
               equation3 <- c(equation_three-0.0001,-1*equation_three-0.0001)
@@ -643,18 +657,22 @@ conditionerServer <- function(id,top_session){
             
             #eq4
             if(input$inequality_selection_erin_four =="less than or equal to"){
-              equation4 <- c(equation_four)
+              # equation4 <- c(equation_four)
+              equation4 <- equation_four
+              
             }
             
             else if(input$inequality_selection_erin_four =="greater than or equal to"){
-              equation4 <- c(-1*equation_four)
+              # equation4 <- c(-1*equation_four)
+              equation4 <- -1*equation_four
             }
             else{
               equation4 <- c(equation_four-0.0001,-1*equation_four-0.0001)
             }
-            
+            View(equation1)
+            View(equation_one)
             return(c(equation1,equation2,equation3,equation4))
-
+            
           }#end of constraint function
           
           obj <-function(x){
@@ -662,31 +680,31 @@ conditionerServer <- function(id,top_session){
             if(input$radio_button_erin == 'min'){
               
               return(as.numeric(weight_one(opt$tab_2[1,2]*x[1] + opt$tab_2[9,2]*x[9] + opt$tab_2[10,2]*x[10] + opt$tab_2[5,2]*x[5] +
-                                  opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
-                                  opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
+                                             opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
+                                             opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
                                 + weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
-                                  opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
+                                               opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
                                 + weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
-                                    opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
+                                                 opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
                                 + weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
-                                   opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
-                                   opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
-                                   opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
+                                                opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
+                                                opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
+                                                opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
             }
             
             else{
               
               return( as.numeric(-weight_one(opt$tab_2[1,2]*x[1] + opt$tab_2[9,2]*x[9] + opt$tab_2[10,2]*x[10] + opt$tab_2[5,2]*x[5] +
-                                   opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
-                                   opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
-                                - weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
-                                     opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
-                                - weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
-                                     opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
-                                   - weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
-                                      opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
-                                      opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
-                                      opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
+                                               opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
+                                               opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
+                                 - weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
+                                                opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
+                                 - weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
+                                                  opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
+                                 - weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
+                                                 opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
+                                                 opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
+                                                 opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
               # return(-1*(eq1+eq2+eq3+eq4))
             }
             
@@ -698,12 +716,13 @@ conditionerServer <- function(id,top_session){
           ub <- opt$tab_2[[4]]
           
           opts <- list("algorithm"="NLOPT_LN_COBYLA",
-                       "xtol_rel"=1.0e-8)
+                       "xtol_rel"=1.0e-8,"maxeval"=300000)
           res<- nloptr(x0=x0,eval_f =  obj,
                        eval_g_ineq = constraint,
                        opts = opts,
                        lb=lb, ub=ub)
           
+          View(res$status)
           # optimiser output table 1
           output$optimiser_table32_erin <- renderDataTable({
             df<-data.frame(Predictors = c("Solids Content","Silverson Tip Speed during Emulsion [m/s]","Silverson Tip Speed during Quench  [m/s]",
@@ -716,40 +735,43 @@ conditionerServer <- function(id,top_session){
           })
           
           constraint_val1 <- function(x){
-              a1 <-  (-1.90929008775433) + 293.747340146854 * x[1] + 0.0185866446926401 *
+              return((-1.90929008775433) + 293.747340146854 * x[1] + 0.0185866446926401 *
               ( x[9] ) + -0.221460924788289 * ( x[10] ) + 1.64713604618159 * ( x[5] ) +
               -2.25165790211731 * ( x[11] ) + -0.0301432004945295 *
               ( x[7] ) + 0.911630864596123 *( x[6] ) + ( ( x[10] ) -24.0511031746786) *
               ( ( x[11] ) - 40.3160952380953) * -0.350152923119871 +
-              (x[1] - 0.889285714285715) * ( ( x[7] ) - 58.5077556918568) * 5.69749029830664 
+              (x[1] - 0.889285714285715) * ( ( x[7] ) - 58.5077556918568) * 5.69749029830664 )
 
-              return(a1)            
+              # return(a1)            
           }
           constraint_val2 <- function(x){
-              a2<-  (-63.1284043740373) + 360.506718384543 * x[1] + 0.0521562257371331 *
+              # a2<-  
+                return((-63.1284043740373) + 360.506718384543 * x[1] + 0.0521562257371331 *
               ( x[3] ) + 0.0353296119308415 *( x[4] ) + 3.27376326998214 *( x[5] ) + 2.07763992027492 *
               ( x[6] ) + ( (x[4] ) - 11.690086036606) * ( ( x[4] ) -11.690086036606) * -0.313650248085591 +
-              ( (x[3]) - 10.5377695693782) * ( ( x[5] ) -11.6316630241121) * 0.0468925549996396 
-              return(a2)
+              ( (x[3]) - 10.5377695693782) * ( ( x[5] ) -11.6316630241121) * 0.0468925549996396 )
+              # return(a2)
               
               }
           constraint_val3 <- function(x){
-              a3 <- 8.93621729663531 + 196.247634160075 * x[1] + 0.39712728468703 *
+              # a3 <-
+               return(8.93621729663531 + 196.247634160075 * x[1] + 0.39712728468703 *
               ( x[4] ) + 0.709966849477569 *( x[5] ) + 0.169393285431812 * ( x[7] ) + -1.60593890352765 *
               ( x[8] ) + (x[1]-0.889285714285715) * ( ( x[7] ) - 58.5077556918568)* 6.46419044816413 +
-              ( ( x[8] )-56.6174285714286) * ( ( x[8] )-56.6174285714286) * -1.86801925904818 
+              ( ( x[8] )-56.6174285714286) * ( ( x[8] )-56.6174285714286) * -1.86801925904818 )
               
-              return(a3)
+              # return(a3)
               }
           constraint_val4 <- function(x){
-               a4 <- 632.871957397762 + 353.212348019952 * x[1] + 1.85300874016657 *
+               # a4 <- 
+                 return(632.871957397762 + 353.212348019952 * x[1] + 1.85300874016657 *
               ( x[2] ) + -0.0492383896885823 * ( x[3] ) + 0.15817538864863 *( x[4] ) + 2.66081552162148 *
               ( x[5] ) + -0.233420366808025 * ( x[7] ) + -8.57117901092962 *( x[8] ) + (( x[3] ) - 10.5377695693782) * (
                 ( x[3] ) - 10.5377695693782) * -0.443509372083955 + (x[1] - 0.889285714285715) * (( x[4] ) - 11.690086036606) *
               -14.3823974090446 + (x[1] - 0.889285714285715) * (( x[7] ) - 58.5077556918568) * 15.7785498295843 +
-              (( x[7] ) - 58.5077556918568) * (( x[8] ) - 56.6174285714286) * -0.621838628323516 
+              (( x[7] ) - 58.5077556918568) * (( x[8] ) - 56.6174285714286) * -0.621838628323516 )
                 
-               return(a4)
+               # return(a4)
           }
           
           
