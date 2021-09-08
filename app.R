@@ -56,7 +56,7 @@ ui <- function(request){
     ),
     br(),
     column(12,align = "left",offset = 0,
-           a("Download PAE Model Bank V1.0 Guide",
+           a("Download PAE Processing Model Bank V1.0 Guide",
              href="PAE Model Bank User Guide.pdf", 
              download="PAE Model Bank User Guide.pdf",
              class="dl2")),

@@ -217,7 +217,7 @@ ssmServer <- function(id, top_session){
                            Mean_Seal_Strnt_Pr <- reactive(eval(parse(text = Pr_eqn1)))
                         
                            output$plot1 <- renderPlot({
-                             Mean_Seal_Strength <- Mean_Seal_Strnt_Pr()
+                             Mean_Seal_Strength <- round(Mean_Seal_Strnt_Pr(),3)
                              
                              ggplot(data=data.frame(Sealing_Pressure_list, Mean_Seal_Strength), aes(x=Sealing_Pressure_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
@@ -228,7 +228,7 @@ ssmServer <- function(id, top_session){
                            Mean_Seal_Strnt_Time <- reactive(eval(parse(text = Ti_eqn1)))
                            
                            output$plot2 <- renderPlot({
-                             Mean_Seal_Strength <- Mean_Seal_Strnt_Time()
+                             Mean_Seal_Strength <- round(Mean_Seal_Strnt_Time(),3)
                              ggplot(data=data.frame(Sealing_Time_list, Mean_Seal_Strength), aes(x=Sealing_Time_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank()) + 
                                gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time, label_key = Mean_Seal_Strength) + ylim(0, 15)
@@ -238,7 +238,7 @@ ssmServer <- function(id, top_session){
                            Mean_Seal_Strnt_Temp <- reactive(eval(parse(text = Te_eqn1)))
                            
                            output$plot3 <- renderPlot({
-                             Mean_Seal_Strength <- Mean_Seal_Strnt_Temp()
+                             Mean_Seal_Strength <- round(Mean_Seal_Strnt_Temp(),3)
                              ggplot(data=data.frame(Sealing_Temperature_list, Mean_Seal_Strength), aes(x=Sealing_Temperature_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
                                gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature, label_key = Mean_Seal_Strength) + ylim(0, 15)
@@ -251,7 +251,7 @@ ssmServer <- function(id, top_session){
                                Mean_Seal_Strnt_LT<- reactive(eval(parse(text = Lt_eqn1)))
                                # shinyjs::show(id = "profiler_Layer_Thickness", asis = TRUE)
                                output$plot4 <- renderPlot({
-                                 Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
+                                 Mean_Seal_Strength <- round(Mean_Seal_Strnt_LT(),3)
                                  ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
                                    geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
                                    gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness, label_key = Mean_Seal_Strength)  + ylim(0, 15)
