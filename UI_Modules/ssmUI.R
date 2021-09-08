@@ -11,8 +11,8 @@ ssmUI <- function(id){
                                                p("The data-based model predicts sealing strength of a flexible laminate material based on the sealing parameters – temperature, dwell time and pressure.
 It can be used to identify optimal sealing parameters that would deliver the desired seal strength under the applicable line constraints, for e.g. line speed setting etc.
  "),
-                                               img(src= "seal_strength_img1.png"), 
-                                               #column(width = 6, img(src= "seal_strength_img1.png"),  height="50%", width="50%", align="left")),
+                                               #img(src= "seal_strength_img1.png"), 
+                                               column(width = 12, img(src= "seal_strength_img1.png", width="30%", align="center")),
                   
                                                h4("Scope of the Model"), 
                                                p("The model can be used for the sealing of 4-side-seal and 3-side-seal pouches. The laminates that are already a part of the model are listed below:  "), 
@@ -90,7 +90,7 @@ It can be used to identify optimal sealing parameters that would deliver the des
                    selectInput(ns("x_axis_bd"), 'X axis', choices = c(" "," ") ),
                    selectInput(ns("y_axis_bd"), 'Y axis', choices = c(" "," ")
                                ,selected = names(mtcars)[2], multiple = TRUE),
-                   plotOutput(ns("scatterplot_ashutosh")),
+                   #plotOutput(ns("scatterplot_ashutosh")),
                    br(),
                    br(),
                    tags$ul(
@@ -133,10 +133,10 @@ It can be used to identify optimal sealing parameters that would deliver the des
                                     wellPanel(
                                       h1("Profiler"),
                                       selectInput(ns("Profiler_model_select"), 'Select Packaging Model', choices = c(" "," "), width= "50%" )),
-                                      fluidRow(column(width = 3,plotOutput(ns("plot1"))),
-                                               column(width = 3,plotOutput(ns("plot2"))),
-                                               column(width = 3,plotOutput(ns("plot3"))),
-                                               column(width = 3,plotOutput(ns("plot4"))),
+                                      fluidRow(column(width = 3,plotOutput(ns("plot1"), height = 300)),
+                                               column(width = 3,plotOutput(ns("plot2"), height = 300)),
+                                               column(width = 3,plotOutput(ns("plot3"), height = 300)),
+                                               column(width = 3,plotOutput(ns("plot4"), height = 300)),
                                       ),
                                       fluidRow(column(width = 3,sliderInput(ns("profiler_Sealing_Pressure"),"Sealing_Pressure:", min = 30, max = 110, value = 50)),
                                                column(width = 3,sliderInput(ns("profiler_Sealing_Time"),"Sealing_Time:", min = 200, max = 700, value = 475)),
