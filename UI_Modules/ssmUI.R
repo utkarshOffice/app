@@ -16,7 +16,7 @@ It can be used to identify optimal sealing parameters that would deliver the des
                                                h4("Scope of the Model"), 
                                                p("The model can be used for the sealing of 4-side-seal and 3-side-seal pouches. The laminates that are already a part of the model are listed below:  "), 
                                                
-                                               img(src= "seal_strength_img2.png"),
+                                               img(src= "seal_strength_img2.jpg"),
                                                
                                                h4("Note to all users:"), 
                                                p("We are constantly interested to increase the model, laminate material and pack format offering of this model. Please contact us with your interests, if they are not covered by the existing offering."),
@@ -204,16 +204,16 @@ It can be used to identify optimal sealing parameters that would deliver the des
                  dataTableOutput(ns("optimiser_table32_seal")),
                  h4("Objective Function Value"),
                  uiOutput(ns("value_results_seal")),
-                 downloadButton(ns("download5_seal"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                 downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                  
-               ),
-               wellPanel(
-                 h2("Global Download"),
-                 h4("Download all the results that have been generated throughout the app"),
-                 actionButton(ns("downloadresults_seal"),"Proceed to download all Results",
-                              style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                 uiOutput(ns("Download_Values_seal"))
                )
+               # wellPanel(
+               #   h2("Global Download"),
+               #   h4("Download all the results that have been generated throughout the app"),
+               #   actionButton(ns("downloadresults"),"Proceed to download all Results",
+               #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+               #   uiOutput(ns("Download_Values"))
+               # )
                
                
       )#optimisation end
