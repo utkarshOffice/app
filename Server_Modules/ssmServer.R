@@ -221,7 +221,7 @@ ssmServer <- function(id, top_session){
                              
                              ggplot(data=data.frame(Sealing_Pressure_list, Mean_Seal_Strength), aes(x=Sealing_Pressure_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                               gghighlight(Sealing_Pressure_list == input$profiler_Sealing_Pressure) + ylim(0, 15)
+                               gghighlight(Sealing_Pressure_list == input$profiler_Sealing_Pressure, label_key = Mean_Seal_Strength) + ylim(0, 15)
                            })
                            
                            
@@ -231,7 +231,7 @@ ssmServer <- function(id, top_session){
                              Mean_Seal_Strength <- Mean_Seal_Strnt_Time()
                              ggplot(data=data.frame(Sealing_Time_list, Mean_Seal_Strength), aes(x=Sealing_Time_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank()) + 
-                               gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time) + ylim(0, 15)
+                               gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time, label_key = Mean_Seal_Strength) + ylim(0, 15)
                            })
                            
                            
@@ -241,7 +241,7 @@ ssmServer <- function(id, top_session){
                              Mean_Seal_Strength <- Mean_Seal_Strnt_Temp()
                              ggplot(data=data.frame(Sealing_Temperature_list, Mean_Seal_Strength), aes(x=Sealing_Temperature_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
-                               gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature) + ylim(0, 15)
+                               gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature, label_key = Mean_Seal_Strength) + ylim(0, 15)
                            })
                            
                            shinyjs::hide(id = "profiler_Layer_Thickness")
@@ -255,7 +255,7 @@ ssmServer <- function(id, top_session){
                                  Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
                                  ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
                                    geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
-                                   gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness)  + ylim(0, 15)
+                                   gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness, label_key = Mean_Seal_Strength)  + ylim(0, 15)
                                })
                            }
                            else

@@ -11,7 +11,7 @@ library(nloptr)
 library(ggplot2)
 library(gghighlight)
 library(shinyjs)
-
+library(Rcpp)
 
 #source all files in back_end
 for(f in list.files(path=c("./UI_Modules/","./Server_Modules/"),

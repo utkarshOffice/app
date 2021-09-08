@@ -123,7 +123,7 @@ conditionerServer <- function(id,top_session){
                                         ggplot(data=data.frame(solidscontent, freshvis_result), aes(x=solidscontent, y= freshvis_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("Fresh Viscosity [mPas]")+
-                                          gghighlight(solidscontent == input$solidscontent)
+                                          gghighlight(solidscontent == input$solidscontent, label_key = freshvis_result)
                                       })
                                       
                                       output$plot2 <- renderPlot({
@@ -131,7 +131,7 @@ conditionerServer <- function(id,top_session){
                                         ggplot(data=data.frame(solidscontent, dayvis_result), aes(x=solidscontent, y= dayvis_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("24 Hour Viscosity [mPas]")+
-                                        gghighlight(solidscontent == input$solidscontent)
+                                        gghighlight(solidscontent == input$solidscontent, label_key =dayvis_result)
                                       })
 
                                       output$plot3 <- renderPlot({
@@ -139,7 +139,7 @@ conditionerServer <- function(id,top_session){
                                         ggplot(data=data.frame(solidscontent, dayield_result), aes(x=solidscontent, y= dayield_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("24 Hour Yield Stress [mPas]")+
-                                        gghighlight(solidscontent == input$solidscontent)
+                                        gghighlight(solidscontent == input$solidscontent, label_key = dayield_result)
                                       })
 
                                       output$plot4 <- renderPlot({
@@ -147,7 +147,7 @@ conditionerServer <- function(id,top_session){
                                         ggplot(data=data.frame(solidscontent, weekvis_result), aes(x=solidscontent, y= weekvis_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("1 Week Viscosity [mPas]")+
-                                        gghighlight(solidscontent == input$solidscontent)
+                                        gghighlight(solidscontent == input$solidscontent, label_key = weekvis_result)
                                       })
                                       })
  

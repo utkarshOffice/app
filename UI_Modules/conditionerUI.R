@@ -100,29 +100,28 @@ conditionerUI <- function(id){
                                                 wellPanel(
                                                   h1("Profiler"),
                                                   br(),
-                                                  fluidRow(column(width = 6,
-                                                                  plotOutput(ns("plot1")),
-                                                                  plotOutput(ns("plot2"))
-                                                  ),
-                                                  column(width = 6,
-                                                         plotOutput(ns("plot3")),
-                                                         plotOutput(ns("plot4"))
-                                                  )),
-                                                  fluidRow(column(width = 6,
+                                                  fluidRow(      
+                                                    column(width = 3,plotOutput(ns("plot1"))),
+                                                    column(width = 3,plotOutput(ns("plot2"))),
+                                                    column(width = 3,plotOutput(ns("plot3"))),
+                                                    column(width = 3,plotOutput(ns("plot4")))
+                                                    ),
+                                                  fluidRow(column(width = 4,
                                                                   sliderInput(ns("solidscontent"),"Solids Content:", min = 0.85, max = 1, value = 0.9),
                                                                   sliderInput(ns("silversontipspeedduringemulsion"),"Silverson Tip Speed during Emulsion [m/s]:", min = 7.76, max = 23.26, value = 8),
                                                                   sliderInput(ns("silversontipspeedduringquench"),"Silverson Tip Speed during Quench  [m/s]:", min = 0, max = 23.26, value = 1),
-                                                                  sliderInput(ns("silversontipspeedondischarge"),"Silverson Tip Speed on Discharge [m/s]:", min = 0, max = 23.26, value = 1),
-                                                                  sliderInput(ns("silversontipspeedduringendmixing"),"Silverson Tip Speed during End Mixing [m/s]:", min = 0, max = 23.26, value = 1),
-                                                                  sliderInput(ns("tempofsamplesondischarge"),"Temperature of samples on discharge [C]:", min = 38.34, max = 42.65, value = 39)
+                                                                  sliderInput(ns("silversontipspeedondischarge"),"Silverson Tip Speed on Discharge [m/s]:", min = 0, max = 23.26, value = 1)
                                                   ),
-                                                  column(width = 6,
+                                                  column(width = 4,
                                                          sliderInput(ns("finalmixingtime"),"Final Mixing Time [mins]:", min = 8.08, max = 46.05, value = 9),
                                                          sliderInput(ns("updatedfatstemp"),"Updated Fats Temperature [C]:", min = 59.7, max = 77.7, value = 60),
                                                          sliderInput(ns("tempatpointofquenchinjection"),"Temp at point of Quench [C]:", min = 53.94, max = 59.77, value = 54),
-                                                         sliderInput(ns("quenchinjectionrate"),"Quench Injection Rate [%kg/hr]:", min = 164.06, max = 837.99, value = 165),
                                                          sliderInput(ns("fatsinjectionrate"),"Fats Injection Rate [%kg/hr]:", min = 33.54, max = 117.51, value = 34)
-                                                  ))
+                                                  ),
+                                                  column(width = 4,
+                                                         sliderInput(ns("silversontipspeedduringendmixing"),"Silverson Tip Speed during End Mixing [m/s]:", min = 0, max = 23.26, value = 1),
+                                                         sliderInput(ns("quenchinjectionrate"),"Quench Injection Rate [%kg/hr]:", min = 164.06, max = 837.99, value = 165),
+                                                         sliderInput(ns("tempofsamplesondischarge"),"Temperature of samples on discharge [C]:", min = 38.34, max = 42.65, value = 39)))
                                                 )
                                        ),
                                        tabPanel("Imported Data Simulation",
