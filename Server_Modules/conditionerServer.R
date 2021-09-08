@@ -119,7 +119,7 @@ conditionerServer <- function(id,top_session){
                                       weekvis_result <- reactive(eval(parse(text = week_vis)))
                                       
                                       output$plot1 <- renderPlot({
-                                        freshvis_result <- freshvis_result()
+                                        freshvis_result <- round(freshvis_result(),3)
                                         ggplot(data=data.frame(solidscontent, freshvis_result), aes(x=solidscontent, y= freshvis_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("Fresh Viscosity [mPas]")+
@@ -127,7 +127,7 @@ conditionerServer <- function(id,top_session){
                                       })
                                       
                                       output$plot2 <- renderPlot({
-                                        dayvis_result <- dayvis_result()
+                                        dayvis_result <- round( dayvis_result(),3)
                                         ggplot(data=data.frame(solidscontent, dayvis_result), aes(x=solidscontent, y= dayvis_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("24 Hour Viscosity [mPas]")+
@@ -135,7 +135,7 @@ conditionerServer <- function(id,top_session){
                                       })
 
                                       output$plot3 <- renderPlot({
-                                        dayield_result <- dayield_result()
+                                        dayield_result <- round(dayield_result(),3)
                                         ggplot(data=data.frame(solidscontent, dayield_result), aes(x=solidscontent, y= dayield_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("24 Hour Yield Stress [mPas]")+
@@ -143,7 +143,7 @@ conditionerServer <- function(id,top_session){
                                       })
 
                                       output$plot4 <- renderPlot({
-                                        weekvis_result <- weekvis_result()
+                                        weekvis_result <- round(weekvis_result(),3)
                                         ggplot(data=data.frame(solidscontent, weekvis_result), aes(x=solidscontent, y= weekvis_result)) +
                                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                                           xlab("Solids content") + ylab("1 Week Viscosity [mPas]")+
@@ -515,7 +515,7 @@ conditionerServer <- function(id,top_session){
         )
       })#download end
       
-      #non linear optimisation for erins 
+      #non linear optimisation for erin
       
       observeEvent(req(models_df),{
 
@@ -669,8 +669,7 @@ conditionerServer <- function(id,top_session){
             else{
               equation4 <- c(equation_four-0.0001,-1*equation_four-0.0001)
             }
-            View(equation1)
-            View(equation_one)
+
             return(c(equation1,equation2,equation3,equation4))
             
           }#end of constraint function
@@ -708,7 +707,7 @@ conditionerServer <- function(id,top_session){
               # return(-1*(eq1+eq2+eq3+eq4))
             }
             
-            View(test)#no output
+            #View(test)#no output
           }#objective function end
           
           x0 <- opt$tab_2[[3]]
@@ -722,7 +721,7 @@ conditionerServer <- function(id,top_session){
                        opts = opts,
                        lb=lb, ub=ub)
           
-          View(res$status)
+          #View(res$status)
           # optimiser output table 1
           output$optimiser_table32_erin <- renderDataTable({
             df<-data.frame(Predictors = c("Solids Content","Silverson Tip Speed during Emulsion [m/s]","Silverson Tip Speed during Quench  [m/s]",

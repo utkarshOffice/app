@@ -77,19 +77,19 @@ Facial_MoisturizerServer <- function(id, top_session){
                          result2 <- reactive(eval(parse(text = eqn2)))
                          
                          output$plot1 <- renderPlot({
-                           result <- result1()
+                           result <- round(result1(),3)
                            ggplot(data=data.frame(Initial_Emulsification_Temperature, result), aes(x=Initial_Emulsification_Temperature, y= result)) +
                              geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ xlab("Initial Emulsification Temperature")+
                              ylab("Viscosity 24hrs (mPas)")+
-                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature)
+                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature, label_key = result)
                          })
                          
                          output$plot2 <- renderPlot({
-                           result <- result2()
+                           result <- round(result2(),3)
                            ggplot(data=data.frame(Initial_Emulsification_Temperature, result), aes(x=Initial_Emulsification_Temperature, y= result)) +
                              geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ xlab("Initial Emulsification Temperature")+
                              ylab("Viscosity 2hrs (mPas)")+
-                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature)
+                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature, label_key = result)
                          })
                        })
       })

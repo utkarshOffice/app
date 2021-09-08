@@ -112,18 +112,17 @@ chillrollUI <- function(id){
                                       h1("Profiler"),
                                       fluidRow(column(width = 4,plotOutput(ns("plot2"))),
                                                column(width = 4,plotOutput(ns("plot1"))),
-                                               column(width = 4,plotOutput(ns("plot3")))),
-                                      fluidRow(column(width = 6,
+                                               column(width = 4,
                                                       sliderInput(ns("profiler_Film_thickness"),"Film_thickness:", min = 0.5, max = 2.0, value = 0.71),
                                                       sliderInput(ns("profiler_Cooling_seg_fraction"),"Cooling_seg_fraction:", min = 0.5, max = 0.875, value = 0.78),
                                                       sliderInput(ns("profiler_T_flake_feed"),"T_flake_feed:", min = 100, max = 130, value = 110),
                                                       sliderInput(ns("profiler_T_ambient"),"T_ambient:", min = 15, max = 40, value = 21)
-                                      ),
-                                      column(width = 6,
-                                             sliderInput(ns("profiler_T_chilled_water"),"T_chilled_water:", min = -5, max = 15, value = 7),
-                                             sliderInput(ns("profiler_DEFI_Free_roll_length"),"DEFI_Free_roll_length:", min = 0.001, max = 0.1, value = 0.01),
-                                             sliderInput(ns("profiler_Roll_Speed"),"Roll_Speed:", min = 1.0, max = 4.0, value = 2.0)
-                                      ))
+                                               ),                                               ),
+                                      fluidRow(
+                                      column(width = 4,sliderInput(ns("profiler_T_chilled_water"),"T_chilled_water:", min = -5, max = 15, value = 7)),
+                                      column(width = 4,sliderInput(ns("profiler_Roll_Speed"),"Roll_Speed:", min = 1.0, max = 4.0, value = 2.0)),
+                                      column(width = 4,sliderInput(ns("profiler_DEFI_Free_roll_length"),"DEFI_Free_roll_length:", min = 0.001, max = 0.1, value = 0.01))
+                                      )
                                     )),
                            
                            

@@ -257,11 +257,11 @@ slurryServer <- function(id, top_session){
             Torque <- reactive(eval(parse(text = eqn1)))
             
             output$slider_torque <- renderPlot({
-              Torque <- Torque()
+              Torque <- round(Torque(),3)
               data <- data.frame(TargetSMC, Torque)
               ggplot(data, aes(x=TargetSMC, y= Torque)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Torque)
             })
             
             output$profiler_torque <- renderUI({
@@ -286,10 +286,10 @@ slurryServer <- function(id, top_session){
             Torque <- reactive(eval(parse(text = eqn1)))
             
             output$slider_torque <- renderPlot({
-              Torque <- Torque()
+              Torque <- round(Torque(),3)
               ggplot(data=data.frame(TargetSMC, Torque), aes(x=TargetSMC, y= Torque)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Torque)
             })
             output$profiler_torque <- renderUI({
               em("Torque should fall between 19 and 36.
