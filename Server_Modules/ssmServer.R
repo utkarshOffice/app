@@ -850,28 +850,28 @@ ssmServer <- function(id, top_session){
                 (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
                 (0.00534394)*((x[1] - 77)/38.5)
               
-              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+              if(eq_chosen =="Mean_Seal_Strength(monoPP_Haiti)"){
                 equation <- equation_1
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
                 equation <- equation_2
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
                 equation <- equation_3
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
                 equation <- equation_4
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
                 equation <- equation_5
               }
               
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
                 equation <- equation_6
               }
               
@@ -897,42 +897,50 @@ ssmServer <- function(id, top_session){
             
             obj <- function(x){
               
+              # eq_chosen <- input$equation_seal
               
-              eq_1 <- x[1] + x[2]+ x[3]+ x[4] + x[1]*x[2] + x[1]*x[4]+ x[2]*x[4]+ x[4]*x[3] + x[1]*x[1]+ x[2]*x[2]
+              eq_1 <- opt$tab_1[1,2]*x[1] + opt$tab_1[2,2]*x[2]+ opt$tab_1[3,2]*x[3]+ opt$tab_1[4,2]*x[4] + 
+                opt$tab_1[1,2]*x[1]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]*opt$tab_1[4,2]*x[4]+
+                opt$tab_1[2,2]*x[2]*opt$tab_1[4,2]*x[4]+ opt$tab_1[4,2]*x[4]*opt$tab_1[3,2]*x[3] +
+                opt$tab_1[1,2]*x[1]*opt$tab_1[1,2]*x[1]+ opt$tab_1[2,2]*x[2]*opt$tab_1[2,2]*x[2]
               
-              eq_2 <- x[4] + x[3] + x[2] + x[3]*x[2] + x[1]  
+              eq_2 <- opt$tab_1[4,2]*x[4] + opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + 
+                opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]  
               
-              eq_3 <- x[3] + x[2] + x[3]*x[2] + x[4]*x[1]
+              eq_3 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] +
+                opt$tab_1[4,2]*x[4]*opt$tab_1[1,2]*x[1]
               
-              eq_4 <- x[3] + x[2] + x[3]*x[3] + x[3]*x[2] + x[1]    
+              eq_4 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[3,2]*x[3] +
+                opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]    
               
-              eq_5 <- x[3] + x[2] + x[3]*x[2] + x[1]   
+              eq_5 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]   
               
-              eq_6 <- x[3] + x[2] + x[3]*x[3] + x[3]*x[2] + x[1]
+              eq_6 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[3,2]*x[3] + 
+                opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]
               
-              eq_7 <- x[3] + x[2] + x[3]*x[3] + x[1] 
+              eq_7 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[3,2]*x[3] + opt$tab_1[1,2]*x[1] 
               
-              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+              if(eq_chosen =="Mean_Seal_Strength(monoPP_Haiti)"){
                 eq <- eq_1
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
                 eq <- eq_2
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
                 eq <- eq_3
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
                 eq <- eq_4
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
                 eq <- eq_5
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
                 eq <- eq_6
               }
               
@@ -1011,27 +1019,27 @@ ssmServer <- function(id, top_session){
                 (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
                 (0.00534394)*((x[1] - 77)/38.5)
               
-              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+              if(eq_chosen =="Mean_Seal_Strength(monoPP_Haiti)"){
                 equ <- equation_1
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
                 equ <- equation_2
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
                 equ <- equation_3
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
                 equ <- equation_4
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
                 equ <- equation_5
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+              else if(eq_chosen =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
                 equ <- equation_6
               }
               
@@ -1044,9 +1052,6 @@ ssmServer <- function(id, top_session){
             # View(res$solution)
             # optimiser output table 2
             output$optimiser_table22_seal <- renderDataTable({
-              value1 <- round(constraint_value(res$solution),3)
-              val <- data.frame(Predictors = eq_chosen,
-                                Value = as.data.frame(value1))
               
               DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
                             ,rownames = eq_chosen, colnames =c("Target variable", "Value"))
@@ -1066,6 +1071,23 @@ ssmServer <- function(id, top_session){
               })
               
             }
+            
+            if(inequality_selection_sd=="equal to" && abs(constraint_value(res$solution)-target_sd)>.2 ){
+              showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+            }
+            
+            
+            if(inequality_selection_sd=="less than or equal to" && constraint_value(res$solution)>target_sd ){
+              showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+            }
+            
+            if(inequality_selection_sd=="greater than or equal to" && constraint_value(res$solution)<target_sd ){
+              showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+            }
+            
             
           })#observeevent run optimiser ends
           

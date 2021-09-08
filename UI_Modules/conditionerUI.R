@@ -142,7 +142,6 @@ conditionerUI <- function(id){
                              h2("Process Optimiser (Non Linear Optimisation)"),
                              wellPanel(
                                tags$ul(
-                                 br(),
                                  h3("Target Variables : Fresh Viscosity [mPas], 24 Hour Viscosity [mPas],
                                      24 Hour Yield Stress [mPas], 1 Week Viscosity [mPas]"),
                                  br(),
@@ -153,36 +152,36 @@ conditionerUI <- function(id){
                                  tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
                                  tags$li("Input the desired values of the Target variables. "),
                                  tags$li("Enter the weights (relative importance) of the target variables; by default it is 1.")
-
+                                 
                                ),br()),
-
+                             
                              wellPanel(
                                radioButtons(ns("radio_button_erin"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
                                br(),
-                                 fluidRow(h3("Fresh Viscosity [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_one"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_one"),"Enter the target value",250)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_one"), "Enter the weight",1)),
-                                 br()),
-
+                               fluidRow(h3("Fresh Viscosity [mPas]"),br(),
+                                        column(2,selectInput(ns("inequality_selection_erin_one"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                        column(2,offset= 2,numericInput(ns("numeric_input_erin_one"),"Enter the target value",250)),
+                                        column(2, offset = 3, numericInput(ns("weight_erin_one"), "Enter the weight",1)),
+                                        br()),
+                               
                                fluidRow( h3("24 Hour Viscosity [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_two"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_two"),"Enter the target value",400)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_two"), "Enter the weight",1)),
-                                 br()),
-
+                                         column(2,selectInput(ns("inequality_selection_erin_two"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                         column(2,offset= 2,numericInput(ns("numeric_input_erin_two"),"Enter the target value",400)),
+                                         column(2, offset = 3, numericInput(ns("weight_erin_two"), "Enter the weight",1)),
+                                         br()),
+                               
                                fluidRow( h3(" 24 Hour Yield Stress [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_three"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_three"),"Enter the target value",150)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_three"), "Enter the weight",1)),
-                                 br()),
-
+                                         column(2,selectInput(ns("inequality_selection_erin_three"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                         column(2,offset= 2,numericInput(ns("numeric_input_erin_three"),"Enter the target value",150)),
+                                         column(2, offset = 3, numericInput(ns("weight_erin_three"), "Enter the weight",1)),
+                                         br()),
+                               
                                fluidRow( h3(" 1 Week Viscosity [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_four"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_four"),"Enter the target value",550)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_four"), "Enter the weight",1)),
-                                 br()),
-
+                                         column(2,selectInput(ns("inequality_selection_erin_four"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                         column(2,offset= 2,numericInput(ns("numeric_input_erin_four"),"Enter the target value",550)),
+                                         column(2, offset = 3, numericInput(ns("weight_erin_four"), "Enter the weight",1)),
+                                         br()),
+                               
                                # wellPanel(
                                h2("Objective Function Table"), br(),
                                tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
@@ -203,7 +202,7 @@ conditionerUI <- function(id){
                                h4("Objective Function Value"),
                                uiOutput(ns("value_results_erin")),
                                downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
-
+                               
                              ),
                              wellPanel(
                                h2("Global Download"),
@@ -211,10 +210,10 @@ conditionerUI <- function(id){
                                actionButton(ns("downloadresults"),"Proceed to download all Results",
                                             style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
                                uiOutput(ns("Download_Values"))
-                                     )
-
+                             )
+                             
                            ))
-                  
+      
       )}
     
   )}

@@ -491,12 +491,12 @@ SD_powderServer <- function(id, top_session){
           constraint_value <- function(x){
             return(9.3 + 0.104*x[1]*x[2] + 0.905*x[3] + 4.99*x[4] + 10.5*x[5])
           }
-          # View(res$solution)
+          
           # optimiser output table 2
           output$optimiser_table22_uday_sd <- renderDataTable({
-            value1 <- round(constraint_value(res$solution),3)
-            val <- data.frame(Predictors = c("BD_Prediction_by_Model"),
-                              Value = as.data.frame(value1))
+            # value1 <- round(constraint_value(res$solution),3)
+            # val <- data.frame(Predictors = c("BD_Prediction_by_Model"),
+            #                   Value = as.data.frame(value1))
             
             DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
                           ,rownames = c("BD_Prediction_by_Model"), colnames =c("Target variable", "Value"))
@@ -517,13 +517,29 @@ SD_powderServer <- function(id, top_session){
             
           }
           
+          if(inequality_selection_sd=='equal to' && abs(constraint_value(res$solution)-target_sd)>.2 ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="less than or equal to" && constraint_value(res$solution)>target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="greater than or equal to" && constraint_value(res$solution)<target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          
             })#observeevent run optimiser ends
         
       })#observeevent opt end
       
       observeEvent(input$reset_uday_sd,{
         updateSelectInput(session,"inequality_selection_uday_sd",selected = "less than or equal to")
-        updateNumericInput(session,"numeric_input_uday_sd",value = 28)
+        updateNumericInput(session,"numeric_input_uday_sd",value = 280)
         updateRadioButtons(session,"radio_button_uday_sd",selected = "min")
         predictors_in_model2<-c("Base_Factor_[33.72,90.55]","Filler_Sulphate_Salt_as_Balancing_ingredient_[1,46.14]",
                                 "Base_Powder_Bulk_Density_[230,543]","Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)_[2.95,36.51]",

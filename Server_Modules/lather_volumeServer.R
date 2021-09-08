@@ -524,7 +524,8 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
           })
           
           constraint_value <- function(x){
-            return(147.116305492888 + 151.501186255172 *x[1] + 
+            
+              return(147.116305492888 + 151.501186255172 *x[1] + 
                      -55.3215735730235 *x[2] + -49.4762432407727 * x[7] + -41.4352614156827 *x[6] + 
                      -29.2685282290144 * x[3] + -11.1271782344154 *x[8] + -60.5999588575755 * x[5] + 
                      22.6390321970717 *x[4] + -623.653030175084 * x[9] + -1010.43308194092 *x[10] + 
@@ -539,14 +540,13 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
                      (x[3] - 0.3508) * ((x[4] - 0.144444444444444) * 51.0250540480239) + 
                      (x[3] - 0.3508) * ((x[11] - 1.00844444444444)* 69.3978683182652) +
                      (x[8] - 4.18300653594772) * ((x[12]- 39.4888888888889) * -0.135942835190774) + 
-                     (x[11] - 1.00844444444444) * ((x[11] - 1.00844444444444) * 43.6427684250721))
+                     (x[11] - 1.00844444444444) * ((x[11] - 1.00844444444444) * 43.6427684250721)
+                   
+                   )
           }
           # View(res$solution)
           # optimiser output table 2
           output$optimiser_table22_lather <- renderDataTable({
-            value1 <- round(constraint_value(res$solution),3)
-            val <- data.frame(Predictors = c("Lather volume"),
-                              Value = as.data.frame(value1))
             
             DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
                           ,rownames = c("Lather volume"), colnames =c("Target variable", "Value"))
@@ -566,6 +566,22 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
             })
             
           }
+          
+          if(inequality_selection_sd=='equal to' && abs(constraint_value(res$solution)-target_sd)>.3 ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="less than or equal to" && constraint_value(res$solution)>target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="greater than or equal to" && constraint_value(res$solution)<target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
           
         })#observeevent run optimiser ends
         

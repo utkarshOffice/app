@@ -159,10 +159,10 @@ It can be used to identify optimal sealing parameters that would deliver the des
       ),
       tabPanel("Optimisation",
                wellPanel( 
-                 h2("Process optimiser (Non Linear Optimisation)"),
+                 h2("Packaging Seal-Strength Optimization"),br(),
                  tags$ul(
                   fluidRow(column(5,selectInput(ns("equation_seal"),"Select the Target Variable", 
-                                                        choices =c("Mean_Seal_Strength(monoPP_Haiti)","	Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)",
+                                                        choices =c("Mean_Seal_Strength(monoPP_Haiti)","Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)",
                                                                    "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)","Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)",
                                                                    "Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)","Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)",
                                                                    "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_18metOPP)"))))
