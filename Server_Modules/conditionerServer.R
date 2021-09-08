@@ -8,6 +8,17 @@ conditionerServer <- function(id,top_session){
       optimise <- reactiveVal(NULL)
       optimise1 <- reactiveVal(NULL)
       optimise2 <- reactiveVal(NULL)
+      weight_one <-reactiveVal(NULL)
+      weight_two <-reactiveVal(NULL)
+      weight_three <-reactiveVal(NULL)
+      weight_four <-reactiveVal(NULL)
+      target_one <- reactiveVal(NULL)
+      target_two <- reactiveVal(NULL)
+      target_three <- reactiveVal(NULL)
+      target_four <- reactiveVal(NULL)
+      opt <- reactiveValues(tab_2=NULL)
+      erin_proxy <- DT::dataTableProxy('optimiser_table1_erin')
+
       # go to simulation
       observeEvent(input$commit,{
         updateTabsetPanel(top_session,"tab_id", selected = "Simulation")
@@ -502,7 +513,313 @@ conditionerServer <- function(id,top_session){
             write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
           }
         )
+      })#download end
+      
+      #non linear optimisation for erins 
+      
+      observeEvent(req(models_df),{
+
+        predictor_names_erin <- c("Solids Content_[0.85,1]","Silverson Tip Speed during Emulsion [m/s]_[7.76,23.26]","Silverson Tip Speed during Quench  [m/s]_[0,23.26]",
+                                  "Silverson Tip Speed during End Mixing [m/s]_[0,23.26]","Silverson Tip Speed on Discharge [m/s]_[0,23.26]",
+                                  "Updated Fats Temperature [C]_[59.7,77.7]","Fats Injection Rate [%kg/hr]_[33.54,117.51]","Temp at point of Quench [C]_[53.94,59.77]",
+                                  "Quench Injection Rate [%kg/hr]_[164.06,837.99]","Final Mixing Time [mins]_[8.08,46.05]","Temperature of samples on discharge [C]_[38.34,42.65]")
+        
+        zero_vector<-rep(1,length(predictor_names_erin))
+        min_vector <- c(0.85,7.76,0.00,0.00,0.00,59.7,33.54,53.94,164.06,8.08,38.34)
+        max_vector <- c(1.00,23.26,23.26,23.26,23.26,77.70,117.51,59.77,837.99,46.05,42.65)
+        coef_data2 <- data.frame(cbind(predictor_names_erin,zero_vector,min_vector,max_vector))
+        opt$tab_2 <- coef_data2
+        opt$tab_2[[3]]<- as.numeric(opt$tab_2[[3]])
+        opt$tab_2[[4]]<- as.numeric(opt$tab_2[[4]])
+
+        #table 1
+        output$optimiser_table1_erin <- renderDataTable({
+          DT::datatable(opt$tab_2,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
+        })
+
+        #cell edit
+        observeEvent(input$optimiser_table1_erin_cell_edit,{
+          info <- input$optimiser_table1_erin_cell_edit
+          i <- info$row
+          j <- info$col
+          v <- info$value
+          if(j >= 2 && !is.na(v) && !is.na(as.numeric(v))){
+            v <- as.numeric(v)
+            if(j==2 || ( j==3 && opt$tab_2[i, j+1] > v) || (j==4 && opt$tab_2[i, j-1] < v )){
+              opt$tab_2[i,j] <<- DT::coerceValue(v,opt$tab_2[i, j])
+            }
+          }
+          rep <- opt$tab_2
+          DT::replaceData(erin_proxy, rep, resetPaging = FALSE)
+        })
+        
+        observeEvent(input$run_optimiser_erin,{
+          
+          target_one <- input$numeric_input_erin_one
+          # inequality_selection_one <- input$inequality_selection_erin_one
+          weight_one <- input$weight_erin_one
+          
+          target_two <- input$numeric_input_erin_two
+          # inequality_selection_two <- input$inequality_selection_erin_two
+          weight_two <- input$weight_erin_two
+          
+          target_three <- input$numeric_input_erin_three
+          # inequality_selection_three <- input$inequality_selection_erin_three
+          weight_three <- input$weight_erin_three
+          
+          target_four <- input$numeric_input_erin_four
+          # inequality_selection_four <- input$inequality_selection_erin_four
+          weight_four <- input$weight_erin_four
+          
+          opt$tab_2[[2]] <- as.numeric(opt$tab_2[[2]])
+          
+          constraint <- function(x){
+
+            #equations
+            equation_one <- -1.90929008775433 + 293.747340146854 * x[1] + 0.0185866446926401 *
+                            (x[9]) + -0.221460924788289 * (x[10]) + 1.64713604618159 * (x[5]) +
+                            -2.25165790211731 * (x[11]) + -0.0301432004945295 *
+                            (x[7]) + 0.911630864596123 *(x[6]) + ((x[10]) -24.0511031746786) *
+                            ((x[11]) - 40.3160952380953) * -0.350152923119871 +
+                            (x[1] - 0.889285714285715) * ((x[7]) - 58.5077556918568) * 5.69749029830664 - target_one
+
+
+            equation_two <- -63.1284043740373 + 360.506718384543 * x[1] + 0.0521562257371331 *
+                            (x[3]) + 0.0353296119308415 *(x[4]) + 3.27376326998214 *(x[5]) + 2.07763992027492 *
+                            (x[6]) + ( (x[4] ) - 11.690086036606) * ((x[4]) -11.690086036606) * -0.313650248085591 +
+                            ((x[3]) - 10.5377695693782) * ((x[5]) -11.6316630241121) * 0.0468925549996396 - target_two
+
+
+            equation_three <-  8.93621729663531 + 196.247634160075 * x[1] + 0.39712728468703 *
+                              (x[4]) + 0.709966849477569 *(x[5]) + 0.169393285431812 * (x[7]) + -1.60593890352765 *
+                              (x[8]) + (x[1]-0.889285714285715) * ((x[7]) - 58.5077556918568)* 6.46419044816413 +
+                              ((x[8])-56.6174285714286) * ((x[8])-56.6174285714286) * -1.86801925904818 - target_three
+
+
+            equation_four <- 632.871957397762 + 353.212348019952 * x[1]
+                              + 1.85300874016657 *(x[2]) + -0.0492383896885823 * (x[3]) + 0.15817538864863 *(x[4]) + 2.66081552162148 *
+                              (x[5]) + -0.233420366808025 * (x[7]) + -8.57117901092962 *(x[8]) + ((x[3]) - 10.5377695693782) *
+                            ((x[3]) - 10.5377695693782) * -0.443509372083955 + (x[1] - 0.889285714285715) * ((x[4]) - 11.690086036606) *
+                            -14.3823974090446 + (x[1] - 0.889285714285715) * ((x[7]) - 58.5077556918568) * 15.7785498295843 +
+                            ((x[7]) - 58.5077556918568) * ((x[8]) - 56.6174285714286) * -0.621838628323516 - target_four
+            
+            #eq1
+            if(input$inequality_selection_erin_one =="less than or equal to"){
+              equation1 <- c(equation_one)
+            }
+            # View(inequality_selection_erin_one)
+            else if(input$inequality_selection_erin_one =="greater than or equal to"){
+              equation1 <- c(-1*equation_one)
+            }
+            
+            else{
+              equation1 <- c(equation_one-0.0001,-1*equation_one-0.0001)
+            }
+            
+            #eq2
+            if(input$inequality_selection_erin_two=="less than or equal to"){
+              equation2 <- c(equation_two)
+            }
+            
+            else if(input$inequality_selection_erin_two =="greater than or equal to"){
+              equation2 <- c(-1*equation_two)
+            }
+            
+            else{
+              equation2 <- c(equation_two-0.0001,-1*equation_two-0.0001)
+            }
+            
+            #eq3
+            if(input$inequality_selection_erin_three =="less than or equal to"){
+              equation3 <- c(equation_three)
+            }
+            
+            else if(input$inequality_selection_erin_three =="greater than or equal to"){
+              equation3 <- c(-1*equation_three)
+            }
+            else{
+              equation3 <- c(equation_three-0.0001,-1*equation_three-0.0001)
+            }
+            
+            #eq4
+            if(input$inequality_selection_erin_four =="less than or equal to"){
+              equation4 <- c(equation_four)
+            }
+            
+            else if(input$inequality_selection_erin_four =="greater than or equal to"){
+              equation4 <- c(-1*equation_four)
+            }
+            else{
+              equation4 <- c(equation_four-0.0001,-1*equation_four-0.0001)
+            }
+            
+            return(c(equation1,equation2,equation3,equation4))
+
+          }#end of constraint function
+          
+          obj <-function(x){
+            
+            if(input$radio_button_erin == 'min'){
+              
+              return(as.numeric(weight_one(opt$tab_2[1,2]*x[1] + opt$tab_2[9,2]*x[9] + opt$tab_2[10,2]*x[10] + opt$tab_2[5,2]*x[5] +
+                                  opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
+                                  opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
+                                + weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
+                                  opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
+                                + weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
+                                    opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
+                                + weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
+                                   opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
+                                   opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
+                                   opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
+            }
+            
+            else{
+              
+              return( as.numeric(-weight_one(opt$tab_2[1,2]*x[1] + opt$tab_2[9,2]*x[9] + opt$tab_2[10,2]*x[10] + opt$tab_2[5,2]*x[5] +
+                                   opt$tab_2[11,2]*x[11] + opt$tab_2[7,2]*x[7] +opt$tab_2[6,2]*x[6] + 
+                                   opt$tab_2[10,2]*x[10]*opt$tab_2[11,2]*x[11]+ opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7])
+                                - weight_two(opt$tab_2[1,2]*x[1] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] +
+                                     opt$tab_2[6,2]*x[6] + opt$tab_2[4,2]*x[4]*opt$tab_2[4,2]*x[4] + opt$tab_2[3,2]*x[3]*opt$tab_2[5,2]*x[5])
+                                - weight_three(opt$tab_2[1,2]*x[1] + opt$tab_2[4,2]*x[4] + opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] +
+                                     opt$tab_2[8,2]*x[8] + opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8]*opt$tab_2[8,2]*x[8])
+                                   - weight_four(opt$tab_2[1,2]*x[1] + opt$tab_2[2,2]*x[2] + opt$tab_2[3,2]*x[3] + opt$tab_2[4,2]*x[4] + 
+                                      opt$tab_2[5,2]*x[5] + opt$tab_2[7,2]*x[7] + opt$tab_2[8,2]*x[8] +
+                                      opt$tab_2[3,2]*x[3]*opt$tab_2[3,2]*x[3] + opt$tab_2[1,2]*x[1]*opt$tab_2[4,2]*x[4] +
+                                      opt$tab_2[1,2]*x[1]*opt$tab_2[7,2]*x[7] + opt$tab_2[7,2]*x[7]*opt$tab_2[8,2]*x[8])) )
+              # return(-1*(eq1+eq2+eq3+eq4))
+            }
+            
+            View(test)#no output
+          }#objective function end
+          
+          x0 <- opt$tab_2[[3]]
+          lb <- opt$tab_2[[3]]
+          ub <- opt$tab_2[[4]]
+          
+          opts <- list("algorithm"="NLOPT_LN_COBYLA",
+                       "xtol_rel"=1.0e-8)
+          res<- nloptr(x0=x0,eval_f =  obj,
+                       eval_g_ineq = constraint,
+                       opts = opts,
+                       lb=lb, ub=ub)
+          
+          # optimiser output table 1
+          output$optimiser_table32_erin <- renderDataTable({
+            df<-data.frame(Predictors = c("Solids Content","Silverson Tip Speed during Emulsion [m/s]","Silverson Tip Speed during Quench  [m/s]",
+                                          "Silverson Tip Speed during End Mixing [m/s]","Silverson Tip Speed on Discharge [m/s]",
+                                          "Updated Fats Temperature [C]","Fats Injection Rate [%kg/hr]","Temp at point of Quench [C]",
+                                          "Quench Injection Rate [%kg/hr]","Final Mixing Time [mins]","Temperature of samples on discharge [C]"),
+                           Value = round(res$solution,3)
+            )
+            DT::datatable(df,selection ="none",rownames = FALSE )
+          })
+          
+          constraint_val1 <- function(x){
+              a1 <-  (-1.90929008775433) + 293.747340146854 * x[1] + 0.0185866446926401 *
+              ( x[9] ) + -0.221460924788289 * ( x[10] ) + 1.64713604618159 * ( x[5] ) +
+              -2.25165790211731 * ( x[11] ) + -0.0301432004945295 *
+              ( x[7] ) + 0.911630864596123 *( x[6] ) + ( ( x[10] ) -24.0511031746786) *
+              ( ( x[11] ) - 40.3160952380953) * -0.350152923119871 +
+              (x[1] - 0.889285714285715) * ( ( x[7] ) - 58.5077556918568) * 5.69749029830664 
+
+              return(a1)            
+          }
+          constraint_val2 <- function(x){
+              a2<-  (-63.1284043740373) + 360.506718384543 * x[1] + 0.0521562257371331 *
+              ( x[3] ) + 0.0353296119308415 *( x[4] ) + 3.27376326998214 *( x[5] ) + 2.07763992027492 *
+              ( x[6] ) + ( (x[4] ) - 11.690086036606) * ( ( x[4] ) -11.690086036606) * -0.313650248085591 +
+              ( (x[3]) - 10.5377695693782) * ( ( x[5] ) -11.6316630241121) * 0.0468925549996396 
+              return(a2)
+              
+              }
+          constraint_val3 <- function(x){
+              a3 <- 8.93621729663531 + 196.247634160075 * x[1] + 0.39712728468703 *
+              ( x[4] ) + 0.709966849477569 *( x[5] ) + 0.169393285431812 * ( x[7] ) + -1.60593890352765 *
+              ( x[8] ) + (x[1]-0.889285714285715) * ( ( x[7] ) - 58.5077556918568)* 6.46419044816413 +
+              ( ( x[8] )-56.6174285714286) * ( ( x[8] )-56.6174285714286) * -1.86801925904818 
+              
+              return(a3)
+              }
+          constraint_val4 <- function(x){
+               a4 <- 632.871957397762 + 353.212348019952 * x[1] + 1.85300874016657 *
+              ( x[2] ) + -0.0492383896885823 * ( x[3] ) + 0.15817538864863 *( x[4] ) + 2.66081552162148 *
+              ( x[5] ) + -0.233420366808025 * ( x[7] ) + -8.57117901092962 *( x[8] ) + (( x[3] ) - 10.5377695693782) * (
+                ( x[3] ) - 10.5377695693782) * -0.443509372083955 + (x[1] - 0.889285714285715) * (( x[4] ) - 11.690086036606) *
+              -14.3823974090446 + (x[1] - 0.889285714285715) * (( x[7] ) - 58.5077556918568) * 15.7785498295843 +
+              (( x[7] ) - 58.5077556918568) * (( x[8] ) - 56.6174285714286) * -0.621838628323516 
+                
+               return(a4)
+          }
+          
+          
+          # optimiser output table 2
+          output$optimiser_table22_erin <- renderDataTable({
+            
+            DT::datatable(as.data.frame(rbind(round(constraint_val1(res$solution),3),round(constraint_val2(res$solution),3),
+                                              round(constraint_val3(res$solution),3),round(constraint_val4(res$solution),3)))
+                                    ,rownames = c("Fresh Viscosity [Pa s]","24 hr Viscosity [Pa s]",
+                                      "24 hr Yiels Stress [Pa s]","1 Week Viscosity [Pa s]"), 
+                                      colnames =c("Target variable", "Value"))
+          })
+
+          # optimiser output table 3
+          if(input$radio_button_erin=='min'){
+            output$value_results_erin<- renderUI({
+              ns <- session$ns
+              p(paste0("The objective function value resulting from the optimisation is : "),round(res$objective,3))
+            })
+          }
+          else{
+            output$value_results_erin<- renderUI({
+              ns <- session$ns
+              p(paste0("The objective function value resulting from the optimisation is : "),round(-1*res$objective,3))
+            })
+            
+          }
+          
+          
+        })#end of run optimiser
+          
+              
+      })#end of non linear observeevent
+      observeEvent(input$reset_erin,{
+        updateSelectInput(session,"inequality_selection_erin_one",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_erin_one",value = 250)
+        updateNumericInput(session,"weight_erin_one",value = 1)
+        
+        updateSelectInput(session,"inequality_selection_erin_two",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_erin_two",value = 400)
+        updateNumericInput(session,"weight_erin_two",value = 1)
+        
+        updateSelectInput(session,"inequality_selection_erin_three",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_erin_three",value = 150)
+        updateNumericInput(session,"weight_erin_three",value = 1)
+        
+        updateSelectInput(session,"inequality_selection_erin_four",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_erin_four",value = 550)
+        updateNumericInput(session,"weight_erin_four",value = 1)
+        
+        updateRadioButtons(session,"radio_button_erin",selected = "min")
+        
+        updateSelectInput(session,"inequality_selection_uday_pred",selected = "less than or equal to")
+        updateNumericInput(session,"numeric_input_uday_pred",value = 33)
+        updateNumericInput(session,"weight_pred",value = 1)
+        predictor_names_erin <- c("Solids Content_[0.85,1]","Silverson Tip Speed during Emulsion [m/s]_[7.76,23.26]","Silverson Tip Speed during Quench  [m/s]_[0,23.26]",
+                                  "Silverson Tip Speed during End Mixing [m/s]_[0,23.26]","Silverson Tip Speed on Discharge [m/s]_[0,23.26]",
+                                  "Updated Fats Temperature [C]_[59.7,77.7]","Fats Injection Rate [%kg/hr]_[33.54,117.51]","Temp at point of Quench [C]_[53.94,59.77]",
+                                  "Quench Injection Rate [%kg/hr]_[164.06,837.99]","Final Mixing Time [mins]_[8.08,46.05]","Temperature of samples on discharge [C]_[38.34,42.65]")
+        
+        zero_vector<-rep(1,length(predictor_names_erin))
+        min_vector <- c(0.85,7.76,0.00,0.00,0.00,59.7,33.54,53.94,164.06,8.08,38.34)
+        max_vector <- c(1.00,23.26,23.26,23.26,23.26,77.70,117.51,59.77,837.99,46.05,42.65)
+        coef_data2 <- data.frame(cbind(predictor_names_erin,zero_vector,min_vector,max_vector))
+        opt$tab_2 <- coef_data2
+        opt$tab_2[[3]]<- as.numeric(opt$tab_2[[3]])
+        opt$tab_2[[4]]<- as.numeric(opt$tab_2[[4]])
       })
+      
+      
+      
     }
-  )
-}
+  )}

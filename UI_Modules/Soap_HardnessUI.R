@@ -98,28 +98,35 @@ Soap_HardnessUI <- function(id){
                                        tabPanel("Profiler",
                                                 wellPanel(
                                                   h1("Profiler"),
-                                                  fluidRow(column(width = 10,plotOutput(ns("plot1"))),
+                                                  fluidRow(column(width = 4,plotOutput(ns("plot1"))),
+                                                           column(width = 4,
+                                                                  sliderInput(ns("billetmoistur"),"Billet Moisture:", min = 14, max = 29, value = 15.1),
+                                                                  sliderInput(ns("plodderbackpressuredegc"),"Plodder Back Pressure (30%) @ 40 degC:", min = 7, max = 17, value = 7.7),
+                                                                  sliderInput(ns("flowrate"),"Flow Rate (30%):", min = 3550, max = 7770, value = 3555),
+                                                                  sliderInput(ns("moisture"),"Moisture:", min = 15, max = 28, value = 16.1)
+                                                           ),
+                                                           column(width = 4,
+                                                                  sliderInput(ns("pkocontent"),"PKO Content:", min = 20.00, max = 24.00, value = 20.1),
+                                                                  sliderInput(ns("glycerine"),"Glycerine:", min = 0, max = 6, value = 1.1),
+                                                                  sliderInput(ns("carbopolesc"),"Carbopole SC200 (100%):", min = 0, max = 0.3, value = 0.1),
+                                                                  sliderInput(ns("sodiumchloride"),"Sodium Chloride:", min = 0.5, max = 1.2, value = 1.1))
                                                   ),
                                                   
-                                                  fluidRow(column(width = 6,
-                                                                  sliderInput(ns("billetmoistur"),"Billet Moisture:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("plodderbackpressuredegc"),"Plodder Back Pressure (30%) @ 40 degC:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("flowrate"),"Flow Rate (30%):", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("moisture"),"Moisture:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("pkocontent"),"PKO Content:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("glycerine"),"Glycerine:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("carbopolesc"),"Carbopole SC200 (100%):", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("sodiumchloride"),"Sodium Chloride:", min = 0, max = 100, value = 1)
+                                                  fluidRow(column(width = 4,
+                                                                  sliderInput(ns("soapmasstemperature"),"Soap Mass Temperature:", min = 40, max = 47, value = 40.1),
+                                                                  sliderInput(ns("iv"),"IV (Iodine Value):", min = 36, max = 42, value = 36.1),
+                                                                  sliderInput(ns("sodiumsulfate"),"Sodium Sulfate:", min = 0, max = 1.5, value = 1.1)
                                                   ),
-                                                  column(width = 6,
-                                                         sliderInput(ns("soapmasstemperature"),"Soap Mass Temperature:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("iv"),"IV (Iodine Value):", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("sodiumsulfate"),"Sodium Sulfate:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("sodiumsilicate"),"Sodium Silicate:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("petrolatumjelly"),"Petrolatum Jelly:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("amazonpolymer"),"Amazon Polymer:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("talc"),"Talc:", min = 0, max = 100, value = 1)
-                                                  ))
+                                                  column(width = 4,
+
+                                                         sliderInput(ns("sodiumsilicate"),"Sodium Silicate:", min = 0, max = 2.00, value = 0.5),
+                                                         sliderInput(ns("petrolatumjelly"),"Petrolatum Jelly:", min = 0, max = 1, value = 0.5)
+
+                                                  ),
+                                                  column(width = 4,
+                                                         sliderInput(ns("amazonpolymer"),"Amazon Polymer:", min = 0, max = 1, value = 0.5),
+                                                         sliderInput(ns("talc"),"Talc:", min = 0, max = 6, value = 1.1)
+                                                         ))
                                                 )),
                                        tabPanel("Imported Data Simulation",
                                                 uiOutput(ns("simulation_result_uday_sd2")),
@@ -132,19 +139,63 @@ Soap_HardnessUI <- function(id){
                                        ))
                            
                   ),
-                  tabPanel("Optimization", 
-                           h2("Since the equation is non-linear, optimization is pending."),
+                  tabPanel("Optimisation",
+                           wellPanel( 
+                             h2("Process optimiser (Non Linear Optimisation)"),
+                             tags$ul(
+                               h4("Target Variable :	Soap Bar Hardness")
+                               ,br(),
+                               tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
+                               tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
+                               tags$li("Objective function is defined as a linear combination of model predictors."),
+                               tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
+                               tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
+                               tags$li("Input the desired value of the Target variable. ")
+                               
+                             ),br()),
+                           
                            wellPanel(
-                             h2("Global Download"),
-                             h4("Download all the results that have been generated throughout the app"),
-                             actionButton(ns("downloadresults_uday_sd"),"Proceed to download all Results", 
-                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                             uiOutput(ns("Download_Values_uday_sd"))
+                             radioButtons(ns("radio_button_hardness"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
+                             br(),
+                             fluidRow(
+                               column(2,selectInput(ns("inequality_selection_hardness"),"Select the inequality type ",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                               column(2,offset= 2,numericInput(ns("numeric_input_hardness"),"Enter the Target variable value",3)),
+                               # column(2, offset = 3, numericInput(ns("weight_torque"), "Enter the weight for the Torque equation",1)),
+                               br()),
                              
+                             h2("Objective Function Table"), br(),
+                             tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
+                             tags$li("The objective function is defined as a linear combination of the predictors whose coefficients are given in the 'obj coeff' column. "),
+                             tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
+                             tags$li("Press the 'Run optimiser' button to generate the optimal solution."),
+                             br(),
+                             dataTableOutput(ns("optimiser_table1_hardness"))),
+                           
+                           fluidRow(column(2,actionButton(ns("run_optimiser_hardness"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                                    column(2,actionButton(ns("reset_hardness"),"Reset to defaults",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")) ),
+                           
+                           wellPanel(
+                             h3("Results"),br(),
+                             tags$li("The Target variable value associated with the predictor values, is shown in this table") ,br(),
+                             dataTableOutput(ns("optimiser_table22_hardness")),
+                             h3("Predictors"),br(),
+                             tags$li("The \"Predictors\" table show the optimised value taken by each predictor to obtain the optimised Target variable value. "),br(),
+                             dataTableOutput(ns("optimiser_table32_hardness")),
+                             h4("Objective Function Value"),
+                             uiOutput(ns("value_results_hardness")),
+                             downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                              
-                             #downloadButton(ns("download_all"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                             
-                           ))
+                           )
+                           # wellPanel(
+                           #   h2("Global Download"),
+                           #   h4("Download all the results that have been generated throughout the app"),
+                           #   actionButton(ns("downloadresults"),"Proceed to download all Results",
+                           #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                           #   uiOutput(ns("Download_Values"))
+                           # )
+                           
+                           
+                  )#optimisation end
       )
     }
   )

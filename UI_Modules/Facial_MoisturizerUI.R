@@ -175,14 +175,15 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                # fluidRow(
                  wellPanel(
                    tags$ul(
-                     h2("Process Optimiser "),
+                     h2("Process Optimiser (Linear Optimisation) "),
+                     br(), h4("Target Variables : Viscosity_24hrs and Viscosity_2hrs "),
                      br(),
-                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specific value of Viscosity_24hrs and Viscosity_2hrs."),
+                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specific value of the Target variables."),
                      tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
                      tags$li("Objective function is defined as a linear combination of model predictors."),
                      tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
                      tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
-                     tags$li("Input the desired values of Viscosity_24hrs and Viscosity_2hrs. ")
+                     tags$li("Input the desired values of the Target variables. ")
                    ),
                    
                    br()),

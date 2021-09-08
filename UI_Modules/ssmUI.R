@@ -158,59 +158,65 @@ It can be used to identify optimal sealing parameters that would deliver the des
                
       ),
       tabPanel("Optimisation",
-               fluidRow(
-                 wellPanel(
-                   tags$ul(
-                     h2("Process Optimiser for Drying Prediction "),
-                     br(),
-                     h5("-Non Linear optimisation ought to be used for the equation based on 'Torque' and 'Pred Formula Low Sheer Viscosity' "),
-                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Drying Prediction value."),
-                     tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
-                     tags$li("Objective function is defined as a linear combination of model predictors."),
-                     tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
-                     tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
-                     tags$li("Input the desired value of Drying Prediction, by default it is set to 0.32. ")
-                   ),
-                   br() ),
-                 wellPanel(
-                   fluidRow(radioButtons(ns("radio_button_ashutosh"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
-                            br(),
-                            column(2,selectInput(ns("inequality_selection_ashutosh"),"Select the inequality type",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                            column(2,offset=3,numericInput(ns("numeric_input_ashutosh"),"Enter the target Drying Prediction Value",0.32))),
+               wellPanel( 
+                 h2("Process optimiser (Non Linear Optimisation)"),
+                 tags$ul(
+                  fluidRow(column(5,selectInput(ns("equation_seal"),"Select the Target Variable", 
+                                                        choices =c("Mean_Seal_Strength(monoPP_Haiti)","	Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)",
+                                                                   "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)","Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)",
+                                                                   "Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)","Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)",
+                                                                   "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_18metOPP)"))))
+                   ,br(),
+                   tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
+                   tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
+                   tags$li("Objective function is defined as a linear combination of model predictors."),
+                   tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
+                   tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
+                   tags$li("Input the desired value of the Target variable. ")
                    
-                   wellPanel(
-                     h2("Objective Function Table"), br(),
-                     
-                     tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
-                     tags$li("The objective function is defined as a linear combination of the predictors whose coefficients are given in the 'obj coeff' column. "),
-                     tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
-                     tags$li("Press the 'Run optimiser' button to generate the optimal solution.")),
-                   br(),
-                   dataTableOutput(ns("optimiser_table1_ashutosh"))),
+                 ),br()),
+               
+               wellPanel(
+                 radioButtons(ns("radio_button_seal"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
+                 br(),
+                 fluidRow(
+                   column(2,selectInput(ns("inequality_selection_seal"),"Select the inequality type ",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                   column(2,offset= 2,numericInput(ns("numeric_input_seal"),"Enter the Target variable value",10)),
+                   br()),
                  
-                 fluidRow(column(2,actionButton(ns("run_optimiser_ashutosh"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
-                          column(2,actionButton(ns("reset_ashutosh"),"Reset to defaults",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")) ),
-                 wellPanel(
-                   h3("Results"),
-                   tags$li("The \"Results\" table shows the value of Drying Prediction obtained.") ,br(),
-                   dataTableOutput(ns("optimiser_table2_ashutosh")),
-                   h3("Predictors"),br(),
-                   tags$li("The \"Predictors table\" shows the optimised value taken by each predictor to obtain the above Drying Prediction value. "),br(),
-                   dataTableOutput(ns("optimiser_table3_ashutosh")),
-                   h4("Objective Function Value"),
-                   uiOutput(ns("value_results_ashutosh")),
-                   downloadButton(ns("download3_ashutosh"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4"), br()
-                   
-                 ),
-                 wellPanel(
-                   h2("Global Download"),
-                   h4("Download all the results that have been generated throughout the app"),
-                   actionButton(ns("downloadresults_ashutosh"),"Proceed to download all Results",
-                                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                   uiOutput(ns("Download_Values_ashutosh"))
-                 )
-               ) #fluidrow end
-      ) #tabpanel optimisation end
+                 h2("Objective Function Table"), br(),
+                 tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
+                 tags$li("The objective function is defined as a linear combination of the predictors whose coefficients are given in the 'obj coeff' column. "),
+                 tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
+                 tags$li("Press the 'Run optimiser' button to generate the optimal solution."),
+                 br(),
+                 dataTableOutput(ns("optimiser_table1_seal"))),
+               
+               fluidRow(column(2,actionButton(ns("run_optimiser_seal"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                        column(2,actionButton(ns("reset_seal"),"Reset to defaults",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")) ),
+               
+               wellPanel(
+                 h3("Results"),br(),
+                 tags$li("The Target variable value associated with the predictor values, is shown in this table") ,br(),
+                 dataTableOutput(ns("optimiser_table22_seal")),
+                 h3("Predictors"),br(),
+                 tags$li("The \"Predictors\" table show the optimised value taken by each predictor to obtain the optimised Target variable value. "),br(),
+                 dataTableOutput(ns("optimiser_table32_seal")),
+                 h4("Objective Function Value"),
+                 uiOutput(ns("value_results_seal")),
+                 downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                 
+               )
+               # wellPanel(
+               #   h2("Global Download"),
+               #   h4("Download all the results that have been generated throughout the app"),
+               #   actionButton(ns("downloadresults"),"Proceed to download all Results",
+               #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+               #   uiOutput(ns("Download_Values"))
+               # )
+               
+               
+      )#optimisation end
       
       )}
     

@@ -144,8 +144,11 @@ SD_slurryUI <- function(id){
                            tabsetPanel(tabPanel("Linear Optimisation",
                              wellPanel(
                                tags$ul(
-                                 h2("Process Optimiser for Drying Prediction "),
+                                 h2("Process Optimiser (Linear Optimisation) "),
                                  br(),
+                                 h4("Target Variable : Drying Prediction"),
+                                 br(),
+                                 
                                  h5("-Non Linear optimisation ought to be used for the equation based on 'Torque' and 'Pred Formula Low Sheer Viscosity' "),
                                  tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Drying Prediction value."),
                                  tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
@@ -197,14 +200,16 @@ SD_slurryUI <- function(id){
                                     # fluidRow(
                                       wellPanel(
                                         tags$ul(
-                                          h2("Process Optimiser for Torque and Pred Formula Low Sheer Viscosity")
+                                          h2("Process Optimiser (Non Linear Optimisation)")
                                           ,br(),
+                                          h4("Target Variables : Torque and Pred Formula Low Sheer Viscosity"),br(),
                                           tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Torque & Pred Formula Low Sheer Viscosity values."),
                                           tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
                                           tags$li("Objective function is defined as a linear combination of model predictors."),
                                           tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
                                           tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
-                                          tags$li("Input the desired value of Torque and Pred Formula Low Sheer Viscosity. ")
+                                          tags$li("Input the desired value of Torque and Pred Formula Low Sheer Viscosity. "),
+                                          tags$li("Enter the weights (relative importance) of the Target variables; by default it is 1.")
                                           
                                         ),br()),
                                       
@@ -218,7 +223,6 @@ SD_slurryUI <- function(id){
                                         br()),
                                         
                                         fluidRow(
-                                        # radioButtons(ns("radio_button_uday_pred"),"Objective Type(Pred Formula Low Sheer Viscosity)",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
                                         column(2,selectInput(ns("inequality_selection_uday_pred"),"Select the inequality type (Pred Formula Low Sheer Viscosity)",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
                                         column(2,offset= 2,numericInput(ns("numeric_input_uday_pred"),"Enter the target Pred Formula Low Sheer Viscosity value",33)),
                                         column(2, offset = 3, numericInput(ns("weight_pred"), "Enter the weight for the Pred Formula Low Sheer Viscosity equation",1)),

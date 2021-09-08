@@ -118,14 +118,68 @@ SD_powderUI <- function(id){
                                                 downloadButton(ns("download2_uday_sd"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                                                 
                                                 
-                                       )),
-                           tabPanel("Optimisation",
-                                    h3("Non linear optimisation under works")
-                                    )
-                           
-                  )
+                                       ))
+                                    ),
+        
+        tabPanel("Optimisation",
+                 wellPanel( 
+                    h2("Process optimiser (Non Linear Optimisation)"),
+                   tags$ul(
+                     h4("Target Variable :	BD_Prediction_by_Model  ")
+                     ,br(),
+                     tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
+                     tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
+                     tags$li("Objective function is defined as a linear combination of model predictors."),
+                     tags$li("Select minimization or maximization as per need by clicking on the checkbox. "),
+                     tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
+                     tags$li("Input the desired value of the Target variable. ")
+                     
+                   ),br()),
+                 
+                 wellPanel(
+                   radioButtons(ns("radio_button_uday_sd"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
+                   br(),
+                   fluidRow(
+                     column(2,selectInput(ns("inequality_selection_uday_sd"),"Select the inequality type ",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                     column(2,offset= 2,numericInput(ns("numeric_input_uday_sd"),"Enter the Target variable value",280)),
+                     # column(2, offset = 3, numericInput(ns("weight_torque"), "Enter the weight for the Torque equation",1)),
+                     br()),
+                   
+                   h2("Objective Function Table"), br(),
+                   tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
+                   tags$li("The objective function is defined as a linear combination of the predictors whose coefficients are given in the 'obj coeff' column. "),
+                   tags$li("The values in this column are defaulted to one and they can be edited as per the requirements. "),
+                   tags$li("Press the 'Run optimiser' button to generate the optimal solution."),
+                   br(),
+                   dataTableOutput(ns("optimiser_table1_uday_sd"))),
+                 
+                 fluidRow(column(2,actionButton(ns("run_optimiser_uday_sd"),"Run Optimiser",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")),
+                          column(2,actionButton(ns("reset_uday_sd"),"Reset to defaults",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")) ),
+                 
+                 wellPanel(
+                   h3("Results"),br(),
+                   tags$li("The Target variable value associated with the predictor values, is shown in this table") ,br(),
+                   dataTableOutput(ns("optimiser_table22_uday_sd")),
+                   h3("Predictors"),br(),
+                   tags$li("The \"Predictors\" table show the optimised value taken by each predictor to obtain the optimised Target variable value. "),br(),
+                   dataTableOutput(ns("optimiser_table32_uday_sd")),
+                   h4("Objective Function Value"),
+                   uiOutput(ns("value_results_uday_sd")),
+                   downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                   
+                 )
+                 # wellPanel(
+                 #   h2("Global Download"),
+                 #   h4("Download all the results that have been generated throughout the app"),
+                 #   actionButton(ns("downloadresults"),"Proceed to download all Results",
+                 #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                 #   uiOutput(ns("Download_Values"))
+                 # )
+                 
+                 
+        )#optimisation end
+        
                   )
       
     }
-  )
-}
+  )}
