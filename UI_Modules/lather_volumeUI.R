@@ -173,16 +173,16 @@ lather_volumeUI <- function(id){
                              dataTableOutput(ns("optimiser_table32_lather")),
                              h4("Objective Function Value"),
                              uiOutput(ns("value_results_lather")),
-                             downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                             downloadButton(ns("download5_lather"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                              
+                           ),
+                           wellPanel(
+                             h2("Global Download"),
+                             h4("Download all the results that have been generated throughout the app"),
+                             actionButton(ns("downloadresults_lather"),"Proceed to download all Results",
+                                          style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                             uiOutput(ns("Download_Values_lather"))
                            )
-                           # wellPanel(
-                           #   h2("Global Download"),
-                           #   h4("Download all the results that have been generated throughout the app"),
-                           #   actionButton(ns("downloadresults"),"Proceed to download all Results",
-                           #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                           #   uiOutput(ns("Download_Values"))
-                           # )
                            
                            
                   )#optimisation end

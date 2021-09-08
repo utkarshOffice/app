@@ -7,7 +7,7 @@ conditionerServer <- function(id,top_session){
       importresults <- reactiveVal(NULL)
       optimise <- reactiveVal(NULL)
       optimise1 <- reactiveVal(NULL)
-      optimise2 <- reactiveVal(NULL)
+      optimise2_erin <- reactiveVal(NULL)
       weight_one <-reactiveVal(NULL)
       weight_two <-reactiveVal(NULL)
       weight_three <-reactiveVal(NULL)
@@ -485,11 +485,11 @@ conditionerServer <- function(id,top_session){
                    })
                    })
       
-      observeEvent(input$downloadresults,{
+      observeEvent(input$downloadresults_erin,{
         
-        output$Download_Values <- renderUI({
+        output$Download_Values_erin <- renderUI({
           ns <- session$ns
-          downloadButton(ns("download_all"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+          downloadButton(ns("download_all_erin"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
         })
         #View(manual())
         # View(manualinput())
@@ -499,7 +499,7 @@ conditionerServer <- function(id,top_session){
         nrdata1 <- as.data.frame(manualinput())
         nrdata2 <- as.data.frame(importresults())
         #nrdata3 <- as.data.frame(optimise())
-        #nrdata4 <- as.data.frame(optimise1())
+        nrdata4 <- as.data.frame(optimise2_erin())
         # nrdata5 <- as.data.frame(optimise2())
         
         
@@ -507,10 +507,10 @@ conditionerServer <- function(id,top_session){
         #View(nrdata1)
         #View(nrdata2)
         
-        output$download_all <- downloadHandler(
+        output$download_all_erin <- downloadHandler(
           filename = function() { "All Results.xlsx"},
           content = function(file) {
-            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2), file)
+            write_xlsx(list("Manual Input" = nrdata1,"Manual Results" = nrdata, "Import Results" = nrdata2, "Optimisation Conditioner"= nrdata4), file)
           }
         )
       })#download end
@@ -607,7 +607,7 @@ conditionerServer <- function(id,top_session){
             if(input$inequality_selection_erin_one =="less than or equal to"){
               equation1 <- c(equation_one)
             }
-            View(inequality_selection_erin_one)
+            #View(inequality_selection_erin_one)
             else if(input$inequality_selection_erin_one =="greater than or equal to"){
               equation1 <- c(-1*equation_one)
             }
@@ -777,6 +777,32 @@ conditionerServer <- function(id,top_session){
             })
             
           }
+          
+          
+          downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Fresh Viscosity [Pa s]", "24 hr Viscosity [Pa s]", "24 hr Yiels Stress [Pa s]", "1 Week Viscosity [Pa s]"), Predicted_or_Optimal_Value= c(constraint_val1(res$solution),constraint_val2(res$solution), constraint_val3(res$solution),constraint_val4(res$solution)) )
+          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value= c("Solids Content_[0.85,1]","Silverson Tip Speed during Emulsion [m/s]_[7.76,23.26]","Silverson Tip Speed during Quench  [m/s]_[0,23.26]",
+                                                                                     "Silverson Tip Speed during End Mixing [m/s]_[0,23.26]","Silverson Tip Speed on Discharge [m/s]_[0,23.26]",
+                                                                                     "Updated Fats Temperature [C]_[59.7,77.7]","Fats Injection Rate [%kg/hr]_[33.54,117.51]","Temp at point of Quench [C]_[53.94,59.77]",
+                                                                                     "Quench Injection Rate [%kg/hr]_[164.06,837.99]","Final Mixing Time [mins]_[8.08,46.05]","Temperature of samples on discharge [C]_[38.34,42.65]"),
+                               Predicted_or_Optimal_Value=res$solution)
+          
+          if(input$radio_button_erin=='min'){
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)
+          }
+          else{
+            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = -1*res$objective)
+          }
+          
+          final123 <- rbind(downresults12,downdf12,downopt12)
+          #View(final123)
+          
+          optimise2_erin(final123)
+          output$download5_erin <- downloadHandler(
+            filename = function() { "Optimisation Conditioner.xlsx"},
+            content = function(file) {
+              write_xlsx(list("Optimisation Result" = final123), file)
+            }
+          )
           
           
         })#end of run optimiser
