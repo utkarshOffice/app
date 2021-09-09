@@ -412,7 +412,7 @@ ssmServer <- function(id, top_session){
                          }
                        }else{
                          if(length(input$y_axis_bd) == 1){
-                           ggplot(finaldf, aes(x= finaldf[[input$x_axis_bd]],y= data_ashutosh_bd()[[input$y_axis_bd]])) +
+                           ggplot(finaldf, aes(x= finaldf[[input$x_axis_bd]],y= finaldf[[input$y_axis_bd]])) +
                              geom_point() +labs(x = as.character(input$x_axis_bd))
                          }else
                          {
@@ -435,49 +435,49 @@ ssmServer <- function(id, top_session){
                      
                      output$multi_lines_graph_ashutosh <- renderPlotly({
                        if(length(input$y_axis_bd) == 1){
-                         fig <- plot_ly( x = ~data_ashutosh_bd()[[input$x_axis_bd]], marker=list(size=10))
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd]],mode = 'lines')
+                         fig <- plot_ly( x = ~finaldf[[input$x_axis_bd]], marker=list(size=10))
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd]],mode = 'lines')
                          fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis_bd)),yaxis = list (title = as.character(input$y_axis)) )
                          fig
                        }else if(length(input$y_axis_bd) == 2){
-                         fig <- plot_ly(data_ashutosh_bd(), x = ~data_ashutosh_bd()[[input$x_axis_bd]], marker=list(size=10))
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
+                         fig <- plot_ly(finaldf, x = ~finaldf[[input$x_axis_bd]], marker=list(size=10))
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
                          fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis_bd)),yaxis = list (title = "") )
                          fig
                        }
                        else if(length(input$y_axis_bd) == 3){
-                         fig <- plot_ly(data_ashutosh_bd(), x = ~data_ashutosh_bd()[[input$x_axis_bd]], marker=list(size=10))
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
+                         fig <- plot_ly(finaldf, x = ~finaldf[[input$x_axis_bd]], marker=list(size=10))
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
                          fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis_bd)),yaxis = list (title = "") )
                          fig
                        } else if(length(input$y_axis_bd) == 4){
-                         fig <- plot_ly(data_ashutosh_bd(), x = ~data_ashutosh_bd()[[input$x_axis_bd]], marker=list(size=10))
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[4]]], name = input$y_axis_bd[4], mode = 'lines')
+                         fig <- plot_ly(finaldf, x = ~finaldf[[input$x_axis_bd]], marker=list(size=10))
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[4]]], name = input$y_axis_bd[4], mode = 'lines')
                          fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis_bd)),yaxis = list (title = "") )
                          fig
                        } else if(length(input$y_axis_bd) == 5){
-                         fig <- plot_ly(data_ashutosh_bd(), x = ~data_ashutosh_bd()[[input$x_axis_bd]], marker=list(size=10))
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[4]]], name = input$y_axis_bd[4], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[5]]], name = input$y_axis_bd[5], mode = 'lines')
+                         fig <- plot_ly(finaldf, x = ~finaldf[[input$x_axis_bd]], marker=list(size=10))
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[4]]], name = input$y_axis_bd[4], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[5]]], name = input$y_axis_bd[5], mode = 'lines')
                          fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis_bd)),yaxis = list (title = "") )
                          fig
                        } else if(length(input$y_axis_bd) == 6){
-                         fig <- plot_ly(data_ashutosh_bd(), x = ~data_ashutosh_bd()[[input$x_axis_bd]], marker=list(size=10))
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[4]]], name = input$y_axis_bd[4], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[5]]], name = input$y_axis_bd[5], mode = 'lines')
-                         fig <- fig %>% add_lines(y = ~data_ashutosh_bd()[[input$y_axis_bd[6]]], name = input$y_axis_bd[6], mode = 'lines')
+                         fig <- plot_ly(finaldf, x = ~finaldf[[input$x_axis_bd]], marker=list(size=10))
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[1]]], name = input$y_axis_bd[1],mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[2]]], name = input$y_axis_bd[2], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[3]]], name = input$y_axis_bd[3], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[4]]], name = input$y_axis_bd[4], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[5]]], name = input$y_axis_bd[5], mode = 'lines')
+                         fig <- fig %>% add_lines(y = ~finaldf[[input$y_axis_bd[6]]], name = input$y_axis_bd[6], mode = 'lines')
                          fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis_bd)),yaxis = list (title = "") )
                          fig
                        }

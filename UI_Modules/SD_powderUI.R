@@ -81,6 +81,7 @@ SD_powderUI <- function(id){
                                plotOutput(ns("ggscatter_uday_sd")),
                                checkboxInput(ns("smooth2_uday_sd"),"Multitrend", TRUE),
                                plotOutput(ns("ggsmooth_uday_sd"))
+                               #plotlyOutput(ns("multi_lines_graph_uday_sd"))
                              ),
                              wellPanel(
                                h2("Histogram"),

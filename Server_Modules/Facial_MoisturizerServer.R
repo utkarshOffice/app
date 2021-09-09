@@ -226,6 +226,56 @@ Facial_MoisturizerServer <- function(id, top_session){
                      }
                    })
                    
+                   output$multi_lines_graph_kayla <- renderPlotly({
+                     if(length(input$y_axis) == 1){
+                       fig <- plot_ly( x = ~data_skincare_kayla()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis]],mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = as.character(input$y_axis)) )
+                       fig
+                     }else if(length(input$y_axis) == 2){
+                       fig <- plot_ly(data_skincare_kayla(), x = ~data_skincare_kayla()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     }
+                     else if(length(input$y_axis) == 3){
+                       fig <- plot_ly(data_skincare_kayla(), x = ~data_skincare_kayla()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 4){
+                       fig <- plot_ly(data_skincare_kayla(), x = ~data_skincare_kayla()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 5){
+                       fig <- plot_ly(data_skincare_kayla(), x = ~data_skincare_kayla()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[5]]], name = input$y_axis[5], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 6){
+                       fig <- plot_ly(data_skincare_kayla(), x = ~data_skincare_kayla()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[5]]], name = input$y_axis[5], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_skincare_kayla()[[input$y_axis[6]]], name = input$y_axis[6], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     }
+                   })
+                   
                    output$hist_skincare_kayla <- renderPlot({
                      ggplot(data_skincare_kayla(), aes(x= data_skincare_kayla()[[input$hist_choice_skincare_kayla]])) +
                        geom_histogram(color="black", fill="lightblue")+

@@ -212,6 +212,56 @@ NTR_powderServer <- function(id, top_session){
                      }
                    })
                    
+                   output$multi_lines_graph_uday_ntr <- renderPlotly({
+                     if(length(input$y_axis) == 1){
+                       fig <- plot_ly( x = ~data_uday_ntr()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis]],mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = as.character(input$y_axis)) )
+                       fig
+                     }else if(length(input$y_axis) == 2){
+                       fig <- plot_ly(data_uday_ntr(), x = ~data_uday_ntr()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     }
+                     else if(length(input$y_axis) == 3){
+                       fig <- plot_ly(data_uday_ntr(), x = ~data_uday_ntr()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 4){
+                       fig <- plot_ly(data_uday_ntr(), x = ~data_uday_ntr()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 5){
+                       fig <- plot_ly(data_uday_ntr(), x = ~data_uday_ntr()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[5]]], name = input$y_axis[5], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 6){
+                       fig <- plot_ly(data_uday_ntr(), x = ~data_uday_ntr()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[5]]], name = input$y_axis[5], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_ntr()[[input$y_axis[6]]], name = input$y_axis[6], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     }
+                   })
+                   
                    output$hist_uday_ntr <- renderPlot({
                      ggplot(data_uday_ntr(), aes(x= data_uday_ntr()[[input$hist_choice_uday_ntr]])) +
                        geom_histogram(color="black", fill="lightblue")+

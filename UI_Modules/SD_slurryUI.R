@@ -79,8 +79,8 @@ SD_slurryUI <- function(id){
                                checkboxInput(ns("smooth_uday"),"Trend Line", TRUE),
                                plotOutput(ns("ggscatter_uday")),
                                checkboxInput(ns("smooth2_uday"),"Multitrend", TRUE),
-                               plotOutput(ns("ggsmooth_uday"))
-                               #plotlyOutput(ns("multi_lines_graph_uday"))
+                               plotOutput(ns("ggsmooth_uday")),
+                               plotlyOutput(ns("multi_lines_graph_uday"))
                                
                              ),
                              wellPanel(

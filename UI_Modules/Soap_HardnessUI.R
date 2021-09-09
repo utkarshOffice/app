@@ -76,7 +76,8 @@ Soap_HardnessUI <- function(id){
                                checkboxInput(ns("smooth_uday_sd"),"Trend Line", TRUE),
                                plotOutput(ns("ggscatter_uday_sd")),
                                checkboxInput(ns("smooth2_uday_sd"),"Multitrend", TRUE),
-                               plotOutput(ns("ggsmooth_uday_sd"))
+                               plotOutput(ns("ggsmooth_uday_sd")),
+                               plotlyOutput(ns("multi_lines_graph_uday"))
                              ),
                              wellPanel(
                                h2("Histogram"),

@@ -82,8 +82,8 @@ chillrollUI <- function(id){
                    checkboxInput(ns("smooth_santosh"),"Trend Line", TRUE),
                    plotOutput(ns("ggscatter_santosh")),
                    checkboxInput(ns("smooth2_santosh"),"Multitrend", TRUE),
-                   plotOutput(ns("ggsmooth_santosh"))
-                   #plotlyOutput(ns("multi_lines_graph_santosh"))
+                   plotOutput(ns("ggsmooth_santosh")),
+                   plotlyOutput(ns("multi_lines_graph_santosh"))
                    
                  ),
                  wellPanel(

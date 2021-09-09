@@ -107,7 +107,7 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                                selectInput(ns("x_axis_skincare_kayla"), 'X axis', choices = c(" "," ") ),
                                selectInput(ns("y_axis_skincare_kayla"), 'Y axis', choices = c(" "," ")
                                            ,selected = names(mtcars)[2], multiple = TRUE),
-                               plotOutput(ns("scatterplot_skincare_kayla")),
+                               #plotOutput(ns("scatterplot_skincare_kayla")),
                                br(),
                                br(),
                                tags$ul(
@@ -119,6 +119,8 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                                plotOutput(ns("ggscatter_skincare_kayla")),
                                checkboxInput(ns("smooth2_skincare_kayla"),"Multitrend", TRUE),
                                plotOutput(ns("ggsmooth_skincare_kayla"))
+                               #plotlyOutput(ns("multi_lines_graph_kayla"))
+                               
                              ),
                              wellPanel(
                                h2("Histogram"),

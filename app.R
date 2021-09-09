@@ -25,8 +25,7 @@ ui <- function(request){
   dashboardPage(
     dashboardHeader(title = "PAE Model Bank V1.0"),
     dashboardSidebar(tags$head(
-      tags$style(HTML("
-                      .sidebar { height: 90vh; overflow-y: auto; }
+      tags$style(HTML("   .sidebar { height: 90vh; overflow-y: auto; }
                       .dataTables_wrapper { overflow-x: scroll; }
                       " )
       )
