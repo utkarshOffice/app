@@ -56,13 +56,22 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
         updateTabsetPanel(top_session, "tabs_uday_sd", selected = "Visualization")
       })
       
+      output$advice <- renderDataTable({
+        Advisory_table <- data.frame(Ingredients = c("Sodium Chloride","Sodium Sulfate","Sodium Silicate","FFA_Combined",
+                                                     "Oxiflow-Oxiteno","Sodium Carbonate","Sodium Citrate","PKO Content",
+                                                     "Titanium Dioxide","Tinopal CBS","Perfume","IV (Iodine Value)"),
+                                     Lower_Level = c(.5,0,0,0,0,0,0,5,.4,.0001,.3,39),
+                                     Upper_Level = c(1.6,1.7,1.5,1,1.5,.8,3,20,.5,.001,1.3,42))
+        datatable(Advisory_table)
+      })
+      
       colors <- c("red","black", "green","yellow","violet")
       
       # Profiler renderings
       observeEvent(req(input$perfume),{
         eqn <- "147.116305492888+151.501186255172*sodiumchloride()+-55.3215735730235*sodiumsulfate()+-49.4762432407727*sodiumcitrate()+-41.4352614156827*sodiumcarbonate()+-29.2685282290144*sodiumsilicate()+-11.1271782344154*pkocontent()+-60.5999588575755*oxiflowoxiteno()+22.6390321970717*ffacombined()+-623.653030175084*titaniumdioxide()+-1010.43308194092*tinopalcbs()+57.9687283373548*perfume+7.23116429366333*iv()+(sodiumchloride()-1.17222222222222)*((sodiumchloride()-1.17222222222222)*424.75315555422)+(sodiumchloride()-1.17222222222222)*((sodiumcitrate()-1.70777777777778)*-134.087470076663)+(sodiumchloride()-1.17222222222222)*((ffacombined()-0.144444444444444)*92.3627549149173)+(sodiumsulfate()-0.276666666666667)*((tinopalcbs()-0.0223333333333333)*4746.07002288773)+(sodiumcitrate()-1.70777777777778)*((sodiumcitrate()-1.70777777777778)*21.1314669748662)+(sodiumcitrate()-1.70777777777778)*((titaniumdioxide()-0.360677777777777)*-93.7758844249979)+(sodiumcitrate()-1.70777777777778)*((tinopalcbs()-0.0223333333333333)*2947.53075692333)+(sodiumcitrate()-1.70777777777778)*((iv()-39.4888888888889)*2.6018160032659)+(sodiumsilicate()-0.3508)*((ffacombined()-0.144444444444444)*51.0250540480239)+(sodiumsilicate()-0.3508)*((perfume-1.00844444444444)*69.3978683182652)+(pkocontent()-4.18300653594772)*((iv()-39.4888888888889)*-0.135942835190774)+(perfume-1.00844444444444)*((perfume-1.00844444444444)*43.6427684250721)"
         
-        perfume <- seq(from  = 0.3, to = 1.3, length.out = 100)
+        perfume <- round(seq(from  = 0.3, to = 1.3, length.out = 100),2)
         sodiumchloride <- reactive(input$sodiumchloride)
         sodiumsulfate <- reactive(input$sodiumsulfate)
         sodiumsilicate <- reactive(input$sodiumsilicate)

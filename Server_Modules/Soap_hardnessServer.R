@@ -57,6 +57,16 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
                        "iv","moisture","pkocontent","glycerine","sodiumchloride","sodiumsulfate",
                        "sodiumsilicate","petrolatumjelly","amazonpolymer","carbopolesc","talc")
       
+      output$advice <- renderDataTable({
+        Advisory_table <- data.frame(Ingredients = c("Billet Moisture","Plodder Back Pressure (30%) @ 40 degC","Flow Rate (30%)","Soap Mass Temperature",
+                                                     "IV (Iodine Value)","Moisture","PKO Content","Glycerine","Sodium Chloride","Sodium Sulfate",
+                                                     "Sodium Silicate","Petrolatum Jelly","Amazon Polymer","Carbopole SC200 (100%)","Talc"),
+                                     Lower_Level = c(14.4,7.7,3550,40,36,15.3,20,0,.5,0,0,0,0,0,0),
+                                     Upper_Level = c(28.1,16.4,7770,46.8,42,28,23.5,6,1.2,1.5,1.7,.8,.7,.3,6)
+                                     )
+        datatable(Advisory_table)
+      })
+      
       # model bank table
       output$models_uday_sd <- renderDataTable({
         datatable(x_uday_sd, colnames = c("Models"))
@@ -103,7 +113,7 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
                        output$plot1 <- renderPlot({
                          soap_bar_hardness <- round(soap_bar_hardness(),3)
                          ggplot(data=data.frame(billetmoistur, soap_bar_hardness), aes(x=billetmoistur, y= soap_bar_hardness)) +
-                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+ xlab("Billet Moisture")+
+                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ xlab("Billet Moisture")+
                            ylab("Soap Bar Hardness")+
                            gghighlight(billetmoistur == input$billetmoistur, label_key = soap_bar_hardness)
                        })
