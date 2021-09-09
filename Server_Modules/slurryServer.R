@@ -590,6 +590,8 @@ slurryServer <- function(id, top_session){
               eqn2 <- gsub(j, x1$df[1,i], eqn2)
             }
             
+            View(eqn2)
+            View(eqn1)
             Torque <- eval(parse(text = eqn1))
             TurningPoint <- eval(parse(text = eqn2))
             ClosestFriend <- NULL
@@ -802,9 +804,9 @@ slurryServer <- function(id, top_session){
       
       observeEvent(req(x),
                    {
-                     predictors_in_model2 <- c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
-                                               "CP5(Dry Basis)_[0,0.03]", "LSA(Dry Basis)_[0.17,0.45]",
-                                               "SCMC(Dry Basis)_[0,0.01]","Sulphate(Dry Basis)_[0.17,0.52]")
+                     predictors_in_model2 <- c("TargetSMC [0.287,0.37]","NaLAS(Dry Basis) [0.13,0.41]","AlkSilicate(Dry Basis) [0.07,0.16]",
+                                               "CP5(Dry Basis) [0,0.03]", "LSA(Dry Basis) [0.17,0.45]",
+                                               "SCMC(Dry Basis) [0,0.01]","Sulphate(Dry Basis) [0.17,0.52]")
                      zero_vector<-rep(1,length(predictors_in_model2))
                      min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
                      max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
@@ -943,9 +945,9 @@ slurryServer <- function(id, top_session){
                        updateSelectInput(session,"inequality_selection",selected = "less than or equal to")
                        updateNumericInput(session,"numeric_input",value = .32)
                        updateRadioButtons(session,"radio_button",selected = "min")
-                       predictors_in_model2<-c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
-                                               "CP5(Dry Basis)_[0,0.03]", "LSA(Dry Basis)_[0.17,0.45]",
-                                               "SCMC(Dry Basis)_[0,0.01]","Sulphate(Dry Basis)_[0.17,0.52]")
+                       predictors_in_model2<-c("TargetSMC [0.287,0.37]","NaLAS(Dry Basis) [0.13,0.41]","AlkSilicate(Dry Basis) [0.07,0.16]",
+                                               "CP5(Dry Basis) [0,0.03]", "LSA(Dry Basis) [0.17,0.45]",
+                                               "SCMC(Dry Basis) [0,0.01]","Sulphate(Dry Basis) [0.17,0.52]")
                        zero_vector<-rep(1,length(predictors_in_model2))
                        min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
                        max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
@@ -957,9 +959,9 @@ slurryServer <- function(id, top_session){
                      
                      #optimisation based on category - class
                      
-                     predictors_in_model22<-c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
-                                              "CP5(Dry Basis)_[0,0.03]", "LSA(Dry Basis)_[0.17,0.45]",
-                                              "SCMC(Dry Basis)_[0,0.01]","Sulphate(Dry Basis)_[0.17,0.52]")
+                     predictors_in_model22<-c("TargetSMC [0.287,0.37]","NaLAS(Dry Basis) [0.13,0.41]","AlkSilicate(Dry Basis) [0.07,0.16]",
+                                              "CP5(Dry Basis) [0,0.03]", "LSA(Dry Basis) [0.17,0.45]",
+                                              "SCMC(Dry Basis) [0,0.01]","Sulphate(Dry Basis) [0.17,0.52]")
                      
                      zero_vector2<-rep(1,length(predictors_in_model22))
                      min_vector2 <- c(0.287,0.13,0.07,0,0.17,0,0.17)
@@ -1123,9 +1125,9 @@ slurryServer <- function(id, top_session){
                      observeEvent(input$reset2,{
                        updateSelectInput(session,"category_selection",selected = "Green")
                        updateRadioButtons(session,"radio_button2",selected = "min")
-                       predictors_in_model2<-c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
-                                               "CP5(Dry Basis)_[0,0.03]", "LSA(Dry Basis)_[0.17,0.45]",
-                                               "SCMC(Dry Basis)_[0,0.01]","Sulphate(Dry Basis)_[0.17,0.52]")
+                       predictors_in_model2<-c("TargetSMC [0.287,0.37]","NaLAS(Dry Basis) [0.13,0.41]","AlkSilicate(Dry Basis) [0.07,0.16]",
+                                               "CP5(Dry Basis) [0,0.03]", "LSA(Dry Basis) [0.17,0.45]",
+                                               "SCMC(Dry Basis) [0,0.01]","Sulphate(Dry Basis) [0.17,0.52]")
                        zero_vector<-rep(1,length(predictors_in_model2))
                        min_vector2 <- c(0.287,0.13,0.07,0,0.17,0,0.17)
                        max_vector2 <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
@@ -1162,9 +1164,9 @@ slurryServer <- function(id, top_session){
       
       #non linear optimisation for aditi - torque
       observeEvent(req(x),{
-        predictor_names_torque <- c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
-                                   "CP5(Dry Basis)_[0,0.03]", "LSA(Dry Basis)_[0.17,0.45]",
-                                   "SCMC(Dry Basis)_[0,0.01]","Sulphate(Dry Basis)_[0.17,0.52]")
+        predictor_names_torque <- c("TargetSMC [0.287,0.37]","NaLAS(Dry Basis) [0.13,0.41]","AlkSilicate(Dry Basis) [0.07,0.16]",
+                                   "CP5(Dry Basis) [0,0.03]", "LSA(Dry Basis) [0.17,0.45]",
+                                   "SCMC(Dry Basis) [0,0.01]","Sulphate(Dry Basis) [0.17,0.52]")
         zero_vector <- rep(1,length(predictor_names_torque))
         min_vector<- c(0.287,0.13,0.07,0,0.17,0,0.17)
         max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
@@ -1420,9 +1422,9 @@ slurryServer <- function(id, top_session){
           updateSelectInput(session,"inequality_selection_adititorque",selected = "less than or equal to")
           updateNumericInput(session,"numeric_input_adititorque",value = 28)
           updateRadioButtons(session,"radio_button_adititorque",selected = "min")
-          predictors_in_model2<-c("TargetSMC_[0.287,0.37]","NaLAS(Dry Basis)_[0.13,0.41]","AlkSilicate(Dry Basis)_[0.07,0.16]",
-                                  "CP5(Dry Basis)_[0,0.03]", "LSA(Dry Basis)_[0.17,0.45]",
-                                  "SCMC(Dry Basis)_[0,0.01]","Sulphate(Dry Basis)_[0.17,0.52]")
+          predictors_in_model2<-c("TargetSMC [0.287,0.37]","NaLAS(Dry Basis) [0.13,0.41]","AlkSilicate(Dry Basis) [0.07,0.16]",
+                                  "CP5(Dry Basis) [0,0.03]", "LSA(Dry Basis) [0.17,0.45]",
+                                  "SCMC(Dry Basis) [0,0.01]","Sulphate(Dry Basis) [0.17,0.52]")
           zero_vector<-rep(1,length(predictors_in_model2))
           min_vector<- c(0.287,0.13,0.07,0,0.17,0,0.17)
           max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)

@@ -15,9 +15,15 @@ SD_powderUI <- function(id){
                                                    tags$li(" This table presents the available models for this segment.")
                                                    ,tags$li(" Simulation will take place for all equations simultaneously.")
                                                  ),
-                                                 dataTableOutput(ns("models_uday_sd"))
+                                                 dataTableOutput(ns("models_uday_sd")), 
+                                                 h3("Advisory Table"),
+                                                 tags$ul(
+                                                   tags$li(" This table presents the advisable Lower and Upper Limits for all Predictors"),
+                                                 ),
+                                                 dataTableOutput(ns("advice_uday_sd"))
                                                )
                                                ,
+                                             
                                                wellPanel(
                                                  h2("Simulation Data Inputs"),
                                                  p("Only one of manual data entry and external import is allowed. Select one and proceed."),
@@ -125,7 +131,7 @@ SD_powderUI <- function(id){
                  wellPanel( 
                     h2("Process optimiser (Non Linear Optimisation)"),
                    tags$ul(
-                     h4("Target Variable :	BD_Prediction_by_Model  ")
+                     h4("Target Variable :	BD Prediction by Model  ")
                      ,br(),
                      tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
                      tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),

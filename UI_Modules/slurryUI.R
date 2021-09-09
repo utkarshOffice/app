@@ -42,7 +42,10 @@ slurryUI <- function(id){
                                           ,tags$li(" Sum = NaLAS (dry basis) + AlkSilicate (dry basis) + LSA (dry basis) + CP5 (dry basis) + SCMC (dry basis) + Sulphate (dry basis)", style = "color:green")
                                         ),
                                         dataTableOutput(ns("models")),
-                                        h3("Accepted range for user inputs"),
+                                        h3("Advisory Table"),
+                                        tags$ul(
+                                          tags$li(" This table presents the advisable Lower and Upper Limits for all Predictors"),
+                                        ),
                                         dataTableOutput(ns("advice"))
                                       ),
                                       wellPanel(

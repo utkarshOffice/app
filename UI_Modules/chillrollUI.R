@@ -18,7 +18,10 @@ chillrollUI <- function(id){
                    ,tags$li(" Simulation will take place for all equations simultaneously.")
                  ),
                  dataTableOutput(ns("models_santosh")),
-                 h3("Accepted range for user inputs"),
+                 h3("Advisory Table"),
+                 tags$ul(
+                   tags$li(" This table presents the advisable Lower and Upper Limits for all Predictors"),
+                 ),
                  dataTableOutput(ns("advice_santosh"))
                )
                ,

@@ -15,7 +15,12 @@ lather_volumeUI <- function(id){
                                tags$li(" This table presents the available models for this segment.")
                                ,tags$li(" Simulation will take place for all equations simultaneously.")
                              ),
-                             dataTableOutput(ns("models_uday_sd"))
+                             dataTableOutput(ns("models_uday_sd")),
+                             h3("Advisory Table"),
+                             tags$ul(
+                               tags$li(" This table presents the advisable Lower and Upper Limits for all Predictors"),
+                             ),
+                             dataTableOutput(ns("advice_lather"))
                            )
                            ,
                            wellPanel(

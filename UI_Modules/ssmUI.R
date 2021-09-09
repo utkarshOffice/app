@@ -38,7 +38,10 @@ It can be used to identify optimal sealing parameters that would deliver the des
                    ,tags$li(" Simulation will take place for all equations simultaneously.")
                  ),
                  dataTableOutput(ns("models_ashutosh")),
-                 h3("Accepted range for user inputs"),
+                 h3("Advisory Table"),
+                 tags$ul(
+                   tags$li(" This table presents the advisable Lower and Upper Limits for all Predictors"),
+                 ),
                  dataTableOutput(ns("advice_ashutosh"))
                )
                ,
@@ -162,10 +165,10 @@ It can be used to identify optimal sealing parameters that would deliver the des
                  h2("Process optimiser (Non Linear Optimisation)"),
                  tags$ul(
                   fluidRow(column(5,selectInput(ns("equation_seal"),"Select the Target Variable", 
-                                                        choices =c("Mean_Seal_Strength(monoPP_Haiti)","	Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)",
-                                                                   "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)","Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)",
-                                                                   "Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)","Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)",
-                                                                   "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_18metOPP)"))))
+                                                        choices =c("Mean Seal Strength(monoPP Haiti)","	Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)",
+                                                                   "Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)","Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)",
+                                                                   "Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)","Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)",
+                                                                   "Mean Seal Strength(Paper metOPP/90gsmPaper 18metOPP)"))))
                    ,br(),
                    tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
                    tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),

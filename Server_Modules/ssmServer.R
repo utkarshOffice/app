@@ -17,38 +17,38 @@ ssmServer <- function(id, top_session){
       # ---------------------------------------------------- MODEL & DATA IMPORT --------------------------------------------------------
       
       # making a dataframe for our two models calculating Flake Final Temp (Model 1 & 2) 
-      x_ashutosh <- data.frame(Models_ashutosh <- c("Mean_Seal_Strength(monoPP_Haiti) = (10.085043285)+ (0.143476202)*((Sealing_Pressure - 50)/25)) + 
-                                                    (0.5005544208)*((Sealing_Time - 475)/275) + (1.1487322096)*((Sealing_Temperature - 120)/20) - 
-                                                    (0.265927563)*((Layer_Thickness - 35)/5) - (0.214751072)*((Sealing_Pressure - 50)/25)*((Sealing_Time - 475)/275) + 
-                                                    (0.1653191326)*((Sealing_Pressure - 50)/25)*((Layer_Thickness - 35)/5) - 
-                                                    (0.190088312)*((Sealing_Time-475)/275)*((Layer_Thickness - 35)/5) - 
-                                                    (0.227255444)*((Layer_Thickness - 35)/5)*((Sealing_Temperature - 120)/20) - 
-                                                    (0.438383433)*((Sealing_Pressure - 50)/25)*((Sealing_Pressure - 50)/25) + 
-                                                    (0.422789614)*((Sealing_Time-475)/275)*((Sealing_Time-475)/275) ",
+      x_ashutosh <- data.frame(Models_ashutosh <- c("Mean Seal Strength(monoPP Haiti) = (10.085043285)+ (0.143476202)*((Sealing Pressure - 50)/25)) + 
+                                                    (0.5005544208)*((Sealing Time - 475)/275) + (1.1487322096)*((Sealing Temperature - 120)/20) - 
+                                                    (0.265927563)*((Layer Thickness - 35)/5) - (0.214751072)*((Sealing Pressure - 50)/25)*((Sealing Time - 475)/275) + 
+                                                    (0.1653191326)*((Sealing Pressure - 50)/25)*((Layer Thickness - 35)/5) - 
+                                                    (0.190088312)*((Sealing Time-475)/275)*((Layer Thickness - 35)/5) - 
+                                                    (0.227255444)*((Layer Thickness - 35)/5)*((Sealing Temperature - 120)/20) - 
+                                                    (0.438383433)*((Sealing Pressure - 50)/25)*((Sealing Pressure - 50)/25) + 
+                                                    (0.422789614)*((Sealing Time-475)/275)*((Sealing Time-475)/275) ",
                                                     
-                                                    "Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP) = (7.9283468534) - (1.744214002)*((Layer_Thickness - 85)/15)+
-                                                    (2.0472868262)*((Sealing_Temperature - 180)/60) + (1.0299432676)*((Sealing_Time-475)/275) + 
-                                                    (1.0456231626)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) - (0.085441804)*((Sealing_Pressure - 77)/38.5)",
+                                                    "Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP) = (7.9283468534) - (1.744214002)*((Layer Thickness - 85)/15)+
+                                                    (2.0472868262)*((Sealing Temperature - 180)/60) + (1.0299432676)*((Sealing Time-475)/275) + 
+                                                    (1.0456231626)*((Sealing Temperature - 180)/60)*((Sealing Time-475)/275) - (0.085441804)*((Sealing Pressure - 77)/38.5)",
                                                     
-                                                    "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP) = (7.5004364288) + (2.1104133638)*((Sealing_Temperature - 180)/60)+
-                                                    (0.9519562501)*((Sealing_Time-475)/275) + (1.0656214205)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + 
-                                                    (0.2754606935)*((Layer_Thickness - 16.5)/1.5) - (0.007364972)*((Sealing_Pressure - 77)/38.5)",
+                                                    "Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP) = (7.5004364288) + (2.1104133638)*((Sealing Temperature - 180)/60)+
+                                                    (0.9519562501)*((Sealing Time-475)/275) + (1.0656214205)*((Sealing Temperature - 180)/60)*((Sealing Time-475)/275) + 
+                                                    (0.2754606935)*((Layer Thickness - 16.5)/1.5) - (0.007364972)*((Sealing Pressure - 77)/38.5)",
                                                     
-                                                    "Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP) = (8.2995281922) + (4.1535657286)*((Sealing_Temperature - 180)/60)+
-                                                    (0.9568895775)*((Sealing_Time-475)/275) - (3.199586193)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) + 
-                                                    (0.7476644958)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + (0.0536281149)*((Sealing_Pressure - 77)/38.5)",
+                                                    "Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP) = (8.2995281922) + (4.1535657286)*((Sealing Temperature - 180)/60)+
+                                                    (0.9568895775)*((Sealing Time-475)/275) - (3.199586193)*((Sealing Temperature - 180)/60)*((Sealing Temperature - 180)/60) + 
+                                                    (0.7476644958)*((Sealing Temperature - 180)/60)*((Sealing Time-475)/275) + (0.0536281149)*((Sealing Pressure - 77)/38.5)",
                                                     
-                                                    "Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP) = (9.544993865) + (2.6037874114)*((Sealing_Temperature - 180)/60)+
-                                                    (1.8176938907)*((Sealing_Time-475)/275) + (1.96449116648)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) -
-                                                    (0.489432036)*((Sealing_Pressure - 77)/38.5)",
+                                                    "Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP) = (9.544993865) + (2.6037874114)*((Sealing Temperature - 180)/60)+
+                                                    (1.8176938907)*((Sealing Time-475)/275) + (1.96449116648)*((Sealing Temperature - 180)/60)*((Sealing Time-475)/275) -
+                                                    (0.489432036)*((Sealing Pressure - 77)/38.5)",
                                                     
-                                                    "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP) = (6.3165820822) + (1.0534709536)*((Sealing_Temperature - 180)/60)+
-                                                    (0.6532790282)*((Sealing_Time-475)/275) + (1.3296269584)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) + 
-                                                    (0.7989598978)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + (0.1730372655)*((Sealing_Pressure - 77)/38.5)",
+                                                    "Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP) = (6.3165820822) + (1.0534709536)*((Sealing Temperature - 180)/60)+
+                                                    (0.6532790282)*((Sealing Time-475)/275) + (1.3296269584)*((Sealing Temperature - 180)/60)*((Sealing Temperature - 180)/60) + 
+                                                    (0.7989598978)*((Sealing Temperature - 180)/60)*((Sealing Time-475)/275) + (0.1730372655)*((Sealing Pressure - 77)/38.5)",
                                                     
-                                                    "Mean_Seal_Strength(Paper_metOPP/90gsmPaper_18metOPP) = (9.6899630181) + (0.5344405994)*((Sealing_Temperature - 180)/60)+
-                                                    (1.1338418823)*((Sealing_Time-475)/275) - (1.76049007)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) -
-                                                    (0.00534394)*((Sealing_Pressure - 77)/38.5)"
+                                                    "Mean Seal Strength(Paper metOPP/90gsmPaper 18metOPP) = (9.6899630181) + (0.5344405994)*((Sealing Temperature - 180)/60)+
+                                                    (1.1338418823)*((Sealing Time-475)/275) - (1.76049007)*((Sealing Temperature - 180)/60)*((Sealing Temperature - 180)/60) -
+                                                    (0.00534394)*((Sealing Pressure - 77)/38.5)"
       ))
       
       # lists for variable names
@@ -81,9 +81,9 @@ ssmServer <- function(id, top_session){
       
       # rendering advisory tables - predictors and their limits
       output$advice_ashutosh <- renderDataTable({
-        Advisory_table <- data.frame(Ingredients = c("Sealing_Pressure","Sealing_Time",
-                                                     "Sealing_Temperature",
-                                                     "Layer_Thickness"),
+        Advisory_table <- data.frame(Ingredients = c("Sealing Pressure","Sealing Time",
+                                                     "Sealing Temperature",
+                                                     "Layer Thickness"),
                                      Lower_Level = c(30, 200, 100, 15),
                                      Upper_Level = c(110, 700, 240, 100))
         datatable(Advisory_table)
@@ -495,7 +495,9 @@ ssmServer <- function(id, top_session){
           y_ashutosh <- reactive({
             values <- c(50, 475, 120, 35)
             sqr <- data.frame(t(values))
-            colnames(sqr) <- all_vars_ashutosh
+            colnames(sqr) <- c("Sealing Pressure","Sealing Time",
+                               "Sealing Temperature",
+                               "Layer Thickness")
             rownames(sqr) <- c("Enter Simulation Values")
             sqr
           })
@@ -507,16 +509,16 @@ ssmServer <- function(id, top_session){
           
           datatable(x1_ashutosh$df, editable = T) %>%
             formatStyle(
-              "Sealing_Pressure",
+              "Sealing Pressure",
               color = styleInterval(c(30, 70), c('red', 'black', 'red')))%>%
             formatStyle(
-              "Sealing_Time",
+              "Sealing Time",
               color = styleInterval(c(200, 700), c('red', 'black', 'red')))%>%
             formatStyle(
-              "Sealing_Temperature",
+              "Sealing Temperature",
               color = styleInterval(c(100, 140), c('red', 'black', 'red')))%>%
             formatStyle(
-              "Layer_Thickness",
+              "Layer Thickness",
               color = styleInterval(c(30, 40), c('red', 'black', 'red')))
         })
         
@@ -544,44 +546,47 @@ ssmServer <- function(id, top_session){
         
         
         output$modeltable_ashutosh <- renderDataTable(
-          datatable(x1_ashutosh$df)
+          datatable(x1_ashutosh$df, 
+                    colnames = c("Sealing Pressure","Sealing Time",
+                                 "Sealing Temperature",
+                                 "Layer Thickness") )
         )
         
         
         observeEvent(input$simulate_ashutosh,{
           
-          eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure - 50)/25) + 
-                (0.5005544208)*((Sealing_Time - 475)/275) + (1.1487322096)*((Sealing_Temperature - 120)/20) - 
-                (0.265927563)*((Layer_Thickness - 35)/5) - (0.214751072)*((Sealing_Pressure - 50)/25)*((Sealing_Time - 475)/275) + 
-                (0.1653191326)*((Sealing_Pressure - 50)/25)*((Layer_Thickness - 35)/5) - 
-                (0.190088312)*((Sealing_Time-475)/275)*((Layer_Thickness - 35)/5) - 
-                (0.227255444)*((Layer_Thickness - 35)/5)*((Sealing_Temperature - 120)/20) - 
-                (0.438383433)*((Sealing_Pressure - 50)/25)*((Sealing_Pressure - 50)/25) + 
-                (0.422789614)*((Sealing_Time-475)/275)*((Sealing_Time-475)/275)"
+          eqn1 <-"(10.085043285) + (0.143476202)*((sealingpressure - 50)/25) + 
+                (0.5005544208)*((sealingtime - 475)/275) + (1.1487322096)*((sealingtemperature - 120)/20) - 
+                (0.265927563)*((layerthickness - 35)/5) - (0.214751072)*((sealingpressure - 50)/25)*((sealingtime - 475)/275) + 
+                (0.1653191326)*((sealingpressure - 50)/25)*((layerthickness - 35)/5) - 
+                (0.190088312)*((sealingtime-475)/275)*((layerthickness - 35)/5) - 
+                (0.227255444)*((layerthickness - 35)/5)*((sealingtemperature - 120)/20) - 
+                (0.438383433)*((sealingpressure - 50)/25)*((sealingpressure - 50)/25) + 
+                (0.422789614)*((sealingtime-475)/275)*((sealingtime-475)/275)"
           
-          eqn2 <-"(7.9283468534) - (1.744214002)*((Layer_Thickness - 85)/15)+
-                (2.0472868262)*((Sealing_Temperature - 180)/60) + (1.0299432676)*((Sealing_Time-475)/275) + 
-                (1.0456231626)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) - (0.085441804)*((Sealing_Pressure - 77)/38.5)"
+          eqn2 <-"(7.9283468534) - (1.744214002)*((layerthickness - 85)/15)+
+                (2.0472868262)*((sealingtemperature - 180)/60) + (1.0299432676)*((sealingtime-475)/275) + 
+                (1.0456231626)*((sealingtemperature - 180)/60)*((sealingtime-475)/275) - (0.085441804)*((sealingpressure - 77)/38.5)"
           
-          eqn3 <-"(7.5004364288) + (2.1104133638)*((Sealing_Temperature - 180)/60)+
-                (0.9519562501)*((Sealing_Time-475)/275) + (1.0656214205)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + 
-                (0.2754606935)*((Layer_Thickness - 16.5)/1.5) - (0.007364972)*((Sealing_Pressure - 77)/38.5)"
+          eqn3 <-"(7.5004364288) + (2.1104133638)*((sealingtemperature - 180)/60)+
+                (0.9519562501)*((sealingtime-475)/275) + (1.0656214205)*((sealingtemperature - 180)/60)*((sealingtime-475)/275) + 
+                (0.2754606935)*((layerthickness - 16.5)/1.5) - (0.007364972)*((sealingpressure - 77)/38.5)"
           
-          eqn4 <-"(8.2995281922) + (4.1535657286)*((Sealing_Temperature - 180)/60)+
-                (0.9568895775)*((Sealing_Time-475)/275) - (3.199586193)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) + 
-                (0.7476644958)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + (0.0536281149)*((Sealing_Pressure - 77)/38.5)"
+          eqn4 <-"(8.2995281922) + (4.1535657286)*((sealingtemperature - 180)/60)+
+                (0.9568895775)*((sealingtime-475)/275) - (3.199586193)*((sealingtemperature - 180)/60)*((sealingtemperature - 180)/60) + 
+                (0.7476644958)*((sealingtemperature - 180)/60)*((sealingtime-475)/275) + (0.0536281149)*((sealingpressure - 77)/38.5)"
           
-          eqn5 <-"(9.544993865) + (2.6037874114)*((Sealing_Temperature - 180)/60)+
-                (1.8176938907)*((Sealing_Time-475)/275) + (1.96449116648)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) -
-                (0.489432036)*((Sealing_Pressure - 77)/38.5)"
+          eqn5 <-"(9.544993865) + (2.6037874114)*((sealingtemperature - 180)/60)+
+                (1.8176938907)*((sealingtime-475)/275) + (1.96449116648)*((sealingtemperature - 180)/60)*((sealingtime-475)/275) -
+                (0.489432036)*((sealingpressure - 77)/38.5)"
           
-          eqn6 <-"(6.3165820822) + (1.0534709536)*((Sealing_Temperature - 180)/60)+
-                (0.6532790282)*((Sealing_Time-475)/275) + (1.3296269584)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) + 
-                (0.7989598978)*((Sealing_Temperature - 180)/60)*((Sealing_Time-475)/275) + (0.1730372655)*((Sealing_Pressure - 77)/38.5)"
+          eqn6 <-"(6.3165820822) + (1.0534709536)*((sealingtemperature - 180)/60)+
+                (0.6532790282)*((sealingtime-475)/275) + (1.3296269584)*((sealingtemperature - 180)/60)*((sealingtemperature - 180)/60) + 
+                (0.7989598978)*((sealingtemperature - 180)/60)*((sealingtime-475)/275) + (0.1730372655)*((sealingpressure - 77)/38.5)"
           
-          eqn7 <-"(9.6899630181) + (0.5344405994)*((Sealing_Temperature - 180)/60)+
-                (1.1338418823)*((Sealing_Time-475)/275) - (1.76049007)*((Sealing_Temperature - 180)/60)*((Sealing_Temperature - 180)/60) -
-                (0.00534394)*((Sealing_Pressure - 77)/38.5)"
+          eqn7 <-"(9.6899630181) + (0.5344405994)*((sealingtemperature - 180)/60)+
+                (1.1338418823)*((sealingtime-475)/275) - (1.76049007)*((sealingtemperature - 180)/60)*((sealingtemperature - 180)/60) -
+                (0.00534394)*((sealingpressure - 77)/38.5)"
           
           eqn1 <- gsub("\n","",eqn1)
           eqn2 <- gsub("\n","",eqn2)
@@ -593,9 +598,10 @@ ssmServer <- function(id, top_session){
           
           
           df <- as.data.frame(x1_ashutosh$df)
+          colnames(df) <- gsub(" ","",tolower(colnames(df)))
           
           # prefixing 'df' to column names
-          for(i in b_ashutosh){
+          for(i in colnames(df)){
             eqn1 <- gsub(i, df[1,i], eqn1)
             eqn2 <- gsub(i, df[1,i], eqn2)
             eqn3 <- gsub(i, df[1,i], eqn3)
@@ -639,7 +645,7 @@ ssmServer <- function(id, top_session){
           })
           
           output$result1_ashutosh <- renderDataTable(
-            { tbl })
+            {DT::datatable(tbl, rownames = FALSE, colnames = c("Mean Seal Strength(monoPP Haiti)", "Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)", "Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)", "Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)", "Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)", "Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)", "	Mean Seal Strength(Paper metOPP/90gsmPaper 18metOPP)") )})
         })
         
         
@@ -768,8 +774,8 @@ ssmServer <- function(id, top_session){
         
         #optimisation renderings for ashutosh
         observeEvent(req(x_ashutosh),{
-          predictor_names_sd <- c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
-                                  "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]")
+          predictor_names_sd <- c("Sealing Pressure [30,110]", "Sealing Time [200,700]", 
+                                  "Sealing Temperature [100,240]" , "Layer Thickness [15,100]")
           zero_vector<-rep(1,length(predictor_names_sd))
           min_vector <- c(30,200,100,15)
           max_vector <- c(110,700,240,100)
@@ -781,7 +787,7 @@ ssmServer <- function(id, top_session){
           #table 1
           output$optimiser_table1_seal <- renderDataTable({
             DT::datatable(opt$tab_1,selection="none",editable=TRUE,
-                          colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
+                          colnames = c("Predictors [Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
           })
           
           #cell edit
@@ -850,28 +856,28 @@ ssmServer <- function(id, top_session){
                 (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
                 (0.00534394)*((x[1] - 77)/38.5)
               
-              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+              if(input$equation_seal =="Mean Seal Strength(monoPP Haiti)"){
                 equation <- equation_1
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
                 equation <- equation_2
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
                 equation <- equation_3
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
                 equation <- equation_4
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
                 equation <- equation_5
               }
               
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
                 equation <- equation_6
               }
               
@@ -912,27 +918,27 @@ ssmServer <- function(id, top_session){
               
               eq_7 <- x[3] + x[2] + x[3]*x[3] + x[1] 
               
-              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+              if(input$equation_seal =="Mean Seal Strength(monoPP Haiti)"){
                 eq <- eq_1
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
                 eq <- eq_2
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
                 eq <- eq_3
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
                 eq <- eq_4
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
                 eq <- eq_5
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
                 eq <- eq_6
               }
               
@@ -964,8 +970,8 @@ ssmServer <- function(id, top_session){
             
             # optimiser output table 1
             output$optimiser_table32_seal <- renderDataTable({
-              df<-data.frame(Predictors = c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
-                                            "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]"),
+              df<-data.frame(Predictors = c("Sealing Pressure [30,110]", "Sealing Time [200,700]", 
+                                            "Sealing Temperature [100,240]" , "Layer Thickness [15,100]"),
                              Value = round(res$solution,3)
               )
               DT::datatable(df,selection ="none",rownames = FALSE )
@@ -1011,27 +1017,27 @@ ssmServer <- function(id, top_session){
                 (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
                 (0.00534394)*((x[1] - 77)/38.5)
               
-              if(input$equation_seal =="Mean_Seal_Strength(monoPP_Haiti)"){
+              if(input$equation_seal =="Mean Seal Strength(monoPP Haiti)"){
                 equ <- equation_1
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70-100gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
                 equ <- equation_2
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15-18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
                 equ <- equation_3
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/100gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
                 equ <- equation_4
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/70gsmPaper_18metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
                 equ <- equation_5
               }
               
-              else if(input$equation_seal =="Mean_Seal_Strength(Paper_metOPP/90gsmPaper_15metOPP)"){
+              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
                 equ <- equation_6
               }
               
@@ -1068,8 +1074,8 @@ ssmServer <- function(id, top_session){
             }
             
             downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Target Variable"), Predicted_or_Optimal_Value= constraint_value(res$solution))
-            downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Sealing_Pressure_[30,110]", "Sealing_Time_[200,700]", 
-                                                                                      "Sealing_Temperature_[100,240]" , "Layer_Thickness_[15,100]"),
+            downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Sealing Pressure [30,110]", "Sealing Time [200,700]", 
+                                                                                      "Sealing Temperature [100,240]" , "Layer Thickness [15,100]"),
                                  Predicted_or_Optimal_Value=res$solution)
             
             if(input$radio_button_seal=='min'){

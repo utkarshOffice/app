@@ -475,12 +475,12 @@ SD_slurryServer <- function(id, top_session){
           df$AlkSilicateinSlurry <- as.numeric(df$AlkSilicate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
           df$CP5inSlurry <- as.numeric(df$CP5)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
           df$SulphateinSlurry <- as.numeric(df$Sulphate)/as.numeric(df$sum)*(1-as.numeric(df$TargetSMC))
-          
+          #View(df)
           output$newvals_uday <- renderDataTable({
            newvals <-  round(data.frame(cbind(df$NaLASinSlurry,df$LSAinSlurry, df$SCMCinSlurry, df$AlkSilicateinSlurry, df$CP5inSlurry , df$SulphateinSlurry)
                              ),3)
-            
-            DT::datatable(newvals[2,] , colnames = c("NaLAS in Slurry", "LSA in Slurry", " SCMC in Slurry", " Alk Silicate in Slurry", " CP5 in Slurry", "Sulphate in Slurry"), rownames = NULL)
+            #View(newvals)
+            DT::datatable(newvals , colnames = c("NaLAS in Slurry", "LSA in Slurry", " SCMC in Slurry", " Alk Silicate in Slurry", " CP5 in Slurry", "Sulphate in Slurry"), rownames = NULL)
           
             })
           
@@ -490,12 +490,12 @@ SD_slurryServer <- function(id, top_session){
           })
           
           for(i in b_uday){
-            eqn1 <- gsub(i, df[2,i], eqn1)
-            eqn2 <- gsub(i, df[2,i], eqn2)
+            eqn1 <- gsub(i, df[1,i], eqn1)
+            eqn2 <- gsub(i, df[1,i], eqn2)
           }
           
           for(i in all_vars_uday){
-            eqn3 <- gsub(i, df[2,i], eqn3)
+            eqn3 <- gsub(i, df[1,i], eqn3)
           }
           Pred_Formula_Low_Sheer_Viscosity <- eval(parse(text = eqn1))
           Torque300 <- eval(parse(text = eqn2))
@@ -524,10 +524,7 @@ SD_slurryServer <- function(id, top_session){
           
           output$result1_uday <- renderDataTable(
             
-            {  
-              
-              
-              tbl })
+            {DT::datatable(tbl, rownames = FALSE, colnames = c("Pred Formula Low Sheer Viscosity", "Torque 300", "Drying Prediction")) })
         })
         
         # nrdata2 <- as.data.frame(tbl)
@@ -630,9 +627,9 @@ SD_slurryServer <- function(id, top_session){
         #optimisation renderings for uday(SD slurry props- drying prediction)
         observeEvent(req(x_uday),
                      {
-                       predictors_in_model3_uday<-c("TargetSMC_[0.287,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                                    "CP5_[0,0.03]", "LSA_[0.17,0.45]",
-                                                    "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
+                       predictors_in_model3_uday<-c("TargetSMC [0.287,0.37]","NaLAS [0.13,0.41]","AlkSilicate [0.07,0.16]",
+                                                    "CP5 [0,0.03]", "LSA [0.17,0.45]",
+                                                    "SCMC [0,0.01]","Sulphate [0.17,0.52]")
                        zero_vector<-rep(1,length(predictors_in_model3_uday))
                        min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
                        max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
@@ -643,7 +640,7 @@ SD_slurryServer <- function(id, top_session){
                        
                        #table 1
                        output$optimiser_table1_uday<-renderDataTable({
-                         DT::datatable(opt$tab_1,selection="none",editable=TRUE,colnames = c("Predictors_[Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
+                         DT::datatable(opt$tab_1,selection="none",editable=TRUE,colnames = c("Predictors [Expected lower bound, Expected upper bound]","obj_coeff","Lower Bounds(editable)","Upper Bounds(editable)"))
                        })
                        
                        observeEvent(input$optimiser_table1_uday_cell_edit,{
@@ -765,9 +762,9 @@ SD_slurryServer <- function(id, top_session){
                          updateSelectInput(session,"inequality_selection_uday",selected = "less than or equal to")
                          updateNumericInput(session,"numeric_input_uday",value = .32)
                          updateRadioButtons(session,"radio_button_uday",selected = "min")
-                         predictors_in_model3_uday<-c("TargetSMC_[0.29,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                                      "CP5_[0,0.03]", "LSA_[0.17,0.45]",
-                                                      "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
+                         predictors_in_model3_uday<-c("TargetSMC [0.29,0.37]","NaLAS [0.13,0.41]","AlkSilicate [0.07,0.16]",
+                                                      "CP5 [0,0.03]", "LSA [0.17,0.45]",
+                                                      "SCMC [0,0.01]","Sulphate [0.17,0.52]")
                          zero_vector<-rep(1,length(predictors_in_model3_uday))
                          min_vector <- c(0.287,0.13,0.07,0,0.17,0,0.17)
                          max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
@@ -804,9 +801,9 @@ SD_slurryServer <- function(id, top_session){
       #non linear optimisation for Udays model
       observeEvent(req(x_uday),{
         
-        predictor_names_torque <- c("TargetSMC_[0.29,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                    "CP5_[0.001,0.03]", "LSA_[0.17,0.45]",
-                                    "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
+        predictor_names_torque <- c("TargetSMC [0.29,0.37]","NaLAS [0.13,0.41]","AlkSilicate [0.07,0.16]",
+                                    "CP5 [0.001,0.03]", "LSA [0.17,0.45]",
+                                    "SCMC [0,0.01]","Sulphate [0.17,0.52]")
         zero_vector<-rep(1,length(predictor_names_torque))
         min_vector <- c(0.29,0.13,0.07,0.001,0.17,0,0.17)
         max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
@@ -1071,9 +1068,9 @@ SD_slurryServer <- function(id, top_session){
         updateNumericInput(session,"numeric_input_uday_pred",value = 33)
         updateNumericInput(session,"weight_pred",value = 1)
         
-        predictors_in_model2<-c("TargetSMC_[0.29,0.37]","NaLAS_[0.13,0.41]","AlkSilicate_[0.07,0.16]",
-                                "CP5_[0,0.03]", "LSA_[0.17,0.45]",
-                                "SCMC_[0,0.01]","Sulphate_[0.17,0.52]")
+        predictors_in_model2<-c("TargetSMC [0.29,0.37]","NaLAS [0.13,0.41]","AlkSilicate [0.07,0.16]",
+                                "CP5 [0,0.03]", "LSA [0.17,0.45]",
+                                "SCMC [0,0.01]","Sulphate [0.17,0.52]")
         zero_vector<-rep(1,length(predictors_in_model2))
         min_vector<- c(0.29,0.13,0.07,0,0.17,0,0.17)
         max_vector <- c(0.37,0.41,0.16,0.03,0.45,0.01,0.52)
