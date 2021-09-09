@@ -395,11 +395,13 @@ SD_slurryServer <- function(id, top_session){
         observe({
           y_uday <- reactive({
            # munits <- rep("%(w/w)",length(all_vars_uday))
-            values <- c(0.287, 0.13, 0.17, 0.17, 0.07, 0.01, 0.01)
-            sqr <- data.frame(t(values))
             #sqr1 <- datatable(sqr, editable = T,colnames = c("Model Predictors","Measurement Units", "Enter Simulation Values"))
+            munits <- rep("[0-1 %(w/w)]",length(all_vars_uday))
+            values <- c(0.287, 0.13, 0.07, 0.17, 0.00, 0.00, 0.17)
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+            # sqr <- data.frame(t(values))
             colnames(sqr) <- all_vars_uday
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units [Fractions (0-1)]","Enter Simulation Values")
             sqr
           })
           x1_uday$df <- y_uday()
@@ -524,10 +526,7 @@ SD_slurryServer <- function(id, top_session){
           
           output$result1_uday <- renderDataTable(
             
-            {  
-              
-              
-              tbl })
+            { tbl })
         })
         
         # nrdata2 <- as.data.frame(tbl)

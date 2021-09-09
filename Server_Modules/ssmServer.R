@@ -496,10 +496,12 @@ ssmServer <- function(id, top_session){
         x1_ashutosh <- reactiveValues()
         observe({
           y_ashutosh <- reactive({
+            munits <- c("[N/cm^2]","[ms]","[C]","[um]")
             values <- c(50, 475, 120, 35)
-            sqr <- data.frame(t(values))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+            # sqr <- data.frame(t(values))
             colnames(sqr) <- all_vars_ashutosh
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
             sqr
           })
           x1_ashutosh$df <- y_ashutosh()
@@ -599,13 +601,13 @@ ssmServer <- function(id, top_session){
           
           # prefixing 'df' to column names
           for(i in b_ashutosh){
-            eqn1 <- gsub(i, df[1,i], eqn1)
-            eqn2 <- gsub(i, df[1,i], eqn2)
-            eqn3 <- gsub(i, df[1,i], eqn3)
-            eqn4 <- gsub(i, df[1,i], eqn4)
-            eqn5 <- gsub(i, df[1,i], eqn5)
-            eqn6 <- gsub(i, df[1,i], eqn6)
-            eqn7 <- gsub(i, df[1,i], eqn7)
+            eqn1 <- gsub(i, df[2,i], eqn1)
+            eqn2 <- gsub(i, df[2,i], eqn2)
+            eqn3 <- gsub(i, df[2,i], eqn3)
+            eqn4 <- gsub(i, df[2,i], eqn4)
+            eqn5 <- gsub(i, df[2,i], eqn5)
+            eqn6 <- gsub(i, df[2,i], eqn6)
+            eqn7 <- gsub(i, df[2,i], eqn7)
           }
           
           

@@ -481,11 +481,13 @@ slurryServer <- function(id, top_session){
         
         observe({
           y <- reactive({
-            #munits <- rep("0-1",length(b))
+            
+            munits <- rep("[0-1]",length(b))
             values <- c(0.287, 0.13, 0.07, 0.17, 0.00, 0.00, 0.17)
-            sqr <- data.frame(t(values))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+            # sqr <- data.frame(t(values))
             colnames(sqr) <- b
-            rownames(sqr) <- c( "Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units [Fractions (0-1)]","Enter Simulation Values")
             sqr
           })
           x1$df <- y()
@@ -537,7 +539,7 @@ slurryServer <- function(id, top_session){
         })
         
 
-        var_sum <- reactive(sum(as.numeric(x1$df[1,c(2,3,4,5,6,7)])))
+        var_sum <- reactive(sum(as.numeric(x1$df[2,c(2,3,4,5,6,7)])))
         
         observeEvent(input[["simulation_input_cell_edit"]],{
           if(var_sum() == 1 ){
@@ -561,17 +563,17 @@ slurryServer <- function(id, top_session){
           eqn1 <- "550.942517169757 *TargetSMC + 657.293920443309 *NaLASnew + -178.742137567497 *AlkSilicatenew + -145.925867640988 *CP5new +484.822800006602 *LSAnew + 205.55728325435 *SCMCnew + 14.7480644403947 *Sulphatenew + -435.366522312941 *0 + TargetSMC * (NaLASnew *-2509.30663159213) +TargetSMC * (Sulphatenew * -909.820229343898) +TargetSMC * (LSAnew * -2140.43715033235)"
           eqn2 <- "1.64652727504537*TargetSMC + -0.340054974118285*NaLAS + 0.0349876142645199*AlkSilicate + -0.26064073764549*CP5 + -0.0575389664392278*LSA + -1.17237663840093*SCMC + -0.298363251134605*Sulphate"
           
-          slurry_sum <- reactive( as.numeric(x1$df[1,c("NaLAS (dry basis)")])+ as.numeric(x1$df[1,c("AlkSilicate (dry basis)")])+ as.numeric(x1$df[1,c("CP5 (dry basis)")])+
-                                    as.numeric(x1$df[1,c("LSA (dry basis)")])+ as.numeric(x1$df[1,c("SCMC (dry basis)")])+ as.numeric(x1$df[1,c("Sulphate (dry basis)")]))
+          slurry_sum <- reactive( as.numeric(x1$df[2,c("NaLAS (dry basis)")])+ as.numeric(x1$df[2,c("AlkSilicate (dry basis)")])+ as.numeric(x1$df[2,c("CP5 (dry basis)")])+
+                                    as.numeric(x1$df[2,c("LSA (dry basis)")])+ as.numeric(x1$df[2,c("SCMC (dry basis)")])+ as.numeric(x1$df[2,c("Sulphate (dry basis)")]))
           
           if(slurry_sum() == 1){
-            TargetSMC <- as.numeric(x1$df[1,c("TargetSMC")])
-            NaLASnew <- as.numeric(x1$df[1,c("NaLAS (dry basis)")])/slurry_sum() * (1- TargetSMC)
-            AlkSilicatenew <- as.numeric(x1$df[1,c("AlkSilicate (dry basis)")])/slurry_sum() * (1- TargetSMC)
-            CP5new <- as.numeric(x1$df[1,c("CP5 (dry basis)")])/slurry_sum() * (1- TargetSMC)
-            LSAnew <- as.numeric(x1$df[1,c("LSA (dry basis)")])/slurry_sum() * (1- TargetSMC)
-            SCMCnew <- as.numeric(x1$df[1,c("SCMC (dry basis)")])/slurry_sum() * (1- TargetSMC)
-            Sulphatenew <- as.numeric(x1$df[1,c("Sulphate (dry basis)")])/slurry_sum() * (1- TargetSMC)
+            TargetSMC <- as.numeric(x1$df[2,c("TargetSMC")])
+            NaLASnew <- as.numeric(x1$df[2,c("NaLAS (dry basis)")])/slurry_sum() * (1- TargetSMC)
+            AlkSilicatenew <- as.numeric(x1$df[2,c("AlkSilicate (dry basis)")])/slurry_sum() * (1- TargetSMC)
+            CP5new <- as.numeric(x1$df[2,c("CP5 (dry basis)")])/slurry_sum() * (1- TargetSMC)
+            LSAnew <- as.numeric(x1$df[2,c("LSA (dry basis)")])/slurry_sum() * (1- TargetSMC)
+            SCMCnew <- as.numeric(x1$df[2,c("SCMC (dry basis)")])/slurry_sum() * (1- TargetSMC)
+            Sulphatenew <- as.numeric(x1$df[2,c("Sulphate (dry basis)")])/slurry_sum() * (1- TargetSMC)
             
             output$newvals <- renderDataTable({
               round(data.frame(cbind(NaLASnew,AlkSilicatenew,CP5new,LSAnew,SCMCnew,Sulphatenew)),3)
@@ -587,7 +589,7 @@ slurryServer <- function(id, top_session){
             
             for(i in b){
               j <- str_replace(i, " \\s*\\([^\\)]+\\)", "")
-              eqn2 <- gsub(j, x1$df[1,i], eqn2)
+              eqn2 <- gsub(j, x1$df[2,i], eqn2)
             }
             
             Torque <- eval(parse(text = eqn1))

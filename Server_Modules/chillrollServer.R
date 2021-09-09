@@ -332,10 +332,12 @@ chillrollServer <- function(id, top_session){
         x1_santosh <- reactiveValues()
         observe({
           y_santosh <- reactive({
+            munits <- c("[mm]","[fraction]","[C]","[C]","[C]","[m]","[rpm]")
             values <- c(1.0, 0.75, 110, 30, 7.5, 0.01, 2.0)
-            sqr <- data.frame(t(values))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+           # sqr <- data.frame(t(values))
             colnames(sqr) <- all_vars_santosh
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
             sqr
           })
           x1_santosh$df <- y_santosh()
@@ -406,8 +408,8 @@ chillrollServer <- function(id, top_session){
   
           # prefixing 'df' to column names
           for(i in b_santosh){
-            eqn1 <- gsub(i, df[1,i], eqn1)
-            eqn2 <- gsub(i, df[1,i], eqn2)
+            eqn1 <- gsub(i, df[2,i], eqn1)
+            eqn2 <- gsub(i, df[2,i], eqn2)
           }
           
 
