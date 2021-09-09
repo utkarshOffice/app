@@ -100,7 +100,7 @@ Soap_HardnessUI <- function(id){
                                                   h1("Profiler"),
                                                   fluidRow(column(width = 4,plotOutput(ns("plot1"))),
                                                            column(width = 4,
-                                                                  sliderInput(ns("billetmoistur"),"Billet Moisture:", min = 14, max = 29, value = 15.1),
+                                                                  sliderInput(ns("billetmoistur"),"Billet Moisture:", min = 14, max = 29, value = 15),
                                                                   sliderInput(ns("plodderbackpressuredegc"),"Plodder Back Pressure (30%) @ 40 degC:", min = 7, max = 17, value = 7.7),
                                                                   sliderInput(ns("flowrate"),"Flow Rate (30%):", min = 3550, max = 7770, value = 3555),
                                                                   sliderInput(ns("moisture"),"Moisture:", min = 15, max = 28, value = 16.1)

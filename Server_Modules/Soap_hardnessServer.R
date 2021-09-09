@@ -101,11 +101,11 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
                        soap_bar_hardness <- reactive(eval(parse(text = eqn1)))
 
                        output$plot1 <- renderPlot({
-                         soap_bar_hardness <- soap_bar_hardness()
+                         soap_bar_hardness <- round(soap_bar_hardness(),3)
                          ggplot(data=data.frame(billetmoistur, soap_bar_hardness), aes(x=billetmoistur, y= soap_bar_hardness)) +
                            geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+ xlab("Billet Moisture")+
                            ylab("Soap Bar Hardness")+
-                           gghighlight(billetmoistur == input$billetmoistur)
+                           gghighlight(billetmoistur == input$billetmoistur, label_key = soap_bar_hardness)
                        })
                      })
 

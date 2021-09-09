@@ -62,7 +62,7 @@ SD_powderServer <- function(id, top_session){
             BD_Prediction_by_Model <- BD_Prediction_by_Model()
             ggplot(data=data.frame(Base_Factor, BD_Prediction_by_Model), aes(x=Base_Factor, y= BD_Prediction_by_Model)) +
               geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-              gghighlight(Base_Factor == input$Base_Factor)
+              gghighlight(Base_Factor == input$Base_Factor, label_key = BD_Prediction_by_Model)
           })
         })
         

@@ -98,17 +98,16 @@ SD_powderUI <- function(id){
                                        tabPanel("Profiler",
                                                 wellPanel(
                                                   h1("Profiler"),
-                                                  fluidRow(column(width = 10,plotOutput(ns("plot2"))),
-                                                           ),
-                                                  fluidRow(column(width = 6,
+                                                  fluidRow(column(width = 6,plotOutput(ns("plot2"))),
+                                                           column(width = 6,
                                                                   sliderInput(ns("Base_Factor"),"Base Factor:", min = 1, max = 100, value = 5),
                                                                   sliderInput(ns("Filler_Sulphate_Salt_as_Balancing_ingredient"),"Filler Sulphate Salt as Balancing ingredient:", min = 1, max = 100, value = 5),
-                                                                  sliderInput(ns("Base_Powder_Bulk_Density"),"Base Powder Bulk Density:", min = 1, max = 100, value = 5)
+                                                                  sliderInput(ns("Post_Dosing_Ingredients_Majors"),"Post Dosing Ingredients Majors:", min = 1, max = 100, value = 5),
+                                                                  sliderInput(ns("Post_Dosing_Ingredients_Minors"),"Post Dosing Ingredients Minors:", min = 1, max = 100, value = 5)
+                                                  )
                                                   ),
-                                                  column(width = 6,
-                                                         sliderInput(ns("Post_Dosing_Ingredients_Majors"),"Post Dosing Ingredients Majors:", min = 1, max = 100, value = 5),
-                                                         sliderInput(ns("Post_Dosing_Ingredients_Minors"),"Post Dosing Ingredients Minors:", min = 1, max = 100, value = 5)
-                                                  ))
+                                                  fluidRow( column(width = 6, sliderInput(ns("Base_Powder_Bulk_Density"),"Base Powder Bulk Density:", min = 1, max = 100, value = 5) )
+                                                  )
                                                 )),
                                        tabPanel("Imported Data Simulation",
                                                 uiOutput(ns("simulation_result_uday_sd2")),

@@ -1083,12 +1083,12 @@ ssmServer <- function(id, top_session){
             }
             
             
-            if(inequality_selection_sd=="less than or equal to" && constraint_value(res$solution)>target_sd ){
+            if(inequality_selection_sd=="less than or equal to" && round(constraint_value(res$solution),1)>target_sd ){
               showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
                                   Please alter the inputs and re-run."))
             }
             
-            if(inequality_selection_sd=="greater than or equal to" && constraint_value(res$solution)<target_sd ){
+            if(inequality_selection_sd=="greater than or equal to" && round(constraint_value(res$solution),1)<target_sd ){
               showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
                                   Please alter the inputs and re-run."))
             }

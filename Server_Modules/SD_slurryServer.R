@@ -93,24 +93,24 @@ SD_slurryServer <- function(id, top_session){
             Drying_Prediction <- reactive(eval(parse(text = eqn3)))
             
             output$plot1 <- renderPlot({
-              Torque <- Torque300()
+              Torque <- round(Torque300(),3)
               ggplot(data=data.frame(TargetSMC, Torque), aes(x=TargetSMC, y= Torque)) +
-                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Torque)
             })
             
             output$plot2 <- renderPlot({
-              Pred_Formula_Low_Sheer_Viscosity <- Pred_Formula_Low_Sheer_Viscosity()
+              Pred_Formula_Low_Sheer_Viscosity <- round(Pred_Formula_Low_Sheer_Viscosity(),3)
               ggplot(data=data.frame(TargetSMC, Pred_Formula_Low_Sheer_Viscosity), aes(x=TargetSMC, y= Pred_Formula_Low_Sheer_Viscosity)) +
-                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ylab("Pred Formula Low Sheer Viscosity")+
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Pred_Formula_Low_Sheer_Viscosity)
             })
             
             output$plot3 <- renderPlot({
-              Drying_Prediction <- Drying_Prediction()
+              Drying_Prediction <- round(Drying_Prediction(),3)
               ggplot(data=data.frame(TargetSMC, Drying_Prediction), aes(x=TargetSMC, y= Drying_Prediction)) +
-                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ ylab("Drying Prediction")+
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Drying_Prediction)
             })
             
           }else
@@ -130,24 +130,24 @@ SD_slurryServer <- function(id, top_session){
             Drying_Prediction <- reactive(eval(parse(text = eqn3)))
             
             output$plot1 <- renderPlot({
-              Torque <- Torque300()
+              Torque <- round(Torque300(),3)
               ggplot(data=data.frame(TargetSMC, Torque), aes(x=TargetSMC, y= Torque)) +
-                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Torque)
             })
             
             output$plot2 <- renderPlot({
-              Pred_Formula_Low_Sheer_Viscosity <- Pred_Formula_Low_Sheer_Viscosity()
+              Pred_Formula_Low_Sheer_Viscosity <- round(Pred_Formula_Low_Sheer_Viscosity(),3)
               ggplot(data=data.frame(TargetSMC, Pred_Formula_Low_Sheer_Viscosity), aes(x=TargetSMC, y= Pred_Formula_Low_Sheer_Viscosity)) +
-                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ylab("Pred Formula Low Sheer Viscosity")+
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Pred_Formula_Low_Sheer_Viscosity)
             })
             
             output$plot3 <- renderPlot({
-              Drying_Prediction <- Drying_Prediction()
+              Drying_Prediction <- round(Drying_Prediction(),3)
               ggplot(data=data.frame(TargetSMC, Drying_Prediction), aes(x=TargetSMC, y= Drying_Prediction)) +
-                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(TargetSMC == input$profiler_targetsmc)
+                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ ylab("Drying Prediction")+
+                gghighlight(TargetSMC == input$profiler_targetsmc, label_key = Drying_Prediction)
             })
           }
         })

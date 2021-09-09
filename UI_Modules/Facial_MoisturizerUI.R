@@ -139,25 +139,26 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                                                 wellPanel(
                                                   h1("Profiler"),
                                                   br(),
-                                                  fluidRow(column(width = 6,
+                                                  fluidRow(column(width = 4,
                                                                   plotOutput(ns("plot1"))
-                                                  ),column(width = 6,
+                                                  ),column(width = 4,
                                                            plotOutput(ns("plot2"))
+                                                  ),column(width = 4,
+                                                           sliderInput(ns("Initial_Emulsification_Temperature"),"Initial Emulsification Temperature:", min = 68, max = 72, value = 68),
+                                                           sliderInput(ns("Homogenization_Speed"),"Homogenization Speed:", min = 33, max = 50, value = 33),
+                                                           sliderInput(ns("First_Homogenization_Time_Length"),"First Homogenization Time Length:", min = 10, max = 20, value = 11),
+                                                           sliderInput(ns("Second_Homogenization_Time_Length"),"Second Homogenization Time Length:", min = 3, max = 13, value = 4)
                                                   )
                                                   ),
 
-                                                  fluidRow(column(width = 6,
-                                                                  sliderInput(ns("Initial_Emulsification_Temperature"),"Initial Emulsification Temperature:", min = 68, max = 72, value = 68),
-                                                                  sliderInput(ns("Homogenization_Speed"),"Homogenization Speed:", min = 33, max = 50, value = 33),
-                                                                  sliderInput(ns("First_Homogenization_Time_Length"),"First Homogenization Time Length:", min = 10, max = 20, value = 11),
-                                                                  sliderInput(ns("Second_Homogenization_Time_Length"),"Second Homogenization Time Length:", min = 3, max = 13, value = 4)
-                                                  ),
+                                                  fluidRow(
                                                   column(width = 6,
                                                          sliderInput(ns("First_Cooling_Time_Length"),"First Cooling Time Length:", min = 14, max = 43, value = 14),
-                                                         sliderInput(ns("Second_Cooling_Time_Length"),"Second Cooling Time Length:", min = 10, max = 52, value = 10),
-                                                         sliderInput(ns("Discharge_Temperature"),"Discharge Temperature:", min = 36, max = 42, value = 36),
-                                                         sliderInput(ns("Discharge_Time_Length"),"Discharge Time Length:", min = 3, max = 26, value = 3)
-                                                  ))
+                                                         sliderInput(ns("Second_Cooling_Time_Length"),"Second Cooling Time Length:", min = 10, max = 52, value = 10)),
+                                                  column(width = 6,                                                  
+                                                           sliderInput(ns("Discharge_Temperature"),"Discharge Temperature:", min = 36, max = 42, value = 36),
+                                                           sliderInput(ns("Discharge_Time_Length"),"Discharge Time Length:", min = 3, max = 26, value = 3))
+                                                  )
                                                 )
                                        ),
                                        tabPanel("Imported Data Simulation",

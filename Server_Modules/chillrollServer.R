@@ -94,19 +94,21 @@ chillrollServer <- function(id, top_session){
             Final_Flake_Temp_M2 <- reactive(eval(parse(text = eqn2)))
             
             output$plot1 <- renderPlot({
-              Final_Flake_Temp_1 <- Final_Flake_Temp_M1()
+              Final_Flake_Temp_1 <- round(Final_Flake_Temp_M1(),3)
               ggplot(data=data.frame(Film_thickness, Final_Flake_Temp_1), aes(x=Film_thickness, y= Final_Flake_Temp_1)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                 xlab("Film Thickness")+ ylab("Final Flake Temp-M1")+
                 gghighlight(Film_thickness == input$profiler_Film_thickness , label_key = Final_Flake_Temp_1)
+
             })
             
             output$plot2 <- renderPlot({
-              Final_Flake_Temp_2 <- Final_Flake_Temp_M2()
+              Final_Flake_Temp_2 <- round(Final_Flake_Temp_M2(),3)
               ggplot(data=data.frame(Film_thickness, Final_Flake_Temp_2), aes(x=Film_thickness, y= Final_Flake_Temp_2)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
                 xlab("Film Thickness")+ ylab("Final Flake Temp-M2")+
                 gghighlight(Film_thickness == input$profiler_Film_thickness , label_key = Final_Flake_Temp_2)
+
             })
     
             })

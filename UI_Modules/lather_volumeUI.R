@@ -98,25 +98,29 @@ lather_volumeUI <- function(id){
                                        tabPanel("Profiler",
                                                 wellPanel(
                                                   h1("Profiler"),
-                                                  fluidRow(column(width = 10,plotOutput(ns("plot"))),
+                                                  fluidRow(column(width = 4,plotOutput(ns("plot"))),
+                                                           column(width = 4,                                                                  
+                                                                  sliderInput(ns("sodiumchloride"),"Sodium Chloride:", min = 0.5, max = 1.6, value = 1),
+                                                                  sliderInput(ns("sodiumsulfate"),"Sodium Sulfate:", min = 0, max = 1.7, value = 1),
+                                                                  sliderInput(ns("sodiumsilicate"),"Sodium Silicate:", min = 0, max = 1.5, value = 1),
+                                                                  sliderInput(ns("ffacombined"),"FFA_Combined:", min = 0, max = 1, value = 1)),
+                                                           column(width = 4,
+                                                                  sliderInput(ns("sodiumcitrate"),"Sodium Citrate:", min = 0, max = 3, value = 1),
+                                                                  sliderInput(ns("pkocontent"),"PKO Content:", min = 5, max = 20, value = 10),
+                                                                  sliderInput(ns("titaniumdioxide"),"Titanium Dioxide:", min = 0.4, max = 0.5, value = 0.45),
+                                                                  sliderInput(ns("tinopalcbs"),"Tinopal CBS:", min = 0.0001, max = 0.001, value = 0.0001))
                                                   ),
                                                   
-                                                  fluidRow(column(width = 6,
-                                                                  sliderInput(ns("sodiumchloride"),"Sodium Chloride:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("sodiumsulfate"),"Sodium Sulfate:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("sodiumsilicate"),"Sodium Silicate:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("ffacombined"),"FFA_Combined:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("oxiflowoxiteno"),"Oxiflow-Oxiteno:", min = 0, max = 100, value = 1),
-                                                                  sliderInput(ns("sodiumcarbonate"),"Sodium Carbonate:", min = 0, max = 100, value = 1)
+                                                  fluidRow(column(width = 4,
+                                                                  sliderInput(ns("oxiflowoxiteno"),"Oxiflow-Oxiteno:", min = 0, max = 1.5, value = 1),
+                                                                  sliderInput(ns("sodiumcarbonate"),"Sodium Carbonate:", min = 0, max = 0.8, value = 0.5)
                                                   ),
-                                                  column(width = 6,
-                                                         sliderInput(ns("sodiumcitrate"),"Sodium Citrate:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("pkocontent"),"PKO Content:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("titaniumdioxide"),"Titanium Dioxide:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("tinopalcbs"),"Tinopal CBS:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("perfume"),"Perfume:", min = 0, max = 100, value = 1),
-                                                         sliderInput(ns("iv"),"IV (Iodine Value):", min = 0, max = 100, value = 1)
-                                                  ))
+                                                  column(width = 4,
+                                                         sliderInput(ns("perfume"),"Perfume:", min = 0.3, max = 1.3, value = 1)
+                                                         ),
+                                                  column(width = 4,
+                                                         sliderInput(ns("iv"),"IV (Iodine Value):", min = 39, max = 42, value = 40)
+))
                                                 )),
                                        tabPanel("Imported Data Simulation",
                                                 uiOutput(ns("simulation_result_uday_sd2")),
