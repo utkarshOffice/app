@@ -20,6 +20,8 @@ NTR_powderUI <- function(id){
                                                     ,tags$li(" Simulation will take place for both equations simultaneously.")
                                                   ),
                                                   dataTableOutput(ns("models_uday_ntr")),
+                                                  h3("Accepted Range for User Inputs"),
+                                                  dataTableOutput(ns("advice_uday_ntr"))
                                                 )
                                                 ,
                                                 wellPanel(
@@ -132,7 +134,7 @@ NTR_powderUI <- function(id){
       tabPanel("Optimisation",
                wellPanel(  h2("Process optimiser (Non Linear Optimisation)"),
                  tags$ul(
-                   h4("Target Variable :	BD_Prediction_by_Model  ")
+                   h4("Target Variable :	BD Prediction by Model  ")
                    ,br(),
                    tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
                    tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),

@@ -16,8 +16,14 @@ lather_volumeUI <- function(id){
                                ,tags$li(" Simulation will take place for all equations simultaneously.")
                              ),
                              dataTableOutput(ns("models_uday_sd")),
-                             h3("Accepted range for user inputs"),
-                             dataTableOutput(ns("advice"))
+
+                             h3("Advisory Table"),
+                             tags$ul(
+                               tags$li(" This table presents the advisable Lower and Upper Limits for all Predictors"),
+                             ),
+                             dataTableOutput(ns("advice_lather"))
+
+
                            )
                            ,
                            wellPanel(

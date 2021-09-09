@@ -53,7 +53,10 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                                                           ,tags$li(" Simulation will take place for both equations simultaneously.")
                                                         ),
                                                         dataTableOutput(ns("models_skincare_kayla")),
-                                                        h2("Advisory Table"), 
+                                                        h3("Advisory Table"),
+                                                        tags$ul(
+                                                          tags$li(" This table presents the advisable Lower and Upper Limits for all Predictors"),
+                                                        ),
                                                         dataTableOutput(ns("advice_skincare_kayla"))
                                                       )
                                                       ,

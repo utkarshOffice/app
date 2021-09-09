@@ -11,7 +11,7 @@ SD_powderServer <- function(id, top_session){
       uday_proxy_sd <- DT::dataTableProxy('optimiser_table1_uday_sd')
       
       opt <- reactiveValues(tab_1=NULL)
-      x_uday_sd <- data.frame(Models <- c("BD_Prediction_by_Model = 9.3 + 0.104 * Base_Factor * Filler (Sulphate/ Salt as Balancing ingredient) + 0.905 * Base_Powder_Bulk_Density + 4.99 * Post_Dosing_Ingredients_Majors_( >1% in FG other than Filler) + 10.5 * Post_Dosing_Ingredient_Minor_ (<1% in FG other than Filler)"
+      x_uday_sd <- data.frame(Models <- c("BD Prediction by Model = 9.3 + 0.104 * Base Factor * Filler (Sulphate/ Salt as Balancing ingredient) + 0.905 * Base Powder Bulk Density + 4.99 * Post Dosing Ingredients Majors ( >1% in FG other than Filler) + 10.5 * Post Dosing Ingredient Minor (<1% in FG other than Filler)"
       ))  
       # function for parsing the equations
       predictors <- function(str){
@@ -23,7 +23,9 @@ SD_powderServer <- function(id, top_session){
       
       b_uday_sd <- c("basefactor", "filler", "basepowderbulkdensity", "postdosingingredientsmajors", "postdosingingredientsminors")
       
-      all_uday_sd <- c("Base_Factor","Filler_Sulphate_Salt_as_Balancing_ingredient","Base_Powder_Bulk_Density","Post_Dosing_Ingredients_Majors","Post_Dosing_Ingredients_Minors")
+      all_uday_sd <- c("Base Factor","Filler Sulphate Salt as Balancing ingredient",
+                       "Base Powder Bulk Density","Post Dosing Ingredients Majors",
+                       "Post Dosing Ingredients Minors")
       
       
       # model bank table
@@ -40,6 +42,15 @@ SD_powderServer <- function(id, top_session){
         updateTabsetPanel(top_session, "tabs_uday_sd", selected = "Visualization")
       })
       
+      
+      output$advice_uday_sd <- renderDataTable({
+        Advisory_table <- data.frame(Ingredients = c("Base Factor","Filler Sulphate Salt as Balancing ingredient",
+                                                     "Base Powder Bulk Density","Post Dosing Ingredients Majors(>1% in FG other than Filler)",
+                                                     "Post Dosing Ingredients Minors (<1% in FG other than Filler)"),
+                                     Lower_Level = c(33.72, 1, 230, 2.95, 0.24),
+                                     Upper_Level = c(90.55, 46.14, 543, 36.51, 12.105))
+        datatable(Advisory_table)
+      })
       colors <- c("red","black", "green","yellow","violet")
       
       # Profiler renderings
@@ -215,10 +226,12 @@ SD_powderServer <- function(id, top_session){
         observe({
           y_uday_sd <- reactive({
             munits <- c("%(w/w)","%(w/w)","kg/m3","%(w/w)","%(w/w)")
-            values <- rep(1, length(all_uday_sd))
+            values <- c(33.72, 1, 230, 2.95, 0.24)
             sqr <- do.call(rbind,data.frame(cbind(munits,values)))
             #sqr1 <- datatable(sqr, editable = T,colnames = c("Model Predictors","Measurement Units", "Enter Simulation Values"))
-            colnames(sqr) <- all_uday_sd
+            colnames(sqr) <- c("Base Factor","Filler Sulphate Salt as Balancing ingredient",
+                               "Base Powder Bulk Density","Post Dosing Ingredients Majors",
+                               "Post Dosing Ingredients Minors")
             rownames(sqr) <- c("Measurement Units (fractions)", "Enter Simulation Values")
             sqr
           })
@@ -227,9 +240,29 @@ SD_powderServer <- function(id, top_session){
         
         
         
+        # output$simulation_input_uday_sd <- renderDataTable({ 
+        #   datatable(x1_uday_sd$df, editable = T)
+        # })
         output$simulation_input_uday_sd <- renderDataTable({ 
-          datatable(x1_uday_sd$df, editable = T)
+          datatable(x1_uday_sd$df, editable = T) %>%
+       
+            formatStyle(
+              "Base Factor",
+              color = styleInterval(c(33.71, 90.56), c('red', 'black', 'red')))%>%
+            formatStyle(
+              "Filler Sulphate Salt as Balancing ingredient",
+              color = styleInterval(c(0.99, 46.15), c('red', 'black', 'red')))%>%
+            formatStyle(
+              "Base Powder Bulk Density",
+              color = styleInterval(c(229, 544), c('red', 'black', 'red')))%>%
+            formatStyle(
+              "Post Dosing Ingredients Majors",
+              color = styleInterval(c(2.94, 36.52), c('red', 'black', 'red')))%>%
+            formatStyle(
+              "Post Dosing Ingredients Minors",
+              color = styleInterval(c(0.2399, 12.106), c('red', 'black', 'red')))
         })
+        
         
         
         
@@ -257,17 +290,29 @@ SD_powderServer <- function(id, top_session){
         
         
         output$modeltable_uday_sd <- renderDataTable(
-          datatable(x1_uday_sd$df)
+          datatable(x1_uday_sd$df, 
+                   colnames = c("Base Factor","Filler Sulphate Salt as Balancing ingredient",
+                                "Base Powder Bulk Density","Post Dosing Ingredients Majors",
+                                "Post Dosing Ingredients Minors"))
         )
         
         # b_uday_sd <- c("BaseFactor", "FillerSulphateSaltasBalancingingredient", "BasePowderBulkDensity", "PostDosingIngredientsMajors", "PostDosingIngredientsMinors")
         
         observeEvent(input$simulate_uday_sd,{
-          eqn1 <- "9.3 + 0.104 * Base_Factor * Filler_Sulphate_Salt_as_Balancing_ingredient + 0.905 * Base_Powder_Bulk_Density + 4.99 * Post_Dosing_Ingredients_Majors + 10.5 * Post_Dosing_Ingredients_Minors"
-          for(i in all_uday_sd){
+          eqn1 <- "9.3 + 0.104 * basefactor * fillersulphatesaltasbalancingingredient + 0.905 * basepowderbulkdensity + 4.99 * postdosingingredientsmajors + 10.5 * postdosingingredientsminors"
+          
+          colnames(x1_uday_sd$df) <- gsub(" ","",tolower(colnames(x1_uday_sd$df)))
+          
+          for(i in colnames(x1_uday_sd$df)){
+           # j <- str_replace(i, " \\s*\\([^\\)]+\\)", "")
             eqn1 <- gsub(i, x1_uday_sd$df[2,i], eqn1)
           }
+          #View(eqn1)
           
+          #colnames(x1_uday_sd$df) <- gsub(" ","",tolower(colnames(x1_uday_sd$df)))
+          
+          #View(x1_uday_sd$df)
+          #View(x1_uday_sd$df[1,i])
           
           BD_Prediction_by_Model <- eval(parse(text = eqn1))
           
@@ -291,7 +336,7 @@ SD_powderServer <- function(id, top_session){
           )
           
           output$result1_uday_sd <- renderDataTable(
-            { tbl })
+            {DT::datatable(tbl, rownames = FALSE, colnames = "BD Prediction by Model") })
         }) # simulate uday sd ends here
         
         data_uday1_sd <- reactive({
@@ -395,9 +440,9 @@ SD_powderServer <- function(id, top_session){
     
       # non linear optimisation for Udays SD 
       observeEvent(req(x_uday_sd),{
-        predictor_names_sd <- c("Base_Factor_[33.72,90.55]","Filler_Sulphate_Salt_as_Balancing_ingredient_[1,46.14]",
-                                "Base_Powder_Bulk_Density_[230,543]","Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)_[2.95,36.51]",
-                                "Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)_[0.24,12.105]")
+        predictor_names_sd <- c("Base_Factor [33.72,90.55]","Filler Sulphate Salt as Balancing ingredient [1,46.14]",
+                                "Base Powder Bulk Density [230,543]","Post Dosing Ingredients Majors (>1% in FG other than Filler) [2.95,36.51]",
+                                "Post Dosing Ingredients Minors (<1% in FG other than Filler) [0.24,12.105]")
         zero_vector<-rep(1,length(predictor_names_sd))
         min_vector <- c(33.72,1,230,2.95,0.24)
         max_vector <- c(90.55,46.14,543,36.51,12.105)
@@ -480,9 +525,9 @@ SD_powderServer <- function(id, top_session){
           
           # optimiser output table 1
           output$optimiser_table32_uday_sd <- renderDataTable({
-            df<-data.frame(Predictors = c("Base_Factor","Filler_Sulphate_Salt_as_Balancing_ingredient",
-                                          "Base_Powder_Bulk_Density","Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)",
-                                          "Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)"),
+            df<-data.frame(Predictors = c("Base Factor","Filler Sulphate Salt as Balancing ingredient",
+                                          "Base Powder Bulk Density","Post Dosing Ingredients Majors (>1% in FG other than Filler)",
+                                          "Post Dosing Ingredients Minors (<1% in FG other than Filler)"),
                            Value = round(res$solution,3)
                           )
             DT::datatable(df,selection ="none",rownames = FALSE )
@@ -494,12 +539,10 @@ SD_powderServer <- function(id, top_session){
           
           # optimiser output table 2
           output$optimiser_table22_uday_sd <- renderDataTable({
-            # value1 <- round(constraint_value(res$solution),3)
-            # val <- data.frame(Predictors = c("BD_Prediction_by_Model"),
-            #                   Value = as.data.frame(value1))
+
             
             DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
-                          ,rownames = c("BD_Prediction_by_Model"), colnames =c("Target variable", "Value"))
+                          ,rownames = c("BD Prediction by Model"), colnames =c("Target variable", "Value"))
           })
           
           # optimiser output table 3
@@ -535,7 +578,7 @@ SD_powderServer <- function(id, top_session){
          
           
           downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("BD Prediction by Model"), Predicted_or_Optimal_Value= constraint_value(res$solution))
-          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Base_Factor","Filler_Sulphate_Salt_as_Balancing_ingredient","Base_Powder_Bulk_Density","Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)","Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)"),
+          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Base Factor","Filler Sulphate Salt as Balancing ingredient","Base Powder Bulk Density","Post Dosing Ingredients Majors (>1% in FG other than Filler)","Post Dosing Ingredients Minors (<1% in FG other than Filler)"),
                                Predicted_or_Optimal_Value=res$solution)
           
           if(input$radio_button_uday_sd=='min'){
@@ -567,9 +610,9 @@ SD_powderServer <- function(id, top_session){
         updateSelectInput(session,"inequality_selection_uday_sd",selected = "less than or equal to")
         updateNumericInput(session,"numeric_input_uday_sd",value = 280)
         updateRadioButtons(session,"radio_button_uday_sd",selected = "min")
-        predictors_in_model2<-c("Base_Factor_[33.72,90.55]","Filler_Sulphate_Salt_as_Balancing_ingredient_[1,46.14]",
-                                "Base_Powder_Bulk_Density_[230,543]","Post_Dosing_Ingredients_Majors(>1% in FG other than Filler)_[2.95,36.51]",
-                                "Post_Dosing_Ingredients_Minors_(<1% in FG other than Filler)_[0.24,12.105]")
+        predictors_in_model2<-c("Base Factor [33.72,90.55]","Filler Sulphate Salt as Balancing ingredient [1,46.14]",
+                                "Base Powder Bulk Density [230,543]","Post Dosing Ingredients Majors (>1% in FG other than Filler) [2.95,36.51]",
+                                "Post Dosing Ingredients Minors (<1% in FG other than Filler) [0.24,12.105]")
         zero_vector<-rep(1,length(predictors_in_model2))
         min_vector <- c(33.72,1,230,2.95,0.24)
         max_vector <- c(90.55,46.14,543,36.51,12.105)  
