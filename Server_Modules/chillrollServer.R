@@ -70,7 +70,7 @@ chillrollServer <- function(id, top_session){
         eqn2 <- "(Cooling_seg_fraction())*(-48.3757602771176) + (T_ambient()**2)*(-0.0000431916784640458) + T_flake_feed()*0.339086502336415 + T_chilled_water()*0.529509608669907 + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + (DEFI_Free_roll_length()**2)*(0.13197883988453) + Roll_Speed()*7.21191328015338 + (Roll_Speed()**2)*1.26186094993258 - (18.9553266806959)"
         
         
-        Film_thickness <- round(seq(from  = 0.5, to = 2.0, length.out = 25),3)
+        Film_thickness <- round(seq(from  = 0.5, to = 2.0, length.out = 76),3)
         Cooling_seg_fraction <- reactive(input$profiler_Cooling_seg_fraction)
         T_ambient <- reactive(input$profiler_T_ambient)
         T_flake_feed <- reactive(input$profiler_T_flake_feed)
@@ -97,14 +97,16 @@ chillrollServer <- function(id, top_session){
               Final_Flake_Temp_1 <- Final_Flake_Temp_M1()
               ggplot(data=data.frame(Film_thickness, Final_Flake_Temp_1), aes(x=Film_thickness, y= Final_Flake_Temp_1)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(Film_thickness == input$profiler_Film_thickness)
+                xlab("Film Thickness")+ ylab("Final Flake Temp-M1")+
+                gghighlight(Film_thickness == input$profiler_Film_thickness , label_key = Final_Flake_Temp_1)
             })
             
             output$plot2 <- renderPlot({
               Final_Flake_Temp_2 <- Final_Flake_Temp_M2()
               ggplot(data=data.frame(Film_thickness, Final_Flake_Temp_2), aes(x=Film_thickness, y= Final_Flake_Temp_2)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(Film_thickness == input$profiler_Film_thickness)
+                xlab("Film Thickness")+ ylab("Final Flake Temp-M2")+
+                gghighlight(Film_thickness == input$profiler_Film_thickness , label_key = Final_Flake_Temp_2)
             })
     
             })

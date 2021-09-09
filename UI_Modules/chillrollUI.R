@@ -114,7 +114,7 @@ chillrollUI <- function(id){
                                                column(width = 4,plotOutput(ns("plot1"))),
                                                column(width = 4,plotOutput(ns("plot3")))),
                                       fluidRow(column(width = 6,
-                                                      sliderInput(ns("profiler_Film_thickness"),"Film_thickness:", min = 0.5, max = 2.0, value = 0.71),
+                                                      sliderInput(ns("profiler_Film_thickness"),"Film_thickness:", min = 0.5, max = 2.0, value = 0.72),
                                                       sliderInput(ns("profiler_Cooling_seg_fraction"),"Cooling_seg_fraction:", min = 0.5, max = 0.875, value = 0.78),
                                                       sliderInput(ns("profiler_T_flake_feed"),"T_flake_feed:", min = 100, max = 130, value = 110),
                                                       sliderInput(ns("profiler_T_ambient"),"T_ambient:", min = 15, max = 40, value = 21)
