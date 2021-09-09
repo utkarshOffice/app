@@ -248,10 +248,12 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
         
         observe({
           y_uday_sd <- reactive({
+            munits <- rep("-", length(b_uday_sd))
             values <- rep(1, length(b_uday_sd))
-            sqr <- data.frame(t(values))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+            # sqr <- data.frame(t(values))
             colnames(sqr) <- b_uday_sd
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
             sqr
             
           })
@@ -296,7 +298,7 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
           
           eqn <- "147.116305492888+151.501186255172*sodiumchloride+-55.3215735730235*sodiumsulfate+-49.4762432407727*sodiumcitrate+-41.4352614156827*sodiumcarbonate+-29.2685282290144*sodiumsilicate+-11.1271782344154*pkocontent+-60.5999588575755*oxiflowoxiteno+22.6390321970717*ffacombined+-623.653030175084*titaniumdioxide+-1010.43308194092*tinopalcbs+57.9687283373548*perfume+7.23116429366333*iv+(sodiumchloride-1.17222222222222)*((sodiumchloride-1.17222222222222)*424.75315555422)+(sodiumchloride-1.17222222222222)*((sodiumcitrate-1.70777777777778)*-134.087470076663)+(sodiumchloride-1.17222222222222)*((ffacombined-0.144444444444444)*92.3627549149173)+(sodiumsulfate-0.276666666666667)*((tinopalcbs-0.0223333333333333)*4746.07002288773)+(sodiumcitrate-1.70777777777778)*((sodiumcitrate-1.70777777777778)*21.1314669748662)+(sodiumcitrate-1.70777777777778)*((titaniumdioxide-0.360677777777777)*-93.7758844249979)+(sodiumcitrate-1.70777777777778)*((tinopalcbs-0.0223333333333333)*2947.53075692333)+(sodiumcitrate-1.70777777777778)*((iv-39.4888888888889)*2.6018160032659)+(sodiumsilicate-0.3508)*((ffacombined-0.144444444444444)*51.0250540480239)+(sodiumsilicate-0.3508)*((perfume-1.00844444444444)*69.3978683182652)+(pkocontent-4.18300653594772)*((iv-39.4888888888889)*-0.135942835190774)+(perfume-1.00844444444444)*((perfume-1.00844444444444)*43.6427684250721)"
           for(i in all_uday_sd){
-            eqn <- gsub(i, x2[1,i], eqn)
+            eqn <- gsub(i, x2[2,i], eqn)
           }
           
           
