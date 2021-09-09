@@ -73,7 +73,7 @@ SD_powderServer <- function(id, top_session){
             BD_Prediction_by_Model <- BD_Prediction_by_Model()
             ggplot(data=data.frame(Base_Factor, BD_Prediction_by_Model), aes(x=Base_Factor, y= BD_Prediction_by_Model)) +
               geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-              gghighlight(Base_Factor == input$Base_Factor)
+              gghighlight(Base_Factor == input$Base_Factor, label_key = BD_Prediction_by_Model)
           })
         })
         
@@ -536,12 +536,10 @@ SD_powderServer <- function(id, top_session){
           constraint_value <- function(x){
             return(9.3 + 0.104*x[1]*x[2] + 0.905*x[3] + 4.99*x[4] + 10.5*x[5])
           }
-          # View(res$solution)
+          
           # optimiser output table 2
           output$optimiser_table22_uday_sd <- renderDataTable({
-            value1 <- round(constraint_value(res$solution),3)
-            val <- data.frame(Predictors = c("BD Prediction by Model"),
-                              Value = as.data.frame(value1))
+
             
             DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
                           ,rownames = c("BD Prediction by Model"), colnames =c("Target variable", "Value"))
@@ -562,6 +560,22 @@ SD_powderServer <- function(id, top_session){
             
           }
           
+
+          if(inequality_selection_sd=='equal to' && abs(constraint_value(res$solution)-target_sd)>.2 ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="less than or equal to" && constraint_value(res$solution)>target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="greater than or equal to" && constraint_value(res$solution)<target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+         
           
           downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("BD Prediction by Model"), Predicted_or_Optimal_Value= constraint_value(res$solution))
           downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Base Factor","Filler Sulphate Salt as Balancing ingredient","Base Powder Bulk Density","Post Dosing Ingredients Majors (>1% in FG other than Filler)","Post Dosing Ingredients Minors (<1% in FG other than Filler)"),
@@ -594,7 +608,7 @@ SD_powderServer <- function(id, top_session){
       
       observeEvent(input$reset_uday_sd,{
         updateSelectInput(session,"inequality_selection_uday_sd",selected = "less than or equal to")
-        updateNumericInput(session,"numeric_input_uday_sd",value = 28)
+        updateNumericInput(session,"numeric_input_uday_sd",value = 280)
         updateRadioButtons(session,"radio_button_uday_sd",selected = "min")
         predictors_in_model2<-c("Base Factor [33.72,90.55]","Filler Sulphate Salt as Balancing ingredient [1,46.14]",
                                 "Base Powder Bulk Density [230,543]","Post Dosing Ingredients Majors (>1% in FG other than Filler) [2.95,36.51]",

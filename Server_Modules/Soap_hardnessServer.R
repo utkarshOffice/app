@@ -57,6 +57,16 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
                        "iv","moisture","pkocontent","glycerine","sodiumchloride","sodiumsulfate",
                        "sodiumsilicate","petrolatumjelly","amazonpolymer","carbopolesc","talc")
       
+      output$advice <- renderDataTable({
+        Advisory_table <- data.frame(Ingredients = c("Billet Moisture","Plodder Back Pressure (30%) @ 40 degC","Flow Rate (30%)","Soap Mass Temperature",
+                                                     "IV (Iodine Value)","Moisture","PKO Content","Glycerine","Sodium Chloride","Sodium Sulfate",
+                                                     "Sodium Silicate","Petrolatum Jelly","Amazon Polymer","Carbopole SC200 (100%)","Talc"),
+                                     Lower_Level = c(14.4,7.7,3550,40,36,15.3,20,0,.5,0,0,0,0,0,0),
+                                     Upper_Level = c(28.1,16.4,7770,46.8,42,28,23.5,6,1.2,1.5,1.7,.8,.7,.3,6)
+                                     )
+        datatable(Advisory_table)
+      })
+      
       # model bank table
       output$models_uday_sd <- renderDataTable({
         datatable(x_uday_sd, colnames = c("Models"))
@@ -101,11 +111,11 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
                        soap_bar_hardness <- reactive(eval(parse(text = eqn1)))
 
                        output$plot1 <- renderPlot({
-                         soap_bar_hardness <- soap_bar_hardness()
+                         soap_bar_hardness <- round(soap_bar_hardness(),3)
                          ggplot(data=data.frame(billetmoistur, soap_bar_hardness), aes(x=billetmoistur, y= soap_bar_hardness)) +
-                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+ xlab("Billet Moisture")+
+                           geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ xlab("Billet Moisture")+
                            ylab("Soap Bar Hardness")+
-                           gghighlight(billetmoistur == input$billetmoistur)
+                           gghighlight(billetmoistur == input$billetmoistur, label_key = soap_bar_hardness)
                        })
                      })
 
@@ -259,11 +269,12 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
         
         observe({
           y_uday_sd <- reactive({
-            
+            munits <- rep("-", length(b_uday_sd))
             values <- rep(1, length(b_uday_sd))
-            sqr <- data.frame(t(values))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+            # sqr <- data.frame(t(values))
             colnames(sqr) <- b_uday_sd
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
             sqr
           })
           
@@ -306,7 +317,7 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
           eqn1 <- "76.4293896016496+-3.68749131760183*pkocontent+0.0146038397207457*glycerine+0.129132110568962*sodiumchloride+-0.16205511182105*sodiumsulfate+7.04084445503392*sodiumsilicate+0.222746095064746*petrolatumjelly+-4.00166431759117*amazonpolymer+-35.5964551844198*carbopolesc+-0.0109043309619179*talc+0.0796945875198386*moisture+-0.181260159211409*iv+0.250970645173301*soapmasstemperature+-0.0000661956994276951*flowrate+0.0985345478859178*plodderbackpressuredegc+-0.241325571790654*billetmoistur+(glycerine-3.27272727272727)*((glycerine-3.27272727272727)*0.0608438311745331)+(glycerine-3.27272727272727)*((flowrate-5719.86363636364)*0.0000098445456748929)+(sodiumchloride-0.831818181818182)*((talc-2.90909090909091)*-0.00446869632914622)+(sodiumchloride-0.831818181818182)*((iv-38.6136363636364)*-0.027000138479312)+(sodiumsilicate-1.16686363636364)*((sodiumsilicate-1.16686363636364)*0.291936080502523)+(sodiumsilicate-1.16686363636364)*((billetmoistur-20.4986363636364)*-0.162669884515511)+(petrolatumjelly-0.236363636363636)*((flowrate-5719.86363636364)*-0.000263176092084823)+(petrolatumjelly-0.236363636363636)*((plodderbackpressuredegc-11.7522727272727)*0.145362088204255)+(petrolatumjelly-0.236363636363636)*((billetmoistur-20.4986363636364)*0.255700486025522)+(amazonpolymer-0.0838636363636363)*((soapmasstemperature-41.5577272727273)*0.326798858596123)+(amazonpolymer-0.0838636363636363)*((plodderbackpressuredegc-11.7522727272727)*0.0446677847454846)+(amazonpolymer-0.0838636363636363)*((billetmoistur-20.4986363636364)*-1.04095149545583)+(talc-2.90909090909091)*((flowrate-5719.86363636364)*-0.0000085461667984637)+(talc-2.90909090909091)*((billetmoistur-20.4986363636364)*0.00485018468726219)+(moisture-20.5656818181818)*((plodderbackpressuredegc-11.7522727272727)*-0.0237189322663761)+(iv-38.6136363636364)*((iv-38.6136363636364)*0.0442814320739906)+(iv-38.6136363636364)*((flowrate-5719.86363636364)*0.0000197853904718027)+(soapmasstemperature-41.5577272727273)*((soapmasstemperature-41.5577272727273)*-0.0490857657173331)+(plodderbackpressuredegc-11.7522727272727)*((plodderbackpressuredegc-11.7522727272727)*-0.00438487333986625)"
           
           for(i in all_uday_sd){
-            eqn1 <- gsub(i, x2[1,i], eqn1)
+            eqn1 <- gsub(i, x2[2,i], eqn1)
           }
           
           

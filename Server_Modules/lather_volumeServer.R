@@ -56,13 +56,22 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
         updateTabsetPanel(top_session, "tabs_uday_sd", selected = "Visualization")
       })
       
+      output$advice <- renderDataTable({
+        Advisory_table <- data.frame(Ingredients = c("Sodium Chloride","Sodium Sulfate","Sodium Silicate","FFA_Combined",
+                                                     "Oxiflow-Oxiteno","Sodium Carbonate","Sodium Citrate","PKO Content",
+                                                     "Titanium Dioxide","Tinopal CBS","Perfume","IV (Iodine Value)"),
+                                     Lower_Level = c(.5,0,0,0,0,0,0,5,.4,.0001,.3,39),
+                                     Upper_Level = c(1.6,1.7,1.5,1,1.5,.8,3,20,.5,.001,1.3,42))
+        datatable(Advisory_table)
+      })
+      
       colors <- c("red","black", "green","yellow","violet")
       
       # Profiler renderings
       observeEvent(req(input$perfume),{
         eqn <- "147.116305492888+151.501186255172*sodiumchloride()+-55.3215735730235*sodiumsulfate()+-49.4762432407727*sodiumcitrate()+-41.4352614156827*sodiumcarbonate()+-29.2685282290144*sodiumsilicate()+-11.1271782344154*pkocontent()+-60.5999588575755*oxiflowoxiteno()+22.6390321970717*ffacombined()+-623.653030175084*titaniumdioxide()+-1010.43308194092*tinopalcbs()+57.9687283373548*perfume+7.23116429366333*iv()+(sodiumchloride()-1.17222222222222)*((sodiumchloride()-1.17222222222222)*424.75315555422)+(sodiumchloride()-1.17222222222222)*((sodiumcitrate()-1.70777777777778)*-134.087470076663)+(sodiumchloride()-1.17222222222222)*((ffacombined()-0.144444444444444)*92.3627549149173)+(sodiumsulfate()-0.276666666666667)*((tinopalcbs()-0.0223333333333333)*4746.07002288773)+(sodiumcitrate()-1.70777777777778)*((sodiumcitrate()-1.70777777777778)*21.1314669748662)+(sodiumcitrate()-1.70777777777778)*((titaniumdioxide()-0.360677777777777)*-93.7758844249979)+(sodiumcitrate()-1.70777777777778)*((tinopalcbs()-0.0223333333333333)*2947.53075692333)+(sodiumcitrate()-1.70777777777778)*((iv()-39.4888888888889)*2.6018160032659)+(sodiumsilicate()-0.3508)*((ffacombined()-0.144444444444444)*51.0250540480239)+(sodiumsilicate()-0.3508)*((perfume-1.00844444444444)*69.3978683182652)+(pkocontent()-4.18300653594772)*((iv()-39.4888888888889)*-0.135942835190774)+(perfume-1.00844444444444)*((perfume-1.00844444444444)*43.6427684250721)"
         
-        perfume <- seq(from  = 0, to = 99, length.out = 100)
+        perfume <- round(seq(from  = 0.3, to = 1.3, length.out = 100),2)
         sodiumchloride <- reactive(input$sodiumchloride)
         sodiumsulfate <- reactive(input$sodiumsulfate)
         sodiumsilicate <- reactive(input$sodiumsilicate)
@@ -82,11 +91,11 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
                        Lather_volume <- reactive(eval(parse(text = eqn)))
                        
                        output$plot <- renderPlot({
-                         Lather_volume <- Lather_volume()
+                         Lather_volume <- round(Lather_volume(),3)
                          ggplot(data=data.frame(perfume, Lather_volume), aes(x=perfume, y= Lather_volume)) +
                            geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+xlab("Perfume")+
                            ylab("Soap lather volume")+
-                           gghighlight(perfume == input$perfume)
+                           gghighlight(perfume == input$perfume, label_key = Lather_volume)
                        })
                      })
         
@@ -239,10 +248,12 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
         
         observe({
           y_uday_sd <- reactive({
+            munits <- rep("-", length(b_uday_sd))
             values <- rep(1, length(b_uday_sd))
-            sqr <- data.frame(t(values))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+            # sqr <- data.frame(t(values))
             colnames(sqr) <- b_uday_sd
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
             sqr
             
           })
@@ -287,7 +298,7 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
           
           eqn <- "147.116305492888+151.501186255172*sodiumchloride+-55.3215735730235*sodiumsulfate+-49.4762432407727*sodiumcitrate+-41.4352614156827*sodiumcarbonate+-29.2685282290144*sodiumsilicate+-11.1271782344154*pkocontent+-60.5999588575755*oxiflowoxiteno+22.6390321970717*ffacombined+-623.653030175084*titaniumdioxide+-1010.43308194092*tinopalcbs+57.9687283373548*perfume+7.23116429366333*iv+(sodiumchloride-1.17222222222222)*((sodiumchloride-1.17222222222222)*424.75315555422)+(sodiumchloride-1.17222222222222)*((sodiumcitrate-1.70777777777778)*-134.087470076663)+(sodiumchloride-1.17222222222222)*((ffacombined-0.144444444444444)*92.3627549149173)+(sodiumsulfate-0.276666666666667)*((tinopalcbs-0.0223333333333333)*4746.07002288773)+(sodiumcitrate-1.70777777777778)*((sodiumcitrate-1.70777777777778)*21.1314669748662)+(sodiumcitrate-1.70777777777778)*((titaniumdioxide-0.360677777777777)*-93.7758844249979)+(sodiumcitrate-1.70777777777778)*((tinopalcbs-0.0223333333333333)*2947.53075692333)+(sodiumcitrate-1.70777777777778)*((iv-39.4888888888889)*2.6018160032659)+(sodiumsilicate-0.3508)*((ffacombined-0.144444444444444)*51.0250540480239)+(sodiumsilicate-0.3508)*((perfume-1.00844444444444)*69.3978683182652)+(pkocontent-4.18300653594772)*((iv-39.4888888888889)*-0.135942835190774)+(perfume-1.00844444444444)*((perfume-1.00844444444444)*43.6427684250721)"
           for(i in all_uday_sd){
-            eqn <- gsub(i, x2[1,i], eqn)
+            eqn <- gsub(i, x2[2,i], eqn)
           }
           
           
@@ -526,7 +537,8 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
           })
           
           constraint_value <- function(x){
-            return(147.116305492888 + 151.501186255172 *x[1] + 
+            
+              return(147.116305492888 + 151.501186255172 *x[1] + 
                      -55.3215735730235 *x[2] + -49.4762432407727 * x[7] + -41.4352614156827 *x[6] + 
                      -29.2685282290144 * x[3] + -11.1271782344154 *x[8] + -60.5999588575755 * x[5] + 
                      22.6390321970717 *x[4] + -623.653030175084 * x[9] + -1010.43308194092 *x[10] + 
@@ -541,14 +553,13 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
                      (x[3] - 0.3508) * ((x[4] - 0.144444444444444) * 51.0250540480239) + 
                      (x[3] - 0.3508) * ((x[11] - 1.00844444444444)* 69.3978683182652) +
                      (x[8] - 4.18300653594772) * ((x[12]- 39.4888888888889) * -0.135942835190774) + 
-                     (x[11] - 1.00844444444444) * ((x[11] - 1.00844444444444) * 43.6427684250721))
+                     (x[11] - 1.00844444444444) * ((x[11] - 1.00844444444444) * 43.6427684250721)
+                   
+                   )
           }
           # View(res$solution)
           # optimiser output table 2
           output$optimiser_table22_lather <- renderDataTable({
-            value1 <- round(constraint_value(res$solution),3)
-            val <- data.frame(Predictors = c("Lather volume"),
-                              Value = as.data.frame(value1))
             
             DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
                           ,rownames = c("Lather volume"), colnames =c("Target variable", "Value"))
@@ -569,6 +580,23 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
             
           }
           
+#<<<<<<< subinoffice2
+          if(inequality_selection_sd=='equal to' && abs(constraint_value(res$solution)-target_sd)>.3 ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="less than or equal to" && constraint_value(res$solution)>target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_sd=="greater than or equal to" && constraint_value(res$solution)<target_sd ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+#=======
           downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Lather VOlume"), Predicted_or_Optimal_Value= constraint_value(res$solution))
           downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Sodium Chloride_[0.5,1.6]","Sodium Sulfate_[0,1.7]","Sodium Silicate_[0,1.5]",
                                                                                     "FFA_Combined_[0,1]","Oxiflow-Oxiteno_[0,1.5]","Sodium Carbonate_[0,0.8]",
@@ -594,6 +622,7 @@ Perfume - 1.00844444444444) * 43.6427684250721)"
               write_xlsx(list("Optimisation Result" = final123), file)
             }
           )
+#>>>>>>> master
           
         })#observeevent run optimiser ends
         

@@ -99,7 +99,7 @@ ssmServer <- function(id, top_session){
       
       observeEvent(req(input$Profiler_model_select),{
         
-        
+            
             eqn1 <-"(10.085043285) + (0.143476202)*((Sealing_Pressure() - 50)/25) + 
                     (0.5005544208)*((Sealing_Time() - 475)/275) + (1.1487322096)*((Sealing_Temperature() - 120)/20) - 
                     (0.265927563)*((Layer_Thickness() - 35)/5) - (0.214751072)*((Sealing_Pressure() - 50)/25)*((Sealing_Time() - 475)/275) + 
@@ -217,45 +217,48 @@ ssmServer <- function(id, top_session){
                            Mean_Seal_Strnt_Pr <- reactive(eval(parse(text = Pr_eqn1)))
                         
                            output$plot1 <- renderPlot({
-                             Mean_Seal_Strength <- Mean_Seal_Strnt_Pr()
+                             Mean_Seal_Strength <- round(Mean_Seal_Strnt_Pr(),3)
                              
                              ggplot(data=data.frame(Sealing_Pressure_list, Mean_Seal_Strength), aes(x=Sealing_Pressure_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                               gghighlight(Sealing_Pressure_list == input$profiler_Sealing_Pressure) + ylim(0, 15)
+                               xlab("Sealing Pressure")+ ylab("Seal Strength")+
+                               gghighlight(Sealing_Pressure_list == input$profiler_Sealing_Pressure, label_key = Mean_Seal_Strength) + ylim(0, 15)
                            })
                            
                            
                            Mean_Seal_Strnt_Time <- reactive(eval(parse(text = Ti_eqn1)))
                            
                            output$plot2 <- renderPlot({
-                             Mean_Seal_Strength <- Mean_Seal_Strnt_Time()
+                             Mean_Seal_Strength <- round(Mean_Seal_Strnt_Time(),3)
                              ggplot(data=data.frame(Sealing_Time_list, Mean_Seal_Strength), aes(x=Sealing_Time_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank()) + 
-                               gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time) + ylim(0, 15)
+                               xlab("Sealing Time")+ ylab("Seal Strength")+
+                               gghighlight(round(Sealing_Time_list,0) == input$profiler_Sealing_Time, label_key = Mean_Seal_Strength) + ylim(0, 15)
                            })
                            
                            
                            Mean_Seal_Strnt_Temp <- reactive(eval(parse(text = Te_eqn1)))
                            
                            output$plot3 <- renderPlot({
-                             Mean_Seal_Strength <- Mean_Seal_Strnt_Temp()
+                             Mean_Seal_Strength <- round(Mean_Seal_Strnt_Temp(),3)
                              ggplot(data=data.frame(Sealing_Temperature_list, Mean_Seal_Strength), aes(x=Sealing_Temperature_list, y= Mean_Seal_Strength)) +
                                geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
-                               gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature) + ylim(0, 15)
+                               xlab("Sealing Temperature")+ ylab("Seal Strength")+
+                               gghighlight(Sealing_Temperature_list == input$profiler_Sealing_Temperature, label_key = Mean_Seal_Strength) + ylim(0, 15)
                            })
                            
-                           shinyjs::hide(id = "profiler_Layer_Thickness")
                            output$plot4 <- renderPlot({ggplot()+ theme(axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())})
                            
                            if(input$Profiler_model_select == 'monoPP_Haiti' | input$Profiler_model_select == 'Paper_metOPP_70_100gsmPaper_18metOPP' | input$Profiler_model_select == 'Paper_metOPP_90gsmPaper_15_18metOPP')
                            {
                                Mean_Seal_Strnt_LT<- reactive(eval(parse(text = Lt_eqn1)))
-                               shinyjs::show(id = "profiler_Layer_Thickness")
+                               # shinyjs::show(id = "profiler_Layer_Thickness", asis = TRUE)
                                output$plot4 <- renderPlot({
-                                 Mean_Seal_Strength <- Mean_Seal_Strnt_LT()
+                                 Mean_Seal_Strength <- round(Mean_Seal_Strnt_LT(),3)
                                  ggplot(data=data.frame(Layer_Thickness_list, Mean_Seal_Strength), aes(x=Layer_Thickness_list, y= Mean_Seal_Strength)) +
                                    geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20), axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
-                                   gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness)  + ylim(0, 15)
+                                   xlab("Layer Thickness")+ ylab("Seal Strength")+
+                                   gghighlight(Layer_Thickness_list == input$profiler_Layer_Thickness, label_key = Mean_Seal_Strength)  + ylim(0, 15)
                                })
                            }
                            else
@@ -493,12 +496,18 @@ ssmServer <- function(id, top_session){
         x1_ashutosh <- reactiveValues()
         observe({
           y_ashutosh <- reactive({
+            munits <- c("[N/cm^2]","[ms]","[C]","[um]")
             values <- c(50, 475, 120, 35)
-            sqr <- data.frame(t(values))
+             sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+
+
             colnames(sqr) <- c("Sealing Pressure","Sealing Time",
                                "Sealing Temperature",
                                "Layer Thickness")
-            rownames(sqr) <- c("Enter Simulation Values")
+
+            # sqr <- data.frame(t(values))
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
+
             sqr
           })
           x1_ashutosh$df <- y_ashutosh()
@@ -509,17 +518,23 @@ ssmServer <- function(id, top_session){
           
           datatable(x1_ashutosh$df, editable = T) %>%
             formatStyle(
+
               "Sealing Pressure",
-              color = styleInterval(c(30, 70), c('red', 'black', 'red')))%>%
+              color = styleInterval(c(30, 110), c('red', 'black', 'red')))%>%
+
             formatStyle(
               "Sealing Time",
               color = styleInterval(c(200, 700), c('red', 'black', 'red')))%>%
             formatStyle(
+
               "Sealing Temperature",
-              color = styleInterval(c(100, 140), c('red', 'black', 'red')))%>%
+              color = styleInterval(c(100, 240), c('red', 'black', 'red')))%>%
             formatStyle(
               "Layer Thickness",
-              color = styleInterval(c(30, 40), c('red', 'black', 'red')))
+              color = styleInterval(c(15, 100), c('red', 'black', 'red')))
+
+          
+
         })
         
         
@@ -601,14 +616,16 @@ ssmServer <- function(id, top_session){
           colnames(df) <- gsub(" ","",tolower(colnames(df)))
           
           # prefixing 'df' to column names
+
           for(i in colnames(df)){
-            eqn1 <- gsub(i, df[1,i], eqn1)
-            eqn2 <- gsub(i, df[1,i], eqn2)
-            eqn3 <- gsub(i, df[1,i], eqn3)
-            eqn4 <- gsub(i, df[1,i], eqn4)
-            eqn5 <- gsub(i, df[1,i], eqn5)
-            eqn6 <- gsub(i, df[1,i], eqn6)
-            eqn7 <- gsub(i, df[1,i], eqn7)
+            eqn1 <- gsub(i, df[2,i], eqn1)
+            eqn2 <- gsub(i, df[2,i], eqn2)
+            eqn3 <- gsub(i, df[2,i], eqn3)
+            eqn4 <- gsub(i, df[2,i], eqn4)
+            eqn5 <- gsub(i, df[2,i], eqn5)
+            eqn6 <- gsub(i, df[2,i], eqn6)
+            eqn7 <- gsub(i, df[2,i], eqn7)
+
           }
           
           
@@ -856,28 +873,33 @@ ssmServer <- function(id, top_session){
                 (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
                 (0.00534394)*((x[1] - 77)/38.5)
               
-              if(input$equation_seal =="Mean Seal Strength(monoPP Haiti)"){
+              
+
+              if(eq_chosen =="Mean Seal Strength(monoPP Haiti)"){
                 equation <- equation_1
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
                 equation <- equation_2
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
                 equation <- equation_3
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
                 equation <- equation_4
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
+
                 equation <- equation_5
               }
               
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
+
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
+
                 equation <- equation_6
               }
               
@@ -903,42 +925,52 @@ ssmServer <- function(id, top_session){
             
             obj <- function(x){
               
+              # eq_chosen <- input$equation_seal
               
-              eq_1 <- x[1] + x[2]+ x[3]+ x[4] + x[1]*x[2] + x[1]*x[4]+ x[2]*x[4]+ x[4]*x[3] + x[1]*x[1]+ x[2]*x[2]
+              eq_1 <- opt$tab_1[1,2]*x[1] + opt$tab_1[2,2]*x[2]+ opt$tab_1[3,2]*x[3]+ opt$tab_1[4,2]*x[4] + 
+                opt$tab_1[1,2]*x[1]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]*opt$tab_1[4,2]*x[4]+
+                opt$tab_1[2,2]*x[2]*opt$tab_1[4,2]*x[4]+ opt$tab_1[4,2]*x[4]*opt$tab_1[3,2]*x[3] +
+                opt$tab_1[1,2]*x[1]*opt$tab_1[1,2]*x[1]+ opt$tab_1[2,2]*x[2]*opt$tab_1[2,2]*x[2]
               
-              eq_2 <- x[4] + x[3] + x[2] + x[3]*x[2] + x[1]  
+              eq_2 <- opt$tab_1[4,2]*x[4] + opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + 
+                opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]  
               
-              eq_3 <- x[3] + x[2] + x[3]*x[2] + x[4]*x[1]
+              eq_3 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] +
+                opt$tab_1[4,2]*x[4]*opt$tab_1[1,2]*x[1]
               
-              eq_4 <- x[3] + x[2] + x[3]*x[3] + x[3]*x[2] + x[1]    
+              eq_4 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[3,2]*x[3] +
+                opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]    
               
-              eq_5 <- x[3] + x[2] + x[3]*x[2] + x[1]   
+              eq_5 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]   
               
-              eq_6 <- x[3] + x[2] + x[3]*x[3] + x[3]*x[2] + x[1]
+              eq_6 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[3,2]*x[3] + 
+                opt$tab_1[3,2]*x[3]*opt$tab_1[2,2]*x[2] + opt$tab_1[1,2]*x[1]
               
-              eq_7 <- x[3] + x[2] + x[3]*x[3] + x[1] 
+              eq_7 <- opt$tab_1[3,2]*x[3] + opt$tab_1[2,2]*x[2] + opt$tab_1[3,2]*x[3]*opt$tab_1[3,2]*x[3] + opt$tab_1[1,2]*x[1] 
               
-              if(input$equation_seal =="Mean Seal Strength(monoPP Haiti)"){
+
+              if(eq_chosen =="Mean Seal Strength(monoPP Haiti)"){
                 eq <- eq_1
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
                 eq <- eq_2
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
                 eq <- eq_3
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
                 eq <- eq_4
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
                 eq <- eq_5
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
+
                 eq <- eq_6
               }
               
@@ -1017,27 +1049,29 @@ ssmServer <- function(id, top_session){
                 (1.76049007)*((x[3] - 180)/60)*((x[3] - 180)/60) -
                 (0.00534394)*((x[1] - 77)/38.5)
               
-              if(input$equation_seal =="Mean Seal Strength(monoPP Haiti)"){
+
+              if(eq_chosen =="Mean Seal Strength(monoPP Haiti)"){
                 equ <- equation_1
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)"){
                 equ <- equation_2
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)"){
                 equ <- equation_3
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)"){
                 equ <- equation_4
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)"){
                 equ <- equation_5
               }
               
-              else if(input$equation_seal =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
+              else if(eq_chosen =="Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)"){
+
                 equ <- equation_6
               }
               
@@ -1050,9 +1084,6 @@ ssmServer <- function(id, top_session){
             # View(res$solution)
             # optimiser output table 2
             output$optimiser_table22_seal <- renderDataTable({
-              value1 <- round(constraint_value(res$solution),3)
-              val <- data.frame(Predictors = eq_chosen,
-                                Value = as.data.frame(value1))
               
               DT::datatable(as.data.frame(round(constraint_value(res$solution),3)) 
                             ,rownames = eq_chosen, colnames =c("Target variable", "Value"))
@@ -1071,6 +1102,22 @@ ssmServer <- function(id, top_session){
                 p(paste0("The objective function value resulting from the optimisation is : "),round(-1*res$objective,3))
               })
               
+            }
+            
+            if(inequality_selection_sd=="equal to" && abs(constraint_value(res$solution)-target_sd)>.2 ){
+              showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+            }
+            
+            
+            if(inequality_selection_sd=="less than or equal to" && round(constraint_value(res$solution),1)>target_sd ){
+              showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+            }
+            
+            if(inequality_selection_sd=="greater than or equal to" && round(constraint_value(res$solution),1)<target_sd ){
+              showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
             }
             
             downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Target Variable"), Predicted_or_Optimal_Value= constraint_value(res$solution))
@@ -1096,7 +1143,7 @@ ssmServer <- function(id, top_session){
               }
             )
             
-            
+
           })#observeevent run optimiser ends
           
         })#observeevent opt end

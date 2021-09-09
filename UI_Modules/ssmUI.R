@@ -11,19 +11,21 @@ ssmUI <- function(id){
                                                p("The data-based model predicts sealing strength of a flexible laminate material based on the sealing parameters – temperature, dwell time and pressure.
 It can be used to identify optimal sealing parameters that would deliver the desired seal strength under the applicable line constraints, for e.g. line speed setting etc.
  "),
-                                               img(src= "seal_strength_img1.png"),
-                                               
+                                               #img(src= "seal_strength_img1.png"), 
+                                               column(width = 12, img(src= "seal_strength_img1.png", width="30%", align="center")),
+                  
                                                h4("Scope of the Model"), 
                                                p("The model can be used for the sealing of 4-side-seal and 3-side-seal pouches. The laminates that are already a part of the model are listed below:  "), 
                                                
-                                               img(src= "seal_strength_img2.png"),
-                                               
+                                               column(width = 12, img(src= "seal_strength_img2.jpg",  height="75%", width="75%", align="left")),
+
                                                h4("Note to all users:"), 
                                                p("We are constantly interested to increase the model, laminate material and pack format offering of this model. Please contact us with your interests, if they are not covered by the existing offering."),
                                                
                                                h4("Developed By:"), 
+                                               #column(width = 12, img(src= "seal_strength_img3.png",  height="50%", width="50%", align="left")),
                                                img(src= "seal_strength_img3.png"),
-                                               
+                                                   
                                                h4("Contact:"),
                                                p("Omer.Bin-Younos@unilever.com"),
       ),
@@ -91,7 +93,7 @@ It can be used to identify optimal sealing parameters that would deliver the des
                    selectInput(ns("x_axis_bd"), 'X axis', choices = c(" "," ") ),
                    selectInput(ns("y_axis_bd"), 'Y axis', choices = c(" "," ")
                                ,selected = names(mtcars)[2], multiple = TRUE),
-                   plotOutput(ns("scatterplot_ashutosh")),
+                   #plotOutput(ns("scatterplot_ashutosh")),
                    br(),
                    br(),
                    tags$ul(
@@ -133,11 +135,11 @@ It can be used to identify optimal sealing parameters that would deliver the des
                            tabPanel("Profiler",
                                     wellPanel(
                                       h1("Profiler"),
-                                      selectInput(ns("Profiler_model_select"), 'Select Packaging Model', choices = c(" "," "), width= "25%" )),
-                                      fluidRow(column(width = 3,plotOutput(ns("plot1"))),
-                                               column(width = 3,plotOutput(ns("plot2"))),
-                                               column(width = 3,plotOutput(ns("plot3"))),
-                                               column(width = 3,plotOutput(ns("plot4"))),
+                                      selectInput(ns("Profiler_model_select"), 'Select Packaging Model', choices = c(" "," "), width= "50%" )),
+                                      fluidRow(column(width = 3,plotOutput(ns("plot1"), height = 300)),
+                                               column(width = 3,plotOutput(ns("plot2"), height = 300)),
+                                               column(width = 3,plotOutput(ns("plot3"), height = 300)),
+                                               column(width = 3,plotOutput(ns("plot4"), height = 300)),
                                       ),
                                       fluidRow(column(width = 3,sliderInput(ns("profiler_Sealing_Pressure"),"Sealing_Pressure:", min = 30, max = 110, value = 50)),
                                                column(width = 3,sliderInput(ns("profiler_Sealing_Time"),"Sealing_Time:", min = 200, max = 700, value = 475)),
@@ -162,13 +164,15 @@ It can be used to identify optimal sealing parameters that would deliver the des
       ),
       tabPanel("Optimisation",
                wellPanel( 
-                 h2("Process optimiser (Non Linear Optimisation)"),
+                 h2("Packaging Seal-Strength Optimization"),br(),
                  tags$ul(
+
                   fluidRow(column(5,selectInput(ns("equation_seal"),"Select the Target Variable", 
                                                         choices =c("Mean Seal Strength(monoPP Haiti)","	Mean Seal Strength(Paper metOPP/70-100gsmPaper 18metOPP)",
                                                                    "Mean Seal Strength(Paper metOPP/90gsmPaper 15-18metOPP)","Mean Seal Strength(Paper metOPP/100gsmPaper 18metOPP)",
                                                                    "Mean Seal Strength(Paper metOPP/70gsmPaper 18metOPP)","Mean Seal Strength(Paper metOPP/90gsmPaper 15metOPP)",
                                                                    "Mean Seal Strength(Paper metOPP/90gsmPaper 18metOPP)"))))
+
                    ,br(),
                    tags$li("The optimisation page can be used to derive the values of the model predictors that are predicted based on a specified Target variable."),
                    tags$li("The solution can be further constrained by minimizing or maximizing an objective function."),
@@ -207,16 +211,16 @@ It can be used to identify optimal sealing parameters that would deliver the des
                  dataTableOutput(ns("optimiser_table32_seal")),
                  h4("Objective Function Value"),
                  uiOutput(ns("value_results_seal")),
-                 downloadButton(ns("download5_seal"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                 downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                  
-               ),
-               wellPanel(
-                 h2("Global Download"),
-                 h4("Download all the results that have been generated throughout the app"),
-                 actionButton(ns("downloadresults_seal"),"Proceed to download all Results",
-                              style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                 uiOutput(ns("Download_Values_seal"))
                )
+               # wellPanel(
+               #   h2("Global Download"),
+               #   h4("Download all the results that have been generated throughout the app"),
+               #   actionButton(ns("downloadresults"),"Proceed to download all Results",
+               #                style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+               #   uiOutput(ns("Download_Values"))
+               # )
                
                
       )#optimisation end

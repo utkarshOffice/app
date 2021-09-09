@@ -103,29 +103,28 @@ conditionerUI <- function(id){
                                                 wellPanel(
                                                   h1("Profiler"),
                                                   br(),
-                                                  fluidRow(column(width = 6,
-                                                                  plotOutput(ns("plot1")),
-                                                                  plotOutput(ns("plot2"))
-                                                  ),
-                                                  column(width = 6,
-                                                         plotOutput(ns("plot3")),
-                                                         plotOutput(ns("plot4"))
-                                                  )),
-                                                  fluidRow(column(width = 6,
+                                                  fluidRow(      
+                                                    column(width = 3,plotOutput(ns("plot1"))),
+                                                    column(width = 3,plotOutput(ns("plot2"))),
+                                                    column(width = 3,plotOutput(ns("plot3"))),
+                                                    column(width = 3,plotOutput(ns("plot4")))
+                                                    ),
+                                                  fluidRow(column(width = 4,
                                                                   sliderInput(ns("solidscontent"),"Solids Content:", min = 0.85, max = 1, value = 0.9),
                                                                   sliderInput(ns("silversontipspeedduringemulsion"),"Silverson Tip Speed during Emulsion [m/s]:", min = 7.76, max = 23.26, value = 8),
                                                                   sliderInput(ns("silversontipspeedduringquench"),"Silverson Tip Speed during Quench  [m/s]:", min = 0, max = 23.26, value = 1),
-                                                                  sliderInput(ns("silversontipspeedondischarge"),"Silverson Tip Speed on Discharge [m/s]:", min = 0, max = 23.26, value = 1),
-                                                                  sliderInput(ns("silversontipspeedduringendmixing"),"Silverson Tip Speed during End Mixing [m/s]:", min = 0, max = 23.26, value = 1),
-                                                                  sliderInput(ns("tempofsamplesondischarge"),"Temperature of samples on discharge [C]:", min = 38.34, max = 42.65, value = 39)
+                                                                  sliderInput(ns("silversontipspeedondischarge"),"Silverson Tip Speed on Discharge [m/s]:", min = 0, max = 23.26, value = 1)
                                                   ),
-                                                  column(width = 6,
+                                                  column(width = 4,
                                                          sliderInput(ns("finalmixingtime"),"Final Mixing Time [mins]:", min = 8.08, max = 46.05, value = 9),
                                                          sliderInput(ns("updatedfatstemp"),"Updated Fats Temperature [C]:", min = 59.7, max = 77.7, value = 60),
                                                          sliderInput(ns("tempatpointofquenchinjection"),"Temp at point of Quench [C]:", min = 53.94, max = 59.77, value = 54),
-                                                         sliderInput(ns("quenchinjectionrate"),"Quench Injection Rate [%kg/hr]:", min = 164.06, max = 837.99, value = 165),
                                                          sliderInput(ns("fatsinjectionrate"),"Fats Injection Rate [%kg/hr]:", min = 33.54, max = 117.51, value = 34)
-                                                  ))
+                                                  ),
+                                                  column(width = 4,
+                                                         sliderInput(ns("silversontipspeedduringendmixing"),"Silverson Tip Speed during End Mixing [m/s]:", min = 0, max = 23.26, value = 1),
+                                                         sliderInput(ns("quenchinjectionrate"),"Quench Injection Rate [%kg/hr]:", min = 164.06, max = 837.99, value = 165),
+                                                         sliderInput(ns("tempofsamplesondischarge"),"Temperature of samples on discharge [C]:", min = 38.34, max = 42.65, value = 39)))
                                                 )
                                        ),
                                        tabPanel("Imported Data Simulation",
@@ -145,7 +144,6 @@ conditionerUI <- function(id){
                              h2("Process Optimiser (Non Linear Optimisation)"),
                              wellPanel(
                                tags$ul(
-                                 br(),
                                  h3("Target Variables : Fresh Viscosity [mPas], 24 Hour Viscosity [mPas],
                                      24 Hour Yield Stress [mPas], 1 Week Viscosity [mPas]"),
                                  br(),
@@ -156,36 +154,36 @@ conditionerUI <- function(id){
                                  tags$li("Select the desired inequality from \"less than or equal to\", \"equal to\" and \"greater than or equal to\". "),
                                  tags$li("Input the desired values of the Target variables. "),
                                  tags$li("Enter the weights (relative importance) of the target variables; by default it is 1.")
-
+                                 
                                ),br()),
-
+                             
                              wellPanel(
                                radioButtons(ns("radio_button_erin"),"Objective Type",choices=c("Minimization"="min","Maximization"="max"),inline = TRUE),
                                br(),
-                                 fluidRow(h3("Fresh Viscosity [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_one"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_one"),"Enter the target value",250)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_one"), "Enter the weight",1)),
-                                 br()),
-
+                               fluidRow(h3("Fresh Viscosity [mPas]"),br(),
+                                        column(2,selectInput(ns("inequality_selection_erin_one"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                        column(2,offset= 2,numericInput(ns("numeric_input_erin_one"),"Enter the target value",250)),
+                                        column(2, offset = 3, numericInput(ns("weight_erin_one"), "Enter the weight",1)),
+                                        br()),
+                               
                                fluidRow( h3("24 Hour Viscosity [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_two"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_two"),"Enter the target value",400)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_two"), "Enter the weight",1)),
-                                 br()),
-
+                                         column(2,selectInput(ns("inequality_selection_erin_two"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                         column(2,offset= 2,numericInput(ns("numeric_input_erin_two"),"Enter the target value",400)),
+                                         column(2, offset = 3, numericInput(ns("weight_erin_two"), "Enter the weight",1)),
+                                         br()),
+                               
                                fluidRow( h3(" 24 Hour Yield Stress [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_three"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_three"),"Enter the target value",150)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_three"), "Enter the weight",1)),
-                                 br()),
-
+                                         column(2,selectInput(ns("inequality_selection_erin_three"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                         column(2,offset= 2,numericInput(ns("numeric_input_erin_three"),"Enter the target value",150)),
+                                         column(2, offset = 3, numericInput(ns("weight_erin_three"), "Enter the weight",1)),
+                                         br()),
+                               
                                fluidRow( h3(" 1 Week Viscosity [mPas]"),br(),
-                                 column(2,selectInput(ns("inequality_selection_erin_four"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
-                                 column(2,offset= 2,numericInput(ns("numeric_input_erin_four"),"Enter the target value",550)),
-                                 column(2, offset = 3, numericInput(ns("weight_erin_four"), "Enter the weight",1)),
-                                 br()),
-
+                                         column(2,selectInput(ns("inequality_selection_erin_four"),"Select the inequality",choices=c("less than or equal to", "equal to", "greater than or equal to"))),
+                                         column(2,offset= 2,numericInput(ns("numeric_input_erin_four"),"Enter the target value",550)),
+                                         column(2, offset = 3, numericInput(ns("weight_erin_four"), "Enter the weight",1)),
+                                         br()),
+                               
                                # wellPanel(
                                h2("Objective Function Table"), br(),
                                tags$li("Enter the allowed range for each model predictor by editing the 'Lower Bounds' and 'Upper Bounds' columns in the below table."),
@@ -205,6 +203,8 @@ conditionerUI <- function(id){
                                dataTableOutput(ns("optimiser_table32_erin")),
                                h4("Objective Function Value"),
                                uiOutput(ns("value_results_erin")),
+                               downloadButton(ns("download5"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
+                               
                                downloadButton(ns("download5_erin"),"Download above result",style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
 
                              ),
@@ -213,12 +213,13 @@ conditionerUI <- function(id){
                                h4("Download all the results that have been generated throughout the app"),
                                actionButton(ns("downloadresults_erin"),"Proceed to download all Results",
                                             style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
-                               uiOutput(ns("Download_Values_erin"))
+                               uiOutput(ns("Download_Values"))
+                             ),
+                              uiOutput(ns("Download_Values_erin"))
                                      )
-
                            ))
-                  
-      )}
+      
+      }
     
   )}
 

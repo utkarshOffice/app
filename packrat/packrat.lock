@@ -22,8 +22,8 @@ Hash: c0d56cd15034f395874c870141870c25
 
 Package: Rcpp
 Source: CRAN
-Version: 1.0.6
-Hash: d891b607ea796cf30abfe4795380423f
+Version: 1.0.7
+Hash: 3067a413f1457c3c1d88bf39026b179f
 
 Package: askpass
 Source: CRAN
@@ -154,7 +154,7 @@ Requires: digest, glue, rlang, tibble, gtable, isoband, scales, withr
 Package: ggrepel
 Source: CRAN
 Version: 0.9.1
-Hash: b9e6453c3d7a282d00308bc893964efc
+Hash: 2fb92034740e6ea86867deaced574b0a
 Requires: Rcpp, ggplot2, rlang, scales
 
 Package: glue
@@ -188,7 +188,7 @@ Requires: htmltools, jsonlite, yaml
 Package: httpuv
 Source: CRAN
 Version: 1.6.1
-Hash: f6544986815865f945ef7308aecdebe3
+Hash: b1c34b17469c3b466f9ee8619d50a37f
 Requires: R6, Rcpp, later, promises
 
 Package: httr
@@ -221,7 +221,7 @@ Hash: 7474c78957f4e01d1dd4c04217eab244
 Package: later
 Source: CRAN
 Version: 1.2.0
-Hash: f0643bd220035619f3743aaed7c3b2c9
+Hash: d6a846c4a2021469834f39703f2dc24d
 Requires: Rcpp, rlang
 
 Package: lazyeval
@@ -306,7 +306,7 @@ Requires: R6, crayon, hms, prettyunits
 Package: promises
 Source: CRAN
 Version: 1.2.0.1
-Hash: b999731b91ddfd9b4f8fef55460f3c73
+Hash: f022420d90ed232ac326c9e39553f823
 Requires: R6, magrittr, rlang, Rcpp, later
 
 Package: purrr
@@ -328,7 +328,7 @@ Hash: fd602edfd7dbf365642e35dd9cc97958
 Package: readxl
 Source: CRAN
 Version: 1.3.1
-Hash: e34982e51b2fb433409a36da8111439f
+Hash: 25b47dc319062c24a878e6a170a7b702
 Requires: Rcpp, cellranger, progress, tibble
 
 Package: rematch

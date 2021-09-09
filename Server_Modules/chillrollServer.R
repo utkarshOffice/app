@@ -70,7 +70,7 @@ chillrollServer <- function(id, top_session){
         eqn2 <- "(Cooling_seg_fraction())*(-48.3757602771176) + (T_ambient()**2)*(-0.0000431916784640458) + T_flake_feed()*0.339086502336415 + T_chilled_water()*0.529509608669907 + (Film_thickness)*(18.6709859995675) + ((Film_thickness)**2)*(6.55116697694696) + (DEFI_Free_roll_length()**2)*(0.13197883988453) + Roll_Speed()*7.21191328015338 + (Roll_Speed()**2)*1.26186094993258 - (18.9553266806959)"
         
         
-        Film_thickness <- round(seq(from  = 0.5, to = 2.0, length.out = 25),3)
+        Film_thickness <- round(seq(from  = 0.5, to = 2.0, length.out = 76),3)
         Cooling_seg_fraction <- reactive(input$profiler_Cooling_seg_fraction)
         T_ambient <- reactive(input$profiler_T_ambient)
         T_flake_feed <- reactive(input$profiler_T_flake_feed)
@@ -94,17 +94,21 @@ chillrollServer <- function(id, top_session){
             Final_Flake_Temp_M2 <- reactive(eval(parse(text = eqn2)))
             
             output$plot1 <- renderPlot({
-              Final_Flake_Temp_1 <- Final_Flake_Temp_M1()
+              Final_Flake_Temp_1 <- round(Final_Flake_Temp_M1(),3)
               ggplot(data=data.frame(Film_thickness, Final_Flake_Temp_1), aes(x=Film_thickness, y= Final_Flake_Temp_1)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(Film_thickness == input$profiler_Film_thickness)
+                xlab("Film Thickness")+ ylab("Final Flake Temp-M1")+
+                gghighlight(Film_thickness == input$profiler_Film_thickness , label_key = Final_Flake_Temp_1)
+
             })
             
             output$plot2 <- renderPlot({
-              Final_Flake_Temp_2 <- Final_Flake_Temp_M2()
+              Final_Flake_Temp_2 <- round(Final_Flake_Temp_M2(),3)
               ggplot(data=data.frame(Film_thickness, Final_Flake_Temp_2), aes(x=Film_thickness, y= Final_Flake_Temp_2)) +
                 geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                gghighlight(Film_thickness == input$profiler_Film_thickness)
+                xlab("Film Thickness")+ ylab("Final Flake Temp-M2")+
+                gghighlight(Film_thickness == input$profiler_Film_thickness , label_key = Final_Flake_Temp_2)
+
             })
     
             })
@@ -330,10 +334,12 @@ chillrollServer <- function(id, top_session){
         x1_santosh <- reactiveValues()
         observe({
           y_santosh <- reactive({
+            munits <- c("[mm]","[fraction]","[C]","[C]","[C]","[m]","[rpm]")
             values <- c(1.0, 0.75, 110, 30, 7.5, 0.01, 2.0)
-            sqr <- data.frame(t(values))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+           # sqr <- data.frame(t(values))
             colnames(sqr) <- all_vars_santosh
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
             sqr
           })
           x1_santosh$df <- y_santosh()
@@ -404,8 +410,8 @@ chillrollServer <- function(id, top_session){
   
           # prefixing 'df' to column names
           for(i in b_santosh){
-            eqn1 <- gsub(i, df[1,i], eqn1)
-            eqn2 <- gsub(i, df[1,i], eqn2)
+            eqn1 <- gsub(i, df[2,i], eqn1)
+            eqn2 <- gsub(i, df[2,i], eqn2)
           }
           
 
@@ -619,7 +625,7 @@ chillrollServer <- function(id, top_session){
                                                    opt$tab_1[1,2]*x[1]*opt$tab_1[1,2]*x[1] +
                                                    opt$tab_1[6,2]*x[6]*opt$tab_1[6,2]*x[6] + opt$tab_1[7,2]*x[7] + 
                                                    opt$tab_1[7,2]*x[7]*opt$tab_1[7,2]*x[7] 
-                                                   )
+                                                 )
                            
                            
                            if(input$radio_button_chill == 'min'){
@@ -658,23 +664,22 @@ chillrollServer <- function(id, top_session){
                            e <- (x[2])*(-45.5179701273954) + (x[1])*(18.8956339477401) +
                              (x[1]*x[1])*(6.67710528547635) + x[7]*(7.21746209125386) + 
                              (x[7]*x[7])*(1.27090332399397) + 20.3887470216993
+                           
                            return(e)}
                            
                          constraint_value2 <- function(x){
+                           
                            eq <-  (x[2])*(-48.3757602771176) + (x[4]*x[4])*(-0.0000431916784640458) + 
                              (x[3])*(0.339086502336415) + (x[5])*0.529509608669907 +
                              (x[1])*(18.6709859995675) + (x[1]*x[1])*(6.55116697694696) + 
                              (x[6]*x[6])*(0.13197883988453) + (x[7])*7.21191328015338 +
                              (x[7]*x[7])*1.26186094993258 - 18.9553266806959
+                           
                            return(eq)
                            }
                          
                          # optimiser output table 2
                          output$optimiser_table22_chill <- renderDataTable({
-                           value1 <- round(constraint_value(res$solution),3)
-                           value2 <- round(constraint_value2(res$solution),3)
-                           # val <- data.frame(Predictors = c("	Flake Final Temp (Model 1)","	Flake Final Temp (Model 2)"),
-                           #                   Value = as.data.frame(rbind(value1,value2)))
                            
                            DT::datatable(as.data.frame(rbind(round(constraint_value(res$solution),3),round(constraint_value2(res$solution),3))) 
                                          ,rownames = c("Flake Final Temp (Model 1)","	Flake Final Temp (Model 2)"), colnames =c("Target variable", "Value"))
@@ -696,11 +701,31 @@ chillrollServer <- function(id, top_session){
                            
                          }
                          
+#<<<<<<< subinoffice2
+                         if((inequality_selection_one=='equal to' && abs(constraint_value(res$solution)-target_one)>.3)||
+                            (inequality_selection_two=='equal to' && abs(constraint_value2(res$solution)-target_two)>.3)){
+                           showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+                         }
+                         
+                         if((inequality_selection_one=="less than or equal to" && constraint_value(res$solution)>target_one)||
+                            (inequality_selection_two=="less than or equal to" && constraint_value2(res$solution)>target_two)){
+                           showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+                         }
+                         
+                         if(inequality_selection_one=="greater than or equal to" && constraint_value(res$solution)<target_one||
+                            (inequality_selection_two=="greater than or equal to" && constraint_value2(res$solution)<target_two)){
+                           showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+                         }
+#=======
                          downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Flake Final Temp(Model1)", "Flake Final Temp(Model2) "), Predicted_or_Optimal_Value= c(constraint_value(res$solution), constraint_value2(res$solution)))
                          downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Film_thickness_[0.5,2]", "Cooling_seg_fraction_[0.25,0.875]", "T_flake_feed_[100,130]" , 
                                                                                                    "T_ambient_[15,40]","T_chilled_water_[-5,15]" ,"DEFI_Free_roll_length_[0.001,0.1]",
                                                                                                    "Roll_Speed_[1,4]"),
                                               Predicted_or_Optimal_Value=res$solution)
+#>>>>>>> master
                          
                          if(input$radio_button_chill=='min'){
                            downopt12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("Objective Function Value"), Predicted_or_Optimal_Value = res$objective)

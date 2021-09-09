@@ -77,19 +77,19 @@ Facial_MoisturizerServer <- function(id, top_session){
                          result2 <- reactive(eval(parse(text = eqn2)))
                          
                          output$plot1 <- renderPlot({
-                           result <- result1()
+                           result <- round(result1(),3)
                            ggplot(data=data.frame(Initial_Emulsification_Temperature, result), aes(x=Initial_Emulsification_Temperature, y= result)) +
                              geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ xlab("Initial Emulsification Temperature")+
                              ylab("Viscosity 24hrs (mPas)")+
-                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature)
+                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature, label_key = result)
                          })
                          
                          output$plot2 <- renderPlot({
-                           result <- result2()
+                           result <- round(result2(),3)
                            ggplot(data=data.frame(Initial_Emulsification_Temperature, result), aes(x=Initial_Emulsification_Temperature, y= result)) +
                              geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 15))+ xlab("Initial Emulsification Temperature")+
                              ylab("Viscosity 2hrs (mPas)")+
-                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature)
+                             gghighlight(Initial_Emulsification_Temperature == input$Initial_Emulsification_Temperature, label_key = result)
                          })
                        })
       })
@@ -254,12 +254,12 @@ Facial_MoisturizerServer <- function(id, top_session){
         x2_skincare_kayla <- reactiveValues()
         observe({
           y_skincare_kayla <- reactive({
-        
+            munits <- c("[C]","[Hz]","[min]","[min]","[min]","[min]","[C]","[min]")
             values <- c(69,34,11,4,15,11,37,4)
-            sqr <- data.frame(t(values))
-            #sqr1 <- datatable(sqr, editable = T,colnames = c("Model Predictors","Measurement Units", "Enter Simulation Values"))
+            sqr <- do.call(rbind,data.frame(cbind(munits,values)))
+            # sqr <- data.frame(t(values))
             colnames(sqr) <- b_skincare_kayla
-            rownames(sqr) <- c("Enter Simulation Values")
+            rownames(sqr) <- c("Measurement Units","Enter Simulation Values")
             sqr
             
           })
@@ -333,8 +333,8 @@ Facial_MoisturizerServer <- function(id, top_session){
   First_Cooling_Time_Length * 53.2437206619529 + Second_Cooling_Time_Length * -350.472374047041 + Discharge_Temperature * 1694.80362126778 + Discharge_Time_Length * -1390.91117995195 - 75916.4225373359 "
           
           for(i in all_skincare_kayla){
-            eqn1 <- gsub(i, x2[1,i], eqn1)
-            eqn2 <- gsub(i, x2[1,i], eqn2)
+            eqn1 <- gsub(i, x2[2,i], eqn1)
+            eqn2 <- gsub(i, x2[2,i], eqn2)
           }
           
           Viscosity_24hrs <- eval(parse(text = eqn1))

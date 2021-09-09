@@ -72,7 +72,7 @@ NTR_powderServer <- function(id, top_session){
                          BD_Prediction_by_Model <- BD_Prediction_by_Model()
                          ggplot(data=data.frame(Base_Factor, BD_Prediction_by_Model), aes(x=Base_Factor, y= BD_Prediction_by_Model)) +
                            geom_line() + geom_point(size = 4)+ theme(text = element_text(size = 20))+
-                           gghighlight(Base_Factor == input$Base_Factor)
+                           gghighlight(Base_Factor == input$Base_Factor, label_key = BD_Prediction_by_Model)
                        })
                      })
         
@@ -526,12 +526,10 @@ NTR_powderServer <- function(id, top_session){
           constraint_value <- function(x){
             return(132.314+0.00874*x[1]*x[2]+8.812*x[3]+8.602*x[4]+9.003*x[5])
           }
-          # View(res$solution)
+          
           # optimiser output table 2
           output$optimiser_table22_uday_ntr <- renderDataTable({
-            value1 <- round(constraint_value(res$solution),3)
-            val <- data.frame(Predictors = c("BD Prediction by Model"),
-                              Value = as.data.frame(value1))
+
 
             DT::datatable(as.data.frame(round(constraint_value(res$solution),3))
                           ,rownames = c("BD Prediction by Model"), colnames =c("Target variable", "Value"))
@@ -553,6 +551,29 @@ NTR_powderServer <- function(id, top_session){
             
           }
           
+#<<<<<<< subinoffice2
+          if(inequality_selection_ntr=="equal to" && abs(constraint_value(res$solution)-target_ntr)>.2 ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_ntr=="less than or equal to" && constraint_value(res$solution)>target_ntr ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          if(inequality_selection_ntr=="greater than or equal to" && constraint_value(res$solution)<target_ntr ){
+            showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+                                  Please alter the inputs and re-run."))
+          }
+          
+          # if(res$status!=0){
+          #   showModal(modalDialog("Non Linear optimisation will give unexpected results for the given inputs.
+          #                         Please alter the inputs and re-run."))
+          #   
+          # }
+        # View(res$status)
+#=======
           downresults12 <- data.frame(Response_or_Predictors_or_Objective_Function_Value = c("BD Prediction by Model"), Predicted_or_Optimal_Value= constraint_value(res$solution))
           downdf12<-data.frame(Response_or_Predictors_or_Objective_Function_Value=c("Base Factor","Filler Sulphate Salt as Balancing ingredient","Base Powder Bulk Density","Post Dosing Ingredients Majors(>1% in FG other than Filler)","Post Dosing Ingredients Minors (<1% in FG other than Filler)"),
                                Predicted_or_Optimal_Value=res$solution)
@@ -575,6 +596,7 @@ NTR_powderServer <- function(id, top_session){
             }
           )
 
+#>>>>>>> master
         })#observeevent run optimiser ends
 
       })#observeevent opt end

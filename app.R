@@ -11,7 +11,7 @@ library(nloptr)
 library(ggplot2)
 library(gghighlight)
 library(shinyjs)
-
+library(Rcpp)
 
 #source all files in back_end
 for(f in list.files(path=c("./UI_Modules/","./Server_Modules/"),
@@ -56,7 +56,7 @@ ui <- function(request){
     ),
     br(),
     column(12,align = "left",offset = 0,
-           a("Download PAE Model Bank V1.0 Guide",
+           a("Download PAE Processing Model Bank V1.0 Guide",
              href="PAE Model Bank User Guide.pdf", 
              download="PAE Model Bank User Guide.pdf",
              class="dl2")),
@@ -65,7 +65,7 @@ ui <- function(request){
            a("Download PAE Packaging Model Bank V1.0 Guide",
              href="PAE Packaging Model Bank User Guide.pdf", 
              download="PAE Packaging Model Bank User Guide.pdf",
-             class="dl2"))
+             class="dl2")) 
     #bookmarkButton()
     ),
     dashboardBody(
