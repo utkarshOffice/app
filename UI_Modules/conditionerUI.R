@@ -69,6 +69,8 @@ conditionerUI <- function(id){
                                checkboxInput(ns("smooth2"),"Multitrend", TRUE),
                                plotOutput(ns("ggsmooth")),
                                #plotOutput(ns("scatterplot"))
+                               plotlyOutput(ns("multi_lines_graph"))
+                               
                              ),
                              
                              wellPanel(

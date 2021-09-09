@@ -242,6 +242,55 @@ Plodder Back Pressure (30%) @ 40 degC - 11.7522727272727) * 0.145362088204255)
                        }
                      }
                    })
+                   output$multi_lines_graph_uday <- renderPlotly({
+                     if(length(input$y_axis) == 1){
+                       fig <- plot_ly( x = ~data_uday_sd()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis]],mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = as.character(input$y_axis)) )
+                       fig
+                     }else if(length(input$y_axis) == 2){
+                       fig <- plot_ly(data_uday_sd(), x = ~data_uday_sd()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     }
+                     else if(length(input$y_axis) == 3){
+                       fig <- plot_ly(data_uday_sd(), x = ~data_uday_sd()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 4){
+                       fig <- plot_ly(data_uday_sd(), x = ~data_uday_sd()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 5){
+                       fig <- plot_ly(data_uday_sd(), x = ~data_uday_sd()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[5]]], name = input$y_axis[5], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     } else if(length(input$y_axis) == 6){
+                       fig <- plot_ly(data_uday_sd(), x = ~data_uday_sd()[[input$x_axis]], marker=list(size=10))
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[1]]], name = input$y_axis[1],mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[2]]], name = input$y_axis[2], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[3]]], name = input$y_axis[3], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[4]]], name = input$y_axis[4], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[5]]], name = input$y_axis[5], mode = 'lines')
+                       fig <- fig %>% add_lines(y = ~data_uday_sd()[[input$y_axis[6]]], name = input$y_axis[6], mode = 'lines')
+                       fig <- fig %>% layout(xaxis = list(title = as.character(input$x_axis)),yaxis = list (title = "") )
+                       fig
+                     }
+                   })
                    
                    output$hist_uday_sd <- renderPlot({
                      ggplot(data_uday_sd(), aes(x= data_uday_sd()[[input$hist_choice_uday_sd]])) +

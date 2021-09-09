@@ -115,7 +115,9 @@ After segmentation, viscosity 2hrs and viscosity 24hrs were selected as response
                                checkboxInput(ns("smooth_skincare_kayla"),"Trend Line", TRUE),
                                plotOutput(ns("ggscatter_skincare_kayla")),
                                checkboxInput(ns("smooth2_skincare_kayla"),"Multitrend", TRUE),
-                               plotOutput(ns("ggsmooth_skincare_kayla"))
+                               plotOutput(ns("ggsmooth_skincare_kayla")),
+                               plotlyOutput(ns("multi_lines_graph_kayla"))
+                               
                              ),
                              wellPanel(
                                h2("Histogram"),

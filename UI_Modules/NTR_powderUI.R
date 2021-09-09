@@ -83,7 +83,8 @@ NTR_powderUI <- function(id){
                                checkboxInput(ns("smooth_uday_ntr"),"Trend Line", TRUE),
                                plotOutput(ns("ggscatter_uday_ntr")),
                                checkboxInput(ns("smooth2_uday_ntr"),"Multitrend", TRUE),
-                               plotOutput(ns("ggsmooth_uday_ntr"))
+                               plotOutput(ns("ggsmooth_uday_ntr")),
+                               plotlyOutput(ns("multi_lines_graph_uday_ntr"))
                              ),
                              wellPanel(
                                h2("Histogram"),

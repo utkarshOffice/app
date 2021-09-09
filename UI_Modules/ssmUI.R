@@ -101,8 +101,8 @@ It can be used to identify optimal sealing parameters that would deliver the des
                    checkboxInput(ns("smooth_ashutosh"),"Trend Line", TRUE),
                    plotOutput(ns("ggscatter_ashutosh")),
                    checkboxInput(ns("smooth2_ashutosh"),"Multitrend", TRUE),
-                   plotOutput(ns("ggsmooth_ashutosh"))
-                   #plotlyOutput(ns("multi_lines_graph_ashutosh"))
+                   plotOutput(ns("ggsmooth_ashutosh")),
+                   plotlyOutput(ns("multi_lines_graph_ashutosh"))
                    
                  ),
                  wellPanel(
