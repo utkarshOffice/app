@@ -31,28 +31,32 @@ def preprocess(data,polyFlag):
     data_flat.drop('Jaw_Width_mm',axis=1, inplace=True)
     data_flat.drop('Specimen_Width_mm',axis=1, inplace=True)
     data_flat.drop('Layer_2_thickness_um',axis=1, inplace=True)
+    data_flat.drop('Sealing_Force_N',axis=1, inplace=True)
 
     
     # laminate family specify dropping
-    if polyFlag== False:
+    if polyFlag == False:
         data_flat.drop('MetOPP_Supplier',axis=1, inplace=True)
         data_flat.drop('Failure_Mode',axis=1, inplace=True)
         data_flat.drop('Comments',axis=1, inplace=True)
         data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
         data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
-        data_flat.drop('Sealing_Force_N',axis=1, inplace=True)
         
-    if polyFlag== True:
+    print(data_flat)
+    
+    if polyFlag == True:
         data_flat.drop('Layer_2',axis=1, inplace=True)
         data_flat.drop('Layer_3_sealant',axis=1, inplace=True)
         data_flat.drop('Layer_1_thickness_um',axis=1, inplace=True)
         data_flat['Sealent_layer_thickness'] = data_flat['Layer_3_thickness_um']
         data_flat.drop('Layer_3_thickness_um',axis=1, inplace=True)
+
     
     group_cols = list(data_flat.columns)
     group_cols.remove('Seal_Strength_N_15mm')
     data_flat = data_flat[data_flat.Seal_Strength_N_15mm.isna()==0]
     data_flat.fillna(0,inplace=True)
+    print(data_flat)
     data = pd.DataFrame(data_flat.groupby(group_cols).Seal_Strength_N_15mm.mean())
     data.to_csv('Agg-Data.csv')
     data = pd.read_csv('Agg-Data.csv')
@@ -65,6 +69,8 @@ def preprocess(data,polyFlag):
             print("Dropping ",col)
             data.drop(col,axis=1, inplace=True) 
             
+    print(1)
+            
     
     data.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
     
@@ -76,6 +82,7 @@ def preprocess(data,polyFlag):
     
     data['Material_Name'] = data['Material_Name'].str.replace(' ', '')    
     
+    print(data)
     return data
 
 def feature_engg(data, predictors):
@@ -134,10 +141,10 @@ def run_model(data_R, predictors, response, material, polyFlag):
     data_flat = data_R
 
     data = preprocess(data_flat,polyFlag)
-
-    # choosing predictors
+    print(data)
     data_orig = data.copy()
     
+    # choosing predictors
     for col in data.columns:
         if col not in predictors:
             data.drop(col,axis=1, inplace=True)
@@ -147,11 +154,12 @@ def run_model(data_R, predictors, response, material, polyFlag):
 
     data = feature_engg(data, predictors)
     
+    print(data)
     data_mat = data[data.Material_Name == material]
     data_mat.drop('Material_Name', inplace=True, axis = 1)
     
 
-    if polyFlag == True:
+    if polyFlag== True:
         data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
     
     
@@ -159,7 +167,7 @@ def run_model(data_R, predictors, response, material, polyFlag):
     for col in data_mat.columns:
         if data_mat[col].dtype != 'O':
             num_cols.append(col)
-   
+    print(data_mat)
     from sklearn.preprocessing import StandardScaler
     scaler = StandardScaler()
     data_mat[num_cols] = scaler.fit_transform(data_mat[num_cols])

@@ -57,12 +57,20 @@ modellerServer <- function(id, top_session){
       
       observeEvent(req(input$dataset),{
         
- 
-        data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
+        if(input$polyFlag == FALSE)
+        {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
+        #View(data)
+        }
+        if(input$polyFlag == TRUE)
+        {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
         observeEvent(input$build,
 
                       {
                        #updateTabsetPanel(top_session, "tabs", selected = "modellingResults")
+                        
+                       #to reset button status
+                      input$build <- FALSE
+                       
                        unlink("static/tables/*")
                         
                        output$results <- renderUI({ns <- NS(id)
@@ -95,7 +103,6 @@ modellerServer <- function(id, top_session){
                        write.csv(RG_FI,file='static/tables/RG_FI.csv',append=FALSE, row.names = FALSE)
                        
                        
-                       #View(x)
                        waiter_hide()
                        
                        output$model_title1_Text <- renderText('Results Summary ')
