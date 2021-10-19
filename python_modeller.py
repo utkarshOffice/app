@@ -19,50 +19,64 @@ from scipy.stats import skew
 
 def preprocess(data,polyFlag):
     
-    if polyFlag== False:
-        data_flat = data
     
-        data_flat.drop('Pack_Format',axis=1, inplace=True)
-        data_flat.drop('Converter',axis=1, inplace=True)
-        data_flat.drop('Stack',axis=1, inplace=True)
+    data_flat = data
+    
+    # common columns to drop
+    data_flat.drop('Pack_Format',axis=1, inplace=True)
+    data_flat.drop('Converter',axis=1, inplace=True)
+    data_flat.drop('Stack',axis=1, inplace=True)
+    data_flat.drop('Layer_1_outer',axis=1, inplace=True)
+    data_flat.drop('Jaw_Type',axis=1, inplace=True)
+    data_flat.drop('Jaw_Width_mm',axis=1, inplace=True)
+    data_flat.drop('Specimen_Width_mm',axis=1, inplace=True)
+    data_flat.drop('Layer_2_thickness_um',axis=1, inplace=True)
+
+    
+    # laminate family specify dropping
+    if polyFlag== False:
         data_flat.drop('MetOPP_Supplier',axis=1, inplace=True)
-        data_flat.drop('Jaw_Type',axis=1, inplace=True)
-        data_flat.drop('Jaw_Width_mm',axis=1, inplace=True)
-        data_flat.drop('Specimen_Width_mm',axis=1, inplace=True)
         data_flat.drop('Failure_Mode',axis=1, inplace=True)
         data_flat.drop('Comments',axis=1, inplace=True)
-        data_flat.drop('Layer_1_outer',axis=1, inplace=True)
         data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
         data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
-        data_flat.drop('Layer_2_thickness_um',axis=1, inplace=True)
+        data_flat.drop('Sealing_Force_N',axis=1, inplace=True)
         
-        group_cols = list(data_flat.columns)
-        group_cols.remove('Seal_Strength_N_15mm')
-        data_flat = data_flat[data_flat.Seal_Strength_N_15mm.isna()==0]
-        data_flat.fillna(0,inplace=True)
-        data = pd.DataFrame(data_flat.groupby(group_cols).Seal_Strength_N_15mm.mean())
-        data.to_csv('Agg-Data.csv')
-        data = pd.read_csv('Agg-Data.csv')
-        data['Mean(Seal_Strength_N_15mm)'] = data['Seal_Strength_N_15mm']
-        data_flat.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
+    if polyFlag== True:
+        data_flat.drop('Layer_2',axis=1, inplace=True)
+        data_flat.drop('Layer_3_sealant',axis=1, inplace=True)
+        data_flat.drop('Layer_1_thickness_um',axis=1, inplace=True)
+        data_flat['Sealent_layer_thickness'] = data_flat['Layer_3_thickness_um']
+        data_flat.drop('Layer_3_thickness_um',axis=1, inplace=True)
     
-        # Drop catergorical columns with only one category throughout dataset
-        for col in data.columns:
-            if data[col].nunique() == 1:
-                print("Dropping ",col)
-                data.drop(col,axis=1, inplace=True) 
-                
+    group_cols = list(data_flat.columns)
+    group_cols.remove('Seal_Strength_N_15mm')
+    data_flat = data_flat[data_flat.Seal_Strength_N_15mm.isna()==0]
+    data_flat.fillna(0,inplace=True)
+    data = pd.DataFrame(data_flat.groupby(group_cols).Seal_Strength_N_15mm.mean())
+    data.to_csv('Agg-Data.csv')
+    data = pd.read_csv('Agg-Data.csv')
+    data['Mean(Seal_Strength_N_15mm)'] = data['Seal_Strength_N_15mm']
+    data_flat.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
+
+    # Drop catergorical columns with only one category throughout dataset
+    for col in data.columns:
+        if data[col].nunique() == 1:
+            print("Dropping ",col)
+            data.drop(col,axis=1, inplace=True) 
+            
+    
+    data.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
+    
+    if polyFlag== False:
         data['Failure_Mode_C'] = data['Failure_Mode_C'].astype('O')
         data['Failure_Mode_A'] = data['Failure_Mode_A'].astype('O')
         data['Failure_Mode_D'] = data['Failure_Mode_D'].astype('O')
-        data['Failure_Mode_FR'] = data['Failure_Mode_FR'].astype('O') 
-        data.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
-        
-        data['Material_Name'] = data['Material_Name'].str.replace(' ', '')    
-        
-        return data
+        data['Failure_Mode_FR'] = data['Failure_Mode_FR'].astype('O')
     
+    data['Material_Name'] = data['Material_Name'].str.replace(' ', '')    
     
+    return data
 
 def feature_engg(data, predictors):
     
@@ -81,7 +95,16 @@ def feature_engg(data, predictors):
         
     if (('Sealing_Time_ms' in predictors) & ('Sealing_Pressure_N_cm2' in predictors)):
         data["Time_Pr"] = data["Sealing_Time_ms"] * data["Sealing_Pressure_N_cm2"]
+        
+    if (('Sealent_layer_thickness' in predictors) & ('Sealing_Temperature_C' in predictors)):
+        data["Temp_Thick"] = data["Sealent_layer_thickness"] * data["Sealing_Temperature_C"]
     
+    if (('Sealing_Time_ms' in predictors) & ('Sealent_layer_thickness' in predictors)):
+        data["Time_Thick"] = data["Sealing_Time_ms"] * data["Sealent_layer_thickness"]
+        
+    if (('Sealent_layer_thickness' in predictors) & ('Sealing_Pressure_N_cm2' in predictors)):
+        data["Pr_Thick"] = data["Sealing_Pressure_N_cm2"] * data["Sealent_layer_thickness"]
+        
     print(data.info())
     return data
 
@@ -97,21 +120,20 @@ def get_materials(data_R):
 
 def get_predictors(data_R,polyFlag):
     
-    if polyFlag == False:
-        data_flat = data_R
-        data = preprocess(data_flat,polyFlag)
-    
-        data.drop('Mean(Seal_Strength_N_15mm)',axis=1, inplace=True)
-        data.drop('Material_Name',axis=1, inplace=True)
-        
-        return list(data.columns)
+    data_flat = data_R
+    data = preprocess(data_flat,polyFlag)
 
-def run_model(data_R, predictors, response, material, val_flag):
+    data.drop('Mean(Seal_Strength_N_15mm)',axis=1, inplace=True)
+    data.drop('Material_Name',axis=1, inplace=True)
+    
+    return list(data.columns)
+
+def run_model(data_R, predictors, response, material, polyFlag):
     
 
     data_flat = data_R
 
-    data = preprocess(data_flat,False)
+    data = preprocess(data_flat,polyFlag)
 
     # choosing predictors
     data_orig = data.copy()
@@ -129,7 +151,10 @@ def run_model(data_R, predictors, response, material, val_flag):
     data_mat.drop('Material_Name', inplace=True, axis = 1)
     
 
-
+    if polyFlag == True:
+        data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
+    
+    
     num_cols = list()
     for col in data_mat.columns:
         if data_mat[col].dtype != 'O':

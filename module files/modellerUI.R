@@ -7,7 +7,7 @@ modellerUI <- function(id){
     fluidRow(column(width = 6,
            
            switchInput(
-             inputId = ns("laminateFamily"),
+             inputId = ns("polyFlag"),
              onLabel = "Polymer",
              offLabel = "Paper",
              onStatus = "primary", 
@@ -34,15 +34,27 @@ modellerUI <- function(id){
     # actionButton(ns('build'),"BUILD",icon("paper-plane"), 
     #              style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
     br(),
-    materialSwitch(inputId = "outlierflag", label = em("Handle Outliers (Tool in development)"), status = "danger"),
+   
+    fluidRow(column(width = 6,HTML(paste0("<b><i>","Handle Outliers (Tool in development)","</i></b>")))), 
+    
+    switchInput(
+      inputId = ns("outlierflag"),
+      onLabel = "YES",
+      offLabel = "NO",
+      onStatus = "success", 
+      offStatus = "danger",
+      label='Switch',
+      size = "normal"
+    ),
+    
     br(),
     
     actionBttn(
       inputId = ns('build'),
-      label = "BUILD",
+      label = "Build Model",
       color = "success",
       style = "simple",
-      icon = icon("tools"),
+      icon = icon("wrench"),
       size= 'md',
       block = FALSE
     ),
@@ -56,15 +68,10 @@ modellerUI <- function(id){
     br(),
     uiOutput(ns('results')),
     br(),
-    actionBttn(
-      inputId = ns('goToResults'),
-      label = "Go to Results",
-      color = "success",
-      style = "simple",
-      icon = icon("paper-plane"),
-      size= 'md',
-      block = FALSE
-    ),
+    
+    
+    uiOutput(ns('changeTabButton')),
+ 
     #uiOutput(ns('images'))
     #(dataTableOutput(ns("results")))
     bsPopover(id = ns("material"), title = 'NOTE:', content='Upload dataset to fetch all materials within it.',

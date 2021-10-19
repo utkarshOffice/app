@@ -9,14 +9,15 @@ modellerServer <- function(id, top_session){
       #--------------------------------Get Materials-----------------------------------
       observeEvent(req(input$dataset),{
 
-        if(input$laminateFamily == FALSE)
+        if(input$polyFlag == FALSE)
           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))}
-        if(input$laminateFamily == TRUE)
+        if(input$polyFlag == TRUE)
           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
         
         
         material_names <- get_materials(data())
         #View(material_names)
+
         material_names_list <- strsplit(material_names, " +")                  
         #View(material_names_list)
         updateSelectInput(session,'material',choices = material_names_list, selected = material_names_list[1])
@@ -31,12 +32,15 @@ modellerServer <- function(id, top_session){
       
       #--------------------------------Get Predictors ----------------------------------
       observeEvent(req(input$dataset),{
-        if(input$laminateFamily == FALSE)
-          {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))}
-        if(input$laminateFamily == TRUE)
+        if(input$polyFlag == FALSE)
+        {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
+          #View(data)
+          }
+        if(input$polyFlag == TRUE)
           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
         
-        predictor_v <- get_predictors(data(),input$laminateFamily)
+        predictor_v <- get_predictors(data(),input$polyFlag)
+        #View(predictor_v)
         predictor_v_list <- strsplit((predictor_v), " +")
         #View(predictor_v_list)
         updateSelectInput(session,'predictor_vars',choices = predictor_v_list, selected = predictor_v_list[1])
@@ -76,7 +80,7 @@ modellerServer <- function(id, top_session){
                            h5("Estimated Wait Time : < 1 min")
                          ) # use a spinner
                        )
-                       model_results <- run_model(data_sent,input$predictor_vars,'SS',input$material,FALSE)
+                       model_results <- run_model(data_sent,input$predictor_vars,'SS',input$material,input$polyFlag)
                        
                        scores <- model_results[[1]]
                        MLR_FI <- model_results[[2]]
@@ -103,7 +107,17 @@ modellerServer <- function(id, top_session){
                        #   output$images <- renderUI(img(src= "static/plots/Plot_LASSO_coefs.jpg"))
                        #      
                        # })
-                      
+                       output$changeTabButton <- renderUI({ns <- NS(id)
+                       actionBttn(
+                         inputId = ns('goToResults'),
+                         label = "Go to Results",
+                         color = "success",
+                         style = "simple",
+                         icon = icon("paper-plane"),
+                         size= 'md',
+                         block = FALSE
+                       )
+                       })  
      
       })  
       # --------------------------------- Move to results tab --------------------------------------  
