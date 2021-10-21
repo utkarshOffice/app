@@ -15,6 +15,9 @@ library(shinythemes)
 library(reticulate)
 library(shinycssloaders)
 library(waiter)
+library(shinyBS)
+
+#shinyjsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
 #source all files in back_end
 for(f in list.files(path="./module files",
@@ -22,11 +25,12 @@ for(f in list.files(path="./module files",
   print(as.character(f))
   source(f)
 }
-source_python("python_modeller.py")
+#source_python("python_modeller.py")
 
 ui <- function(request){
   dashboardPage(skin = c("green"),
-                dashboardHeader(title = "PAE Non-Linear Regression Modeller V1.0", titleWidth=380),
+                dashboardHeader(title = span("PAE Non-Linear Regression Modeller V1.0",
+                                             style = "font-family: Georgia, sans-serif; font-size: 20px"), titleWidth=420),
                 dashboardSidebar(disable = TRUE,tags$head(
                   tags$style(HTML("   .sidebar { height: 90vh; overflow-y: auto; }
                       .dataTables_wrapper { overflow-x: scroll; }
@@ -35,10 +39,12 @@ ui <- function(request){
                 ),width = 100
               ),
                 dashboardBody(
-                    tabsetPanel(
-                      tabPanel(title='Introduction', introUI("introUI")),
-                      tabPanel(title='Model Builder', modellerUI("modellerUI")),
-                      tabPanel(title='Modelling Results', modelling_resultsUI("modelling_resultsUI"))
+                  #useShinyjs(),
+                  tags$style("* { font-family: Helvetica, sans-serif; }"),
+                    tabsetPanel(id = 'tabs',
+                      tabPanel('INTRO', introUI("introUI")),
+                      tabPanel('BUILDER', modellerUI("modellerUI")),
+                      tabPanel('RESULTS', modelling_resultsUI("modelling_resultsUI"))
                      )
                     )
                 )

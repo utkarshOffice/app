@@ -2,7 +2,7 @@ introUI <- function(id){
   ns <- NS(id)
   tagList(
    fluidPage(
-     h1("Data-based Sealing Strength Models for Flexibles Packaging"), 
+     h1("Introduction to the Modeller (Under Construction)"), 
      br(),
      em("Contact: Omer.Bin-Younos@unilever.com"), 
      br(),
