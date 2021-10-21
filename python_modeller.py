@@ -17,6 +17,22 @@ from sklearn.metrics import mean_squared_error, make_scorer
 from scipy.stats import skew
 
 
+
+def get_equation(coefs):
+
+    print(coefs)
+
+    equation= ""
+    for i in range(len(coefs)):
+        for j in range(2):
+            if j==0:
+                equation= equation + "("+str(coefs.iloc[i,j]) +")*"
+            elif j==1:
+                equation= equation + "("+str(coefs.iloc[i,j]) + ") + "
+
+    return equation
+    
+
 def preprocess(data,polyFlag):
     
     
@@ -42,7 +58,7 @@ def preprocess(data,polyFlag):
         data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
         data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
         
-    print(data_flat)
+    #print(data_flat)
     
     if polyFlag == True:
         data_flat.drop('Layer_2',axis=1, inplace=True)
@@ -56,7 +72,7 @@ def preprocess(data,polyFlag):
     group_cols.remove('Seal_Strength_N_15mm')
     data_flat = data_flat[data_flat.Seal_Strength_N_15mm.isna()==0]
     data_flat.fillna(0,inplace=True)
-    print(data_flat)
+    #print(data_flat)
     data = pd.DataFrame(data_flat.groupby(group_cols).Seal_Strength_N_15mm.mean())
     data.to_csv('Agg-Data.csv')
     data = pd.read_csv('Agg-Data.csv')
@@ -69,20 +85,20 @@ def preprocess(data,polyFlag):
             print("Dropping ",col)
             data.drop(col,axis=1, inplace=True) 
             
-    print(1)
+    #print(1)
             
     
     data.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
     
     if polyFlag== False:
-        data['Failure_Mode_C'] = data['Failure_Mode_C'].astype('O')
-        data['Failure_Mode_A'] = data['Failure_Mode_A'].astype('O')
-        data['Failure_Mode_D'] = data['Failure_Mode_D'].astype('O')
-        data['Failure_Mode_FR'] = data['Failure_Mode_FR'].astype('O')
+        data.drop('Failure_Mode_C',axis=1, inplace=True)
+        data.drop('Failure_Mode_A',axis=1, inplace=True)
+        data.drop('Failure_Mode_D',axis=1, inplace=True)
+        data.drop('Failure_Mode_FR',axis=1, inplace=True)
     
     data['Material_Name'] = data['Material_Name'].str.replace(' ', '')    
     
-    print(data)
+    #print(data)
     return data
 
 def feature_engg(data, predictors):
@@ -112,7 +128,7 @@ def feature_engg(data, predictors):
     if (('Sealent_layer_thickness' in predictors) & ('Sealing_Pressure_N_cm2' in predictors)):
         data["Pr_Thick"] = data["Sealing_Pressure_N_cm2"] * data["Sealent_layer_thickness"]
         
-    print(data.info())
+    #print(data.info())
     return data
 
 def get_materials(data_R):
@@ -141,7 +157,7 @@ def run_model(data_R, predictors, response, material, polyFlag):
     data_flat = data_R
 
     data = preprocess(data_flat,polyFlag)
-    print(data)
+    #print(data)
     data_orig = data.copy()
     
     # choosing predictors
@@ -154,7 +170,7 @@ def run_model(data_R, predictors, response, material, polyFlag):
 
     data = feature_engg(data, predictors)
     
-    print(data)
+    #print(data)
     data_mat = data[data.Material_Name == material]
     data_mat.drop('Material_Name', inplace=True, axis = 1)
     
@@ -165,12 +181,12 @@ def run_model(data_R, predictors, response, material, polyFlag):
     
     num_cols = list()
     for col in data_mat.columns:
-        if data_mat[col].dtype != 'O':
+        if data_mat[col].dtype != 'O' and col != 'Mean(Seal_Strength_N_15mm)':
             num_cols.append(col)
-    print(data_mat)
+    #print(data_mat)
     from sklearn.preprocessing import StandardScaler
     scaler = StandardScaler()
-    data_mat[num_cols] = scaler.fit_transform(data_mat[num_cols])
+    #data_mat[num_cols] = scaler.fit_transform(data_mat[num_cols])
     
     from sklearn.preprocessing import LabelEncoder as LE
    
@@ -190,11 +206,17 @@ def run_model(data_R, predictors, response, material, polyFlag):
     from sklearn.linear_model import LinearRegression
    
    
-    regressor = LinearRegression()
-    regressor.fit(X_train, y_train)
-   
-    y_train_mlr = regressor.predict(X_train)
+    # regressor = LinearRegression()
+    # regressor.fit(X_train, y_train)
+    # 
+    # y_train_mlr = regressor.predict(X_train)
     
+    # Adding a constant variable 
+    import statsmodels.api as sm  
+    #X_train_rfe = sm.add_constant(X_train_rfe)
+    
+    lm = sm.OLS(y_train,X_train).fit()  
+    y_train_mlr = lm.predict(X_train)
     
     # from sklearn.metrics import r2_score
     # print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_mlr)*100,4))))
@@ -227,24 +249,26 @@ def run_model(data_R, predictors, response, material, polyFlag):
     plt.savefig('static/plots/Plot_MLR_Predicted.jpg',dpi=300)
     
     # Plot important coefficients
-    coefs = pd.Series(regressor.coef_, index = X_train.columns)
-    imp_coefs = pd.concat([coefs.sort_values().head(10),
-                         coefs.sort_values().tail(10)])
+    coefs = pd.Series(lm.params, index = X_train.columns)
+    imp_coefs = coefs.sort_values()
     imp_coefs.plot(kind = "barh")
     
     plt.title("Coefficients in the MLR Model")
     plt.savefig('static/plots/Plot_MLR_coefs.jpg',dpi=300)
     
-    
+    from decimal import Decimal
+
     coefs = pd.DataFrame(coefs)
-    coefs = coefs[abs(coefs[0])>=0.01]
+    #coefs = coefs[abs(coefs[0])>=0.01]
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
-    coefs['Importance'] = round(coefs['Importance'],2)
     coefs.sort_values(by='Importance',ascending=False,inplace=True)
-    topMLR = coefs
+    coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
 
+    topMLR = coefs
+  
+    
     from sklearn.metrics import r2_score
     print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_mlr)*100,4))))
     
@@ -313,12 +337,13 @@ def run_model(data_R, predictors, response, material, polyFlag):
     plt.savefig('static/plots/Plot_LASSO_coefs.jpg',dpi=300)
     
     coefs = pd.DataFrame(coefs)
-    coefs = coefs[abs(coefs[0])>=0.01]
+    #coefs = coefs[abs(coefs[0])>=0.01]
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
-    coefs['Importance'] = round(coefs['Importance'],2)
     coefs.sort_values(by='Importance',ascending=False,inplace=True)
+    coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
+
     topLASSO = coefs
     
 
@@ -395,12 +420,13 @@ def run_model(data_R, predictors, response, material, polyFlag):
     plt.show()
     
     coefs = pd.DataFrame(coefs)
-    coefs = coefs[abs(coefs[0])>=0.01]
+    #coefs = coefs[abs(coefs[0])>=0.01]
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
-    coefs['Importance'] = round(coefs['Importance'],2)
     coefs.sort_values(by='Importance',ascending=False,inplace=True)
+    coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
+
     topEN = coefs
     
 
@@ -468,15 +494,14 @@ def run_model(data_R, predictors, response, material, polyFlag):
     plt.show()
     
     coefs = pd.DataFrame(coefs)
-    coefs = coefs[abs(coefs[0])>=0.01]
+    #coefs = coefs[abs(coefs[0])>=0.01]
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
-    coefs['Importance'] = round(coefs['Importance'],2)
-    coefs.sort_values(by='Importance',ascending=False,inplace=True)
+    coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
+    
     topRG = coefs
     
-
     from sklearn.metrics import r2_score
     print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_rdg)*100,4))))
    

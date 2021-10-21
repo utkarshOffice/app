@@ -32,6 +32,7 @@ modellerServer <- function(id, top_session){
       
       #--------------------------------Get Predictors ----------------------------------
       observeEvent(req(input$dataset),{
+        
         if(input$polyFlag == FALSE)
         {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
           #View(data)
@@ -54,7 +55,7 @@ modellerServer <- function(id, top_session){
       })
       
       #--------------------------------Get Model Results ----------------------------------
-      
+  
       observeEvent(req(input$dataset),{
         
         if(input$polyFlag == FALSE)
@@ -63,13 +64,14 @@ modellerServer <- function(id, top_session){
         }
         if(input$polyFlag == TRUE)
         {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
+        
         observeEvent(input$build,
 
                       {
                        #updateTabsetPanel(top_session, "tabs", selected = "modellingResults")
                         
                        #to reset button status
-                      input$build <- FALSE
+                       #input$build <- FALSE
                        
                        unlink("static/tables/*")
                         
@@ -108,7 +110,9 @@ modellerServer <- function(id, top_session){
                        output$model_title1_Text <- renderText('Results Summary ')
                        output$model_title2_Text <- renderText('Models Built - ')
                        
-                       output$resultstable <- renderDataTable(as.data.frame(c(scores['Algorithm'],scores['R2'],scores['RMSE'])))
+                       scoresTable <- as.data.frame(c(scores['Algorithm'],scores['R2'],scores['RMSE']))
+                       
+                       output$resultstable <- renderDataTable(scoresTable)
                        
                        # observeEvent(req(scores),{
                        #   output$images <- renderUI(img(src= "static/plots/Plot_LASSO_coefs.jpg"))
@@ -136,6 +140,11 @@ modellerServer <- function(id, top_session){
                           "tabs",
                           selected = 'RESULTS')
       })
+      
+      observeEvent(input$polyFlag,{
+                #js$reset()
+      }
+      )
     }
   )
 }
