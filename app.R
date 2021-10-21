@@ -25,7 +25,7 @@ for(f in list.files(path="./module files",
   print(as.character(f))
   source(f)
 }
-source_python("python_modeller.py")
+#source_python("python_modeller.py")
 
 ui <- function(request){
   dashboardPage(skin = c("green"),

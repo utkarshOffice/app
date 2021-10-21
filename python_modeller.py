@@ -29,8 +29,16 @@ def get_equation(coefs):
                 equation= equation + "("+str(coefs.iloc[i,j]) +")*"
             elif j==1:
                 equation= equation + "("+str(coefs.iloc[i,j]) + ") + "
+                
+    length = len(equation)
+    equation2=""
+    
+    # to remove last '+'
+    for i in range(length):
+        if(equation[i] == '+'):
+            equation2 = equation[0:i] + equation[i+1:length]
 
-    return equation
+    return equation2
     
 
 def preprocess(data,polyFlag):
@@ -179,6 +187,17 @@ def run_model(data_R, predictors, response, material, polyFlag):
         data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
     
     
+    # generate correlation heatmap
+    plt.figure(figsize=(10,7))
+    matrix = np.triu(data_mat[['Sealing_Time_ms','Sealing_Pressure_N_cm2','Sealing_Temperature_C','Mean(Seal_Strength_N_15mm)']].corr())
+    sns.set_style('white')
+    sns.heatmap(data_mat[['Sealing_Time_ms','Sealing_Pressure_N_cm2','Sealing_Temperature_C','Mean(Seal_Strength_N_15mm)']].corr(), annot_kws={'size': 15},mask=matrix,annot=True)
+    plt.title('Numerical Feature Correlations', fontsize=17)
+    plt.xticks(fontsize=14, rotation=45)
+    plt.yticks(fontsize=14)
+    plt.savefig('./www/Correlation_Heatmap.jpg', bbox_inches = 'tight',dpi=200)
+
+    
     num_cols = list()
     for col in data_mat.columns:
         if data_mat[col].dtype != 'O' and col != 'Mean(Seal_Strength_N_15mm)':
@@ -226,35 +245,40 @@ def run_model(data_R, predictors, response, material, polyFlag):
     
     sns.set_style('whitegrid')
     # Plot residuals
-    plt.figure(figsize=(13,7))
+    plt.figure(figsize=(10,9))
     plt.scatter(y_train_mlr, y_train_mlr - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
     #plt.scatter(y_test_las, y_test_las - y_test, c = "darkblue", alpha=0.5, label = "Validation data")
-    plt.title("MLR Residuals",fontsize=16)
-    plt.xlabel("Predicted values",fontsize=14)
-    plt.ylabel("Residuals",fontsize=14)
-    plt.legend(loc = "upper left",fontsize=14)
-    plt.savefig('static/plots/Plot_MLR_Residuals.jpg',dpi=300)
+    plt.title("MLR",fontsize=16)
+    plt.xlabel("Predicted values",fontsize=10)
+    plt.ylabel("Residuals",fontsize=10)
+    plt.legend(loc = "upper left",fontsize=10)
+    x1, y1 = [4,10],[0,0]
+    x2, y2 = [4,10], [0,0]
+    plt.plot(x1, y1, x2, y2, marker = 'o')
+    plt.savefig('./www/Plot_MLR_Residuals.jpg', bbox_inches = 'tight',dpi=200)
+
+    
     # Plot predictions
     plt.figure(figsize=(10,9))
     plt.scatter(y_train_mlr, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
     #plt.scatter(y_test_las, y_test, c = "darkblue", alpha=0.5, label = "Validation data")
-    plt.title("MLR Predicted vs Real",fontsize=16)
+    plt.title("MLR",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
     plt.legend(loc = "upper left",fontsize=14)
-    x1, y1 = [-2,3],[-2,3]
-    x2, y2 = [-2,3], [-2,3]
+    x1, y1 = [4,10],[4,10]
+    x2, y2 = [4,10], [4,10]
     plt.plot(x1, y1, x2, y2, marker = 'o')
-    plt.show()
-    plt.savefig('static/plots/Plot_MLR_Predicted.jpg',dpi=300)
-    
+    plt.savefig('./www/Plot_MLR_Predicted.jpg', bbox_inches = 'tight',dpi=200)
+
     # Plot important coefficients
     coefs = pd.Series(lm.params, index = X_train.columns)
-    imp_coefs = coefs.sort_values()
+    imp_coefs = pd.concat([coefs.sort_values().head(10),
+                         coefs.sort_values().tail(10)])
     imp_coefs.plot(kind = "barh")
     
     plt.title("Coefficients in the MLR Model")
-    plt.savefig('static/plots/Plot_MLR_coefs.jpg',dpi=300)
+    plt.savefig('static/plots/Plot_MLR_coefs.jpg')
     
     from decimal import Decimal
 
@@ -311,7 +335,7 @@ def run_model(data_R, predictors, response, material, polyFlag):
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Residuals",fontsize=14)
     plt.legend(loc = "upper left",fontsize=14)
-    plt.savefig('static/plots/Plot_LASSO_Residuals.jpg',dpi=300)
+    plt.savefig('static/plots/Plot_LASSO_Residuals.jpg')
     
     # Plot predictions
     plt.figure(figsize=(10,9))
@@ -324,7 +348,7 @@ def run_model(data_R, predictors, response, material, polyFlag):
     x2, y2 = [-2,3], [-2,3]
     plt.plot(x1, y1, x2, y2, marker = 'o')
     plt.legend(loc = "upper left",fontsize=14)
-    plt.savefig('static/plots/Plot_LASSO_Predicted.jpg',dpi=300)
+    plt.savefig('static/plots/Plot_LASSO_Predicted.jpg')
     
     # Plot important coefficients
     coefs = pd.Series(lasso.coef_, index = X_train.columns)
@@ -334,10 +358,10 @@ def run_model(data_R, predictors, response, material, polyFlag):
                          coefs.sort_values().tail(10)])
     imp_coefs.plot(kind = "barh")
     plt.title("Coefficients in the Lasso Model")
-    plt.savefig('static/plots/Plot_LASSO_coefs.jpg',dpi=300)
+    plt.savefig('static/plots/Plot_LASSO_coefs.jpg')
     
     coefs = pd.DataFrame(coefs)
-    #coefs = coefs[abs(coefs[0])>=0.01]
+    coefs = coefs[coefs[0]!=0]
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
@@ -421,6 +445,7 @@ def run_model(data_R, predictors, response, material, polyFlag):
     
     coefs = pd.DataFrame(coefs)
     #coefs = coefs[abs(coefs[0])>=0.01]
+    coefs = coefs[coefs[0]!=0]
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
