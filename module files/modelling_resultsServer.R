@@ -170,9 +170,9 @@ modelling_resultsServer <- function(id, top_session){
              )
            
            output$material_heatmap <- renderUI({
-                 tags$img(src = 'Correlation_Heatmap.jpg',width="100%")
-             }
-            )
+             tags$img(src = 'Correlation_Heatmap.jpg',width="100%")
+           }
+           )
            output$model1_Residuals <- renderUI({
              tags$img(src = 'Plot_MLR_Residuals.jpg',width="100%")
            }

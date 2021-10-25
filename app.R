@@ -17,7 +17,6 @@ library(shinycssloaders)
 library(waiter)
 library(shinyBS)
 
-#shinyjsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
 #source all files in back_end
 for(f in list.files(path="./module files",
@@ -39,7 +38,7 @@ ui <- function(request){
                 ),width = 100
               ),
                 dashboardBody(
-                  #useShinyjs(),
+                  
                   tags$style("* { font-family: Helvetica, sans-serif; }"),
                     tabsetPanel(id = 'tabs',
                       tabPanel('INTRO', introUI("introUI")),

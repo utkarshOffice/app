@@ -1,9 +1,13 @@
 modellerUI <- function(id){
   ns <- NS(id)
+  
+  jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
+  
   tagList(
     br(),
-    
-    fluidRow(column(width = 6,HTML(paste0("<b><i>","Select Laminate Family","</i></b>")))), 
+    useShinyjs(),
+    fluidRow(column(width = 6,HTML(paste0("<b><i>","Select Laminate Family","</i></b>")))),
+    extendShinyjs(text = jsResetCode, functions = "reset"),
     fluidRow(column(width = 6,
            
            switchInput(

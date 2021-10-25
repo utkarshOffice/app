@@ -7,6 +7,8 @@ modellerServer <- function(id, top_session){
       unlink("static/tables/*")
       
       #--------------------------------Get Materials-----------------------------------
+      observeEvent(input$polyFlag,
+                   {
       observeEvent(req(input$dataset),{
 
         if(input$polyFlag == FALSE)
@@ -29,8 +31,11 @@ modellerServer <- function(id, top_session){
         })
         
       })
+    })
       
       #--------------------------------Get Predictors ----------------------------------
+      observeEvent(input$polyFlag,
+                   {
       observeEvent(req(input$dataset),{
         
         if(input$polyFlag == FALSE)
@@ -53,9 +58,12 @@ modellerServer <- function(id, top_session){
         })
         
       })
+    })
       
       #--------------------------------Get Model Results ----------------------------------
   
+      observeEvent(input$polyFlag,
+                   {
       observeEvent(req(input$dataset),{
         
         if(input$polyFlag == FALSE)
@@ -65,9 +73,10 @@ modellerServer <- function(id, top_session){
         if(input$polyFlag == TRUE)
         {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
         
-        observeEvent(input$build,
+      
+        observeEvent(input$build,ignoreInit = TRUE,
 
-                      {
+                  {
                        #updateTabsetPanel(top_session, "tabs", selected = "modellingResults")
                         
                        #to reset button status
@@ -90,7 +99,8 @@ modellerServer <- function(id, top_session){
                            h5("Estimated Wait Time : < 1 min")
                          ) # use a spinner
                        )
-                       model_results <- run_model(data_sent,input$predictor_vars,'SS',input$material,input$polyFlag)
+                       data_sent_df <- as.data.frame(data_sent,row.names = NULL)
+                       model_results <- run_model(data_sent_df,input$predictor_vars,input$material,input$polyFlag)
                        
                        scores <- model_results[[1]]
                        MLR_FI <- model_results[[2]]
@@ -129,11 +139,15 @@ modellerServer <- function(id, top_session){
                          block = FALSE
                        )
                        })  
+                       
+                       # attr(input$build, "readonly") <- FALSE
+                       # input$build <- FALSE
      
       })  
       # --------------------------------- Move to results tab --------------------------------------  
         
         
+      })
       })
       observeEvent(input$goToResults,{
         updateTabsetPanel(session = top_session, 
@@ -141,10 +155,13 @@ modellerServer <- function(id, top_session){
                           selected = 'RESULTS')
       })
       
-      observeEvent(input$polyFlag,{
-                #js$reset()
-      }
-      )
+      # observeEvent(input$polyFlag,{
+      #           js$reset()
+      #   updateTabsetPanel(session = top_session, 
+      #                     "tabs",
+      #                     selected = 'BUILDER')
+      # }
+      #)
     }
   )
 }

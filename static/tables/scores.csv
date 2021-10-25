@@ -1,0 +1,5 @@
+"Algorithm","R2","RMSE"
+"MLR",97.45,0.54
+"MLR + Lasso",90.1,1.06
+"MLR + Elastic Net",90.1,1.06
+"MLR + Ridge",87.46,1.19

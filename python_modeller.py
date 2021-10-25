@@ -15,6 +15,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, RidgeCV, LassoCV, ElasticNetCV
 from sklearn.metrics import mean_squared_error, make_scorer
 from scipy.stats import skew
+import warnings
+warnings.filterwarnings('ignore')
 
 
 
@@ -66,7 +68,7 @@ def preprocess(data,polyFlag):
         data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
         data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
         
-    #print(data_flat)
+    print("dataflat",data_flat.info())
     
     if polyFlag == True:
         data_flat.drop('Layer_2',axis=1, inplace=True)
@@ -159,7 +161,13 @@ def get_predictors(data_R,polyFlag):
     
     return list(data.columns)
 
-def run_model(data_R, predictors, response, material, polyFlag):
+def run_model(data_R, predictors, material, polyFlag):
+  
+  
+    
+    if isinstance(predictors, str):
+      predictors= list([predictors])
+    
     
 
     data_flat = data_R
@@ -182,16 +190,19 @@ def run_model(data_R, predictors, response, material, polyFlag):
     data_mat = data[data.Material_Name == material]
     data_mat.drop('Material_Name', inplace=True, axis = 1)
     
-
     if polyFlag== True:
-        data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
+        if (('Sealing_Temperature_C' in predictors) & ('Sealing_Pressure_N_cm2' in predictors) & ('Sealing_Time_ms' in predictors)):
+          data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
     
     
-    # generate correlation heatmap
+    #generate correlation heatmap
+    heatmap_list = predictors
+    heatmap_list.extend(['Mean(Seal_Strength_N_15mm)'])
+    print(heatmap_list)
     plt.figure(figsize=(10,7))
-    matrix = np.triu(data_mat[['Sealing_Time_ms','Sealing_Pressure_N_cm2','Sealing_Temperature_C','Mean(Seal_Strength_N_15mm)']].corr())
+    matrix = np.triu(data_mat[heatmap_list].corr())
     sns.set_style('white')
-    sns.heatmap(data_mat[['Sealing_Time_ms','Sealing_Pressure_N_cm2','Sealing_Temperature_C','Mean(Seal_Strength_N_15mm)']].corr(), annot_kws={'size': 15},mask=matrix,annot=True)
+    sns.heatmap(data_mat[heatmap_list].corr(), annot_kws={'size': 15},mask=matrix,annot=True)
     plt.title('Numerical Feature Correlations', fontsize=17)
     plt.xticks(fontsize=14, rotation=45)
     plt.yticks(fontsize=14)
