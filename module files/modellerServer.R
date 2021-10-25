@@ -66,21 +66,16 @@ modellerServer <- function(id, top_session){
                    {
       observeEvent(req(input$dataset),{
         
-        if(input$polyFlag == FALSE)
-        {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
-        #View(data)
-        }
-        if(input$polyFlag == TRUE)
-        {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
-        
-      
-        observeEvent(input$build,ignoreInit = TRUE,
+                observeEvent(input$build,ignoreInit = TRUE,
 
                   {
-                       #updateTabsetPanel(top_session, "tabs", selected = "modellingResults")
-                        
-                       #to reset button status
-                       #input$build <- FALSE
+                       
+                        if(input$polyFlag == FALSE)
+                        {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
+                        #View(data)
+                        }
+                        if(input$polyFlag == TRUE)
+                        {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
                        
                        unlink("static/tables/*")
                         
@@ -100,9 +95,11 @@ modellerServer <- function(id, top_session){
                          ) # use a spinner
                        )
                        data_sent_df <- as.data.frame(data_sent,row.names = NULL)
+                       View(1)
                        model_results <- run_model(data_sent_df,input$predictor_vars,input$material,input$polyFlag)
-                       
+                       View(2)
                        scores <- model_results[[1]]
+                       View(3)
                        MLR_FI <- model_results[[2]]
                        LASSO_FI <- model_results[[3]]
                        EN_FI <- model_results[[4]]
@@ -113,7 +110,7 @@ modellerServer <- function(id, top_session){
                        write.csv(LASSO_FI,file='static/tables/LASSO_FI.csv',append=FALSE, row.names = FALSE)
                        write.csv(EN_FI,file='static/tables/EN_FI.csv',append=FALSE, row.names = FALSE)
                        write.csv(RG_FI,file='static/tables/RG_FI.csv',append=FALSE, row.names = FALSE)
-                       
+                       View(4)
                        
                        waiter_hide()
                        

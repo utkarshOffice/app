@@ -58,12 +58,12 @@ server <-  function(input, output, session) {
   modelling_resultsServer("modelling_resultsUI",top_session = session)
   
   
-  observe({
-    reactiveValuesToList(input)
-    session$doBookmark()
-  })
-  onBookmarked(updateQueryString)
-  
+  # observe({
+  #   reactiveValuesToList(input)
+  #   session$doBookmark()
+  # })
+  # onBookmarked(updateQueryString)
+  # 
 }
 # Run the application
 shinyApp(ui, server, enableBookmarking = "url")
