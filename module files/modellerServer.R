@@ -45,7 +45,7 @@ modellerServer <- function(id, top_session){
         if(input$polyFlag == TRUE)
           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
         
-        predictor_v <- get_predictors(data(),input$polyFlag)
+        predictor_v <- get_predictors(data(),input$polyFlag, input$valFlag)
         #View(predictor_v)
         predictor_v_list <- strsplit((predictor_v), " +")
         #View(predictor_v_list)
@@ -96,7 +96,7 @@ modellerServer <- function(id, top_session){
                        )
                        data_sent_df <- as.data.frame(data_sent,row.names = NULL)
                        View(1)
-                       model_results <- run_model(data_sent_df,input$predictor_vars,input$material,input$polyFlag)
+                       model_results <- run_model(data_sent_df,input$predictor_vars,input$material,input$polyFlag, input$valFlag)
                        View(2)
                        scores <- model_results[[1]]
                        View(3)
@@ -117,7 +117,12 @@ modellerServer <- function(id, top_session){
                        output$model_title1_Text <- renderText('Results Summary ')
                        output$model_title2_Text <- renderText('Models Built - ')
                        
-                       scoresTable <- as.data.frame(c(scores['Algorithm'],scores['R2'],scores['RMSE']))
+                       if(input$valFlag == TRUE){
+                          scoresTable <- as.data.frame(c(scores['Algorithm'],scores['Train_R2'],scores['Validation_R2'],scores['Train_RMSE'],scores['Validation_RMSE']))
+                       }
+                       if(input$valFlag == FALSE){
+                          scoresTable <- as.data.frame(c(scores['Algorithm'],scores['R2'],scores['RMSE']))
+                       }
                        
                        output$resultstable <- renderDataTable(scoresTable)
                        

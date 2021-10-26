@@ -52,6 +52,21 @@ modellerUI <- function(id){
     ),
     
     br(),
+    fluidRow(column(width = 6,HTML(paste0("<b><i>","Perform Validation?","</i></b>")))),
+    fluidRow(column(width = 6,
+                    
+                    switchInput(
+                      inputId = ns("valFlag"),
+                      onLabel = "ON",
+                      offLabel = "OFF",
+                      onStatus = "success", 
+                      offStatus = "danger",
+                      label='Switch',
+                      size = "small"
+                    )
+    )
+    ),
+    br(),
     
     actionBttn(
       inputId = ns('build'),
