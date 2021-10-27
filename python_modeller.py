@@ -43,7 +43,6 @@ def get_equation(coefs):
 
     return equation2
     
-
 def preprocess(data,polyFlag, valFlag):
     
     
@@ -69,7 +68,7 @@ def preprocess(data,polyFlag, valFlag):
         data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
         data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
         
-    #print("dataflat",data_flat.info())
+    print("dataflat",data_flat.info())
     
     if polyFlag == True:
         data_flat.drop('Layer_2',axis=1, inplace=True)
@@ -112,9 +111,23 @@ def preprocess(data,polyFlag, valFlag):
     
     # adding validation column
     if valFlag == True:
-        polymer_means = pd.read_excel('www/polymer_means_final.xlsx',engine='openpyxl')
-        data['Validation'] = polymer_means.Validation
-        data.Validation.fillna(0,inplace=True)
+      
+      if polyFlag==True:
+          polymer_means = pd.read_excel('www/polymer_means_final.xlsx',engine='openpyxl')
+          data['Validation'] = polymer_means.Validation
+          data.Validation.fillna(0,inplace=True)
+          
+      if polyFlag==False:
+          for i,row in data.iterrows():
+            if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==200)):
+                data.loc[i,'Validation'] = 1    
+            if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==750)):
+                data.loc[i,'Validation'] = 1   
+            if ((row['Sealing_Temperature_C']==240) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==500)):
+                data.loc[i,'Validation'] = 1   
+            if ((row['Sealing_Temperature_C']==168) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==200)):
+                data.loc[i,'Validation'] = 1  
+          data['Validation'].fillna(0,inplace=True)
     
     #print(data)
     return data
@@ -190,11 +203,17 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
 
     data['Mean(Seal_Strength_N_15mm)'] = data_orig['Mean(Seal_Strength_N_15mm)']
     data['Material_Name'] = data_orig['Material_Name']
-    
+    #print("----------------*------------ \n This is Orig Data ",data_orig.info())
+    #print("----------------*------------ \n This is Data b4 FE ",data.info())
 
     data = feature_engg(data, predictors)
+    #print("----------------*------------ \n This is Data after FE ",data.info())
     
+    #print(material)
+    #print("data material \n",data.Material_Name)
     data_mat = data[data.Material_Name == material]
+    
+    #print("----------------*------------ \n This is Material data",data_mat)
     data_mat.drop('Material_Name', inplace=True, axis = 1)
     
     # removing one unique outlier for polymer data
@@ -237,7 +256,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
             data_mat[col] = le.fit_transform(data_mat[col])
    
     #data_mat.to_csv('data_mat.csv',index=False)
-    print("THIS IS DATAMAT ",data_mat.info())
+    #print("THIS IS DATAMAT ",data_mat.info())
     if valFlag==True:
     
       X_train = data_mat[data_mat.Validation == 0]
@@ -252,9 +271,9 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
       X_val = X_val.drop('Validation', axis=1)
 
     if valFlag==False:
-      
-      X_train = data_mat.drop('Mean(Seal_Strength_N_15mm)', axis=1)
+     
       y_train = data_mat['Mean(Seal_Strength_N_15mm)']
+      X_train = data_mat.drop('Mean(Seal_Strength_N_15mm)', axis=1)
 
    
     from sklearn.feature_selection import RFE
@@ -265,14 +284,16 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     # regressor.fit(X_train, y_train)
     # 
     # y_train_mlr = regressor.predict(X_train)
-    print(6)
+    #print(6)
     # Adding a constant variable 
     import statsmodels.api as sm  
     #X_train_rfe = sm.add_constant(X_train_rfe)
-    
-    lm = sm.OLS(y_train,X_train).fit()  
+    #print(y_train.info())
+    #print(X_train.info())
+    lm = sm.OLS(y_train,X_train).fit() 
+    #print(7)
     y_train_mlr = lm.predict(X_train)
-    
+   # print(8)
     if valFlag==True:
         y_val_mlr = lm.predict(X_val)
     # from sklearn.metrics import r2_score
@@ -286,32 +307,48 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     plt.figure(figsize=(10,9))
     plt.scatter(y_train_mlr, y_train_mlr - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
     
+    limits_list = y_train_mlr
+    #print(8)
+    
     if valFlag==True:
         plt.scatter(y_val_mlr, y_val_mlr - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+        limits_list = np.concatenate((y_train_mlr, y_val_mlr))
+    
+    #print(9)    
+    lineStart = limits_list.min()-1
+    lineEnd = limits_list.max()+1
       
     plt.title("MLR",fontsize=16)
     plt.xlabel("Predicted values",fontsize=10)
     plt.ylabel("Residuals",fontsize=10)
     plt.legend(loc = "upper left",fontsize=10)
-    x1, y1 = [4,10],[0,0]
-    x2, y2 = [4,10], [0,0]
-    plt.plot(x1, y1, x2, y2, marker = 'o')
+        
+    plt.plot([lineStart,lineEnd],[0,0], color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
     plt.savefig('./www/Plot_MLR_Residuals.jpg', bbox_inches = 'tight',dpi=200)
 
     
     # Plot predictions
     plt.figure(figsize=(10,9))
+    
+    limits_list = y_train_mlr
+    
     plt.scatter(y_train_mlr, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
     if valFlag==True:
         plt.scatter(y_val_mlr, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
-      
+        limits_list = np.concatenate((y_train_mlr, y_val_mlr))
+
+    lineStart = limits_list.min()-1
+    lineEnd =limits_list.max()+1
+    
     plt.title("MLR",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
     plt.legend(loc = "upper left",fontsize=14)
-    x1, y1 = [4,10],[4,10]
-    x2, y2 = [4,10], [4,10]
-    plt.plot(x1, y1, x2, y2, marker = 'o')
+    
+    plt.plot([lineStart,lineEnd],[lineStart,lineEnd] , color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.ylim(lineStart,lineEnd)
     plt.savefig('./www/Plot_MLR_Predicted.jpg', bbox_inches = 'tight',dpi=200)
 
     # Plot important coefficients

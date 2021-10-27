@@ -23,13 +23,22 @@ modellerUI <- function(id){
     ),
     br(),
     
-    fluidRow(column(width = 6,fileInput(ns('dataset'),em('Upload Dataset')))), 
+    fluidRow(column(width = 2,HTML(paste0("<b><i>","Upload Dataset","</i></b>"))),
+             column(width = 3,downloadBttn(
+      outputId = ns('sampleDataset_Download'),
+      label = "Download Sample Dataset",
+      color = "primary",
+      style = "simple",
+      size= 'xs',
+      block = FALSE
+    ))),
+    fluidRow(column(width = 6,fileInput(ns('dataset'),''))),
     
     fluidRow(column(width = 6,selectInput(ns('material'),em("Select Material"), choices = c('',''))),
              column(width = 6,uiOutput(ns('materialNote')))), 
+
              
-    
-    selectInput(ns('response_var'),em("Select Response Variable"), choices = c('Seal Strength',''), selected = 'Seal Strength') , 
+      selectInput(ns('response_var'),em("Select Response Variable"), choices = c('Seal Strength',''), selected = 'Seal Strength') , 
    
     
     
@@ -48,7 +57,7 @@ modellerUI <- function(id){
       onStatus = "success", 
       offStatus = "danger",
       label='Switch',
-      size = "normal"
+      size = "small"
     ),
     
     br(),

@@ -169,18 +169,35 @@ modelling_resultsServer <- function(id, top_session){
                }
              )
            
-           output$material_heatmap <- renderUI({
-             tags$img(src = 'Correlation_Heatmap.jpg',width="100%")
-           }
+
+           output$material_heatmap <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path('./www/Correlation_Heatmap.jpg'))
+             # Return a list containing the filename
+             list(src = filename,
+                  width = "80%")
+           }, deleteFile = FALSE
            )
-           output$model1_Residuals <- renderUI({
-             tags$img(src = 'Plot_MLR_Residuals.jpg',width="100%")
-           }
-           )
-           output$model1_ActPre <- renderUI({
-             tags$img(src = 'Plot_MLR_Predicted.jpg',width="100%")
-           }
-           )
+
+           # 
+           output$model1_Residuals <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path('./www/Plot_MLR_Predicted.jpg'))
+             list(src = filename,
+                  width = "100%")
+           }, deleteFile = FALSE)
+           # 
+           # #output$model1_Residuals <- renderImage('Plot_MLR_Residuals.jpg')
+           # 
+           output$model1_ActPre <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path('./www/Plot_MLR_Predicted.jpg'))
+             # Return a list containing the filename
+             list(src = filename,
+                  width = "100%")
+           }, deleteFile = FALSE)
+           
+           
       })
      
 })}

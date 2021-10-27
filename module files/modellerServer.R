@@ -6,7 +6,24 @@ modellerServer <- function(id, top_session){
       source_python("python_modeller.py")
       unlink("static/tables/*")
       
+      #-------------------------Download Sample Dataset--------------------------------
+      
+      
+      sampleDatasetPaper<- as.data.frame(read_excel('www/Packaging Models Dataset Sample.xlsx',sheet = 'stack_2'))
+      sampleDatasetPoly<- as.data.frame(read_excel('www/Packaging Models Dataset Sample.xlsx',sheet = 'stack_3'))
+      
+      
+
+      output$sampleDataset_Download <-
+        downloadHandler(
+          filename = "Packaging Models Dataset Sample.xlsx",
+          content = function(con){
+            write_xlsx(list("stack_3" = sampleDatasetPoly, "stack_2" = sampleDatasetPaper),con)
+          }
+        )
+      
       #--------------------------------Get Materials-----------------------------------
+      
       observeEvent(input$polyFlag,
                    {
       observeEvent(req(input$dataset),{
@@ -34,6 +51,7 @@ modellerServer <- function(id, top_session){
     })
       
       #--------------------------------Get Predictors ----------------------------------
+      
       observeEvent(input$polyFlag,
                    {
       observeEvent(req(input$dataset),{
@@ -64,7 +82,7 @@ modellerServer <- function(id, top_session){
   
       observeEvent(input$polyFlag,
                    {
-      observeEvent(req(input$dataset),{
+        observeEvent(req(input$dataset),{
         
                 observeEvent(input$build,ignoreInit = TRUE,
 
@@ -95,11 +113,11 @@ modellerServer <- function(id, top_session){
                          ) # use a spinner
                        )
                        data_sent_df <- as.data.frame(data_sent,row.names = NULL)
-                       View(1)
+                       #View(1)
                        model_results <- run_model(data_sent_df,input$predictor_vars,input$material,input$polyFlag, input$valFlag)
-                       View(2)
+                       #View(2)
                        scores <- model_results[[1]]
-                       View(3)
+                       #View(3)
                        MLR_FI <- model_results[[2]]
                        LASSO_FI <- model_results[[3]]
                        EN_FI <- model_results[[4]]
@@ -110,7 +128,7 @@ modellerServer <- function(id, top_session){
                        write.csv(LASSO_FI,file='static/tables/LASSO_FI.csv',append=FALSE, row.names = FALSE)
                        write.csv(EN_FI,file='static/tables/EN_FI.csv',append=FALSE, row.names = FALSE)
                        write.csv(RG_FI,file='static/tables/RG_FI.csv',append=FALSE, row.names = FALSE)
-                       View(4)
+                       #View(4)
                        
                        waiter_hide()
                        
