@@ -17,7 +17,6 @@ library(shinycssloaders)
 library(waiter)
 library(shinyBS)
 
-#shinyjsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 
 #source all files in back_end
 for(f in list.files(path="./module files",
@@ -39,7 +38,7 @@ ui <- function(request){
                 ),width = 100
               ),
                 dashboardBody(
-                  #useShinyjs(),
+                  
                   tags$style("* { font-family: Helvetica, sans-serif; }"),
                     tabsetPanel(id = 'tabs',
                       tabPanel('INTRO', introUI("introUI")),
@@ -59,12 +58,12 @@ server <-  function(input, output, session) {
   modelling_resultsServer("modelling_resultsUI",top_session = session)
   
   
-  observe({
-    reactiveValuesToList(input)
-    session$doBookmark()
-  })
-  onBookmarked(updateQueryString)
-  
+  # observe({
+  #   reactiveValuesToList(input)
+  #   session$doBookmark()
+  # })
+  # onBookmarked(updateQueryString)
+  # 
 }
 # Run the application
 shinyApp(ui, server, enableBookmarking = "url")

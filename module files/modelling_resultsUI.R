@@ -52,21 +52,21 @@ modelling_resultsUI <- function(id){
     br(),
     fluidRow(column(width = 6,span(textOutput(ns('model1_Residuals_Text')), style="font-size: 16px;font-weight: bold"),
                     br(),
-                    uiOutput(ns('model1_Residuals'))),
+                    imageOutput(ns('model1_Residuals'))),
              column(width = 6,span(textOutput(ns('model2_Residuals_Text')),style="font-size: 16px;font-weight: bold"),
                     br(),
-                    uiOutput(ns('model2_Residuals')))),
+                    imageOutput(ns('model2_Residuals')))),
     br(),
     fluidRow(column(width = 6,span(textOutput(ns('model1_ActPre_Text')), style="font-size: 16px;font-weight: bold"),
                     br(),
-                    uiOutput(ns('model1_ActPre'))),
+                    imageOutput(ns('model1_ActPre'))),
              column(width = 6,span(textOutput(ns('model2_ActPre_Text')),style="font-size: 16px;font-weight: bold"),
                     br(),
-                    uiOutput(ns('model2_ActPre')))),
+                    imageOutput(ns('model2_ActPre')))),
     br(),
     fluidRow(column(width = 10,span(textOutput(ns('material_heatmap_Text')), style="font-size: 16px;font-weight: bold"),
                     br(),
-                    uiOutput(ns('material_heatmap'))))
+                    imageOutput(ns('material_heatmap'))))
     
     
 

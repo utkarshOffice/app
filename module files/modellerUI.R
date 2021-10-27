@@ -1,9 +1,13 @@
 modellerUI <- function(id){
   ns <- NS(id)
+  
+  jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
+  
   tagList(
     br(),
-    
-    fluidRow(column(width = 6,HTML(paste0("<b><i>","Select Laminate Family","</i></b>")))), 
+    useShinyjs(),
+    fluidRow(column(width = 6,HTML(paste0("<b><i>","Select Laminate Family","</i></b>")))),
+    extendShinyjs(text = jsResetCode, functions = "reset"),
     fluidRow(column(width = 6,
            
            switchInput(
@@ -19,13 +23,22 @@ modellerUI <- function(id){
     ),
     br(),
     
-    fluidRow(column(width = 6,fileInput(ns('dataset'),em('Upload Dataset')))), 
+    fluidRow(column(width = 2,HTML(paste0("<b><i>","Upload Dataset","</i></b>"))),
+             column(width = 3,downloadBttn(
+      outputId = ns('sampleDataset_Download'),
+      label = "Download Sample Dataset",
+      color = "primary",
+      style = "simple",
+      size= 'xs',
+      block = FALSE
+    ))),
+    fluidRow(column(width = 6,fileInput(ns('dataset'),''))),
     
     fluidRow(column(width = 6,selectInput(ns('material'),em("Select Material"), choices = c('',''))),
              column(width = 6,uiOutput(ns('materialNote')))), 
+
              
-    
-    selectInput(ns('response_var'),em("Select Response Variable"), choices = c('Seal Strength',''), selected = 'Seal Strength') , 
+      selectInput(ns('response_var'),em("Select Response Variable"), choices = c('Seal Strength',''), selected = 'Seal Strength') , 
    
     
     
@@ -44,9 +57,24 @@ modellerUI <- function(id){
       onStatus = "success", 
       offStatus = "danger",
       label='Switch',
-      size = "normal"
+      size = "small"
     ),
     
+    br(),
+    fluidRow(column(width = 6,HTML(paste0("<b><i>","Perform Validation?","</i></b>")))),
+    fluidRow(column(width = 6,
+                    
+                    switchInput(
+                      inputId = ns("valFlag"),
+                      onLabel = "ON",
+                      offLabel = "OFF",
+                      onStatus = "success", 
+                      offStatus = "danger",
+                      label='Switch',
+                      size = "small"
+                    )
+    )
+    ),
     br(),
     
     actionBttn(

@@ -15,12 +15,15 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, RidgeCV, LassoCV, ElasticNetCV
 from sklearn.metrics import mean_squared_error, make_scorer
 from scipy.stats import skew
+import warnings
+import openpyxl
+warnings.filterwarnings('ignore')
 
 
 
 def get_equation(coefs):
 
-    print(coefs)
+    #print(coefs)
 
     equation= ""
     for i in range(len(coefs)):
@@ -40,8 +43,7 @@ def get_equation(coefs):
 
     return equation2
     
-
-def preprocess(data,polyFlag):
+def preprocess(data,polyFlag, valFlag):
     
     
     data_flat = data
@@ -66,7 +68,7 @@ def preprocess(data,polyFlag):
         data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
         data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
         
-    #print(data_flat)
+    print("dataflat",data_flat.info())
     
     if polyFlag == True:
         data_flat.drop('Layer_2',axis=1, inplace=True)
@@ -98,13 +100,34 @@ def preprocess(data,polyFlag):
     
     data.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
     
-    if polyFlag== False:
+    if polyFlag == False:
         data.drop('Failure_Mode_C',axis=1, inplace=True)
         data.drop('Failure_Mode_A',axis=1, inplace=True)
         data.drop('Failure_Mode_D',axis=1, inplace=True)
         data.drop('Failure_Mode_FR',axis=1, inplace=True)
     
-    data['Material_Name'] = data['Material_Name'].str.replace(' ', '')    
+    data['Material_Name'] = data['Material_Name'].str.replace(' ', '')  
+    
+    
+    # adding validation column
+    if valFlag == True:
+      
+      if polyFlag==True:
+          polymer_means = pd.read_excel('www/polymer_means_final.xlsx',engine='openpyxl')
+          data['Validation'] = polymer_means.Validation
+          data.Validation.fillna(0,inplace=True)
+          
+      if polyFlag==False:
+          for i,row in data.iterrows():
+            if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==200)):
+                data.loc[i,'Validation'] = 1    
+            if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==750)):
+                data.loc[i,'Validation'] = 1   
+            if ((row['Sealing_Temperature_C']==240) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==500)):
+                data.loc[i,'Validation'] = 1   
+            if ((row['Sealing_Temperature_C']==168) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==200)):
+                data.loc[i,'Validation'] = 1  
+          data['Validation'].fillna(0,inplace=True)
     
     #print(data)
     return data
@@ -112,7 +135,7 @@ def preprocess(data,polyFlag):
 def feature_engg(data, predictors):
     
     for col in data.columns:
-        if (col != 'Mean(Seal_Strength_N_15mm)') & (data[col].dtype in['float64','int64']):
+        if  ((col not in ['Mean(Seal_Strength_N_15mm)','Validation']) & (data[col].dtype in['float64','int64'])):
             data[col+"-2"] = data[col]**2
             data[col+"-3"] = data[col]**3
             data[col+"-Sq"] = np.sqrt(data[col])
@@ -136,7 +159,6 @@ def feature_engg(data, predictors):
     if (('Sealent_layer_thickness' in predictors) & ('Sealing_Pressure_N_cm2' in predictors)):
         data["Pr_Thick"] = data["Sealing_Pressure_N_cm2"] * data["Sealent_layer_thickness"]
         
-    #print(data.info())
     return data
 
 def get_materials(data_R):
@@ -149,49 +171,65 @@ def get_materials(data_R):
         
     return Material_Names
 
-def get_predictors(data_R,polyFlag):
+def get_predictors(data_R,polyFlag,valFlag):
     
     data_flat = data_R
-    data = preprocess(data_flat,polyFlag)
+    data = preprocess(data_flat,polyFlag,valFlag)
 
     data.drop('Mean(Seal_Strength_N_15mm)',axis=1, inplace=True)
     data.drop('Material_Name',axis=1, inplace=True)
     
     return list(data.columns)
 
-def run_model(data_R, predictors, response, material, polyFlag):
+def run_model(data_R, predictors, material, polyFlag, valFlag):
+  
+  
+    
+    if isinstance(predictors, str):
+      predictors= list([predictors])
+    
     
 
     data_flat = data_R
 
-    data = preprocess(data_flat,polyFlag)
+    data = preprocess(data_flat,polyFlag,valFlag)
     #print(data)
     data_orig = data.copy()
     
     # choosing predictors
     for col in data.columns:
-        if col not in predictors:
+        if ((col not in predictors)&(col !='Validation')):
             data.drop(col,axis=1, inplace=True)
 
     data['Mean(Seal_Strength_N_15mm)'] = data_orig['Mean(Seal_Strength_N_15mm)']
     data['Material_Name'] = data_orig['Material_Name']
+    #print("----------------*------------ \n This is Orig Data ",data_orig.info())
+    #print("----------------*------------ \n This is Data b4 FE ",data.info())
 
     data = feature_engg(data, predictors)
+    #print("----------------*------------ \n This is Data after FE ",data.info())
     
-    #print(data)
+    #print(material)
+    #print("data material \n",data.Material_Name)
     data_mat = data[data.Material_Name == material]
+    
+    #print("----------------*------------ \n This is Material data",data_mat)
     data_mat.drop('Material_Name', inplace=True, axis = 1)
     
-
+    # removing one unique outlier for polymer data
     if polyFlag== True:
-        data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
+        if (('Sealing_Temperature_C' in predictors) & ('Sealing_Pressure_N_cm2' in predictors) & ('Sealing_Time_ms' in predictors)):
+          data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
     
     
-    # generate correlation heatmap
+    #generate correlation heatmap
+    heatmap_list = predictors
+    heatmap_list.extend(['Mean(Seal_Strength_N_15mm)'])
+    #print(heatmap_list)
     plt.figure(figsize=(10,7))
-    matrix = np.triu(data_mat[['Sealing_Time_ms','Sealing_Pressure_N_cm2','Sealing_Temperature_C','Mean(Seal_Strength_N_15mm)']].corr())
+    matrix = np.triu(data_mat[heatmap_list].corr())
     sns.set_style('white')
-    sns.heatmap(data_mat[['Sealing_Time_ms','Sealing_Pressure_N_cm2','Sealing_Temperature_C','Mean(Seal_Strength_N_15mm)']].corr(), annot_kws={'size': 15},mask=matrix,annot=True)
+    sns.heatmap(data_mat[heatmap_list].corr(), annot_kws={'size': 15},mask=matrix,annot=True)
     plt.title('Numerical Feature Correlations', fontsize=17)
     plt.xticks(fontsize=14, rotation=45)
     plt.yticks(fontsize=14)
@@ -200,9 +238,11 @@ def run_model(data_R, predictors, response, material, polyFlag):
     
     num_cols = list()
     for col in data_mat.columns:
-        if data_mat[col].dtype != 'O' and col != 'Mean(Seal_Strength_N_15mm)':
+        if ((data_mat[col].dtype != 'O') & (col not in ['Mean(Seal_Strength_N_15mm)','Validation'])):
             num_cols.append(col)
     #print(data_mat)
+
+    
     from sklearn.preprocessing import StandardScaler
     scaler = StandardScaler()
     #data_mat[num_cols] = scaler.fit_transform(data_mat[num_cols])
@@ -216,9 +256,24 @@ def run_model(data_R, predictors, response, material, polyFlag):
             data_mat[col] = le.fit_transform(data_mat[col])
    
     #data_mat.to_csv('data_mat.csv',index=False)
-   
-    X_train = data_mat.drop('Mean(Seal_Strength_N_15mm)', axis=1)
-    y_train = data_mat['Mean(Seal_Strength_N_15mm)']
+    #print("THIS IS DATAMAT ",data_mat.info())
+    if valFlag==True:
+    
+      X_train = data_mat[data_mat.Validation == 0]
+      X_val = data_mat[data_mat.Validation == 1]
+      y_train = X_train['Mean(Seal_Strength_N_15mm)']
+      y_val = X_val['Mean(Seal_Strength_N_15mm)']
+      
+      X_train = X_train.drop('Mean(Seal_Strength_N_15mm)', axis=1)
+      X_train = X_train.drop('Validation', axis=1)
+      
+      X_val = X_val.drop('Mean(Seal_Strength_N_15mm)', axis=1)
+      X_val = X_val.drop('Validation', axis=1)
+
+    if valFlag==False:
+     
+      y_train = data_mat['Mean(Seal_Strength_N_15mm)']
+      X_train = data_mat.drop('Mean(Seal_Strength_N_15mm)', axis=1)
 
    
     from sklearn.feature_selection import RFE
@@ -229,14 +284,18 @@ def run_model(data_R, predictors, response, material, polyFlag):
     # regressor.fit(X_train, y_train)
     # 
     # y_train_mlr = regressor.predict(X_train)
-    
+    #print(6)
     # Adding a constant variable 
     import statsmodels.api as sm  
     #X_train_rfe = sm.add_constant(X_train_rfe)
-    
-    lm = sm.OLS(y_train,X_train).fit()  
+    #print(y_train.info())
+    #print(X_train.info())
+    lm = sm.OLS(y_train,X_train).fit() 
+    #print(7)
     y_train_mlr = lm.predict(X_train)
-    
+   # print(8)
+    if valFlag==True:
+        y_val_mlr = lm.predict(X_val)
     # from sklearn.metrics import r2_score
     # print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_mlr)*100,4))))
     # 
@@ -247,28 +306,49 @@ def run_model(data_R, predictors, response, material, polyFlag):
     # Plot residuals
     plt.figure(figsize=(10,9))
     plt.scatter(y_train_mlr, y_train_mlr - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
-    #plt.scatter(y_test_las, y_test_las - y_test, c = "darkblue", alpha=0.5, label = "Validation data")
+    
+    limits_list = y_train_mlr
+    #print(8)
+    
+    if valFlag==True:
+        plt.scatter(y_val_mlr, y_val_mlr - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+        limits_list = np.concatenate((y_train_mlr, y_val_mlr))
+    
+    #print(9)    
+    lineStart = limits_list.min()-1
+    lineEnd = limits_list.max()+1
+      
     plt.title("MLR",fontsize=16)
     plt.xlabel("Predicted values",fontsize=10)
     plt.ylabel("Residuals",fontsize=10)
     plt.legend(loc = "upper left",fontsize=10)
-    x1, y1 = [4,10],[0,0]
-    x2, y2 = [4,10], [0,0]
-    plt.plot(x1, y1, x2, y2, marker = 'o')
+        
+    plt.plot([lineStart,lineEnd],[0,0], color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
     plt.savefig('./www/Plot_MLR_Residuals.jpg', bbox_inches = 'tight',dpi=200)
 
     
     # Plot predictions
     plt.figure(figsize=(10,9))
+    
+    limits_list = y_train_mlr
+    
     plt.scatter(y_train_mlr, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
-    #plt.scatter(y_test_las, y_test, c = "darkblue", alpha=0.5, label = "Validation data")
+    if valFlag==True:
+        plt.scatter(y_val_mlr, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+        limits_list = np.concatenate((y_train_mlr, y_val_mlr))
+
+    lineStart = limits_list.min()-1
+    lineEnd =limits_list.max()+1
+    
     plt.title("MLR",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
     plt.legend(loc = "upper left",fontsize=14)
-    x1, y1 = [4,10],[4,10]
-    x2, y2 = [4,10], [4,10]
-    plt.plot(x1, y1, x2, y2, marker = 'o')
+    
+    plt.plot([lineStart,lineEnd],[lineStart,lineEnd] , color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.ylim(lineStart,lineEnd)
     plt.savefig('./www/Plot_MLR_Predicted.jpg', bbox_inches = 'tight',dpi=200)
 
     # Plot important coefficients
@@ -303,8 +383,17 @@ def run_model(data_R, predictors, response, material, polyFlag):
     r2_MLR = round(r2_score(y_train,y_train_mlr)*100,2)
     rmse_MLR = round(mean_squared_error(y_train,y_train_mlr,squared=False),2)
     
-    results = pd.DataFrame({'Algorithm':['MLR'], 'RMSE': [rmse_MLR],'R2': [r2_MLR] })
-    results = results[['Algorithm', 'RMSE', 'R2']]
+    if valFlag==False:
+        results = pd.DataFrame({'Algorithm':['MLR'], 'RMSE': [rmse_MLR],'R2': [r2_MLR] })
+        results = results[['Algorithm', 'RMSE', 'R2']]
+      
+    if valFlag==True:
+        r2_MLR_val = round(r2_score(y_val,y_val_mlr)*100,2)
+        rmse_MLR_val = round(mean_squared_error(y_val,y_val_mlr,squared=False),2)
+        results = pd.DataFrame({'Algorithm':['MLR'], 'Train_RMSE': [rmse_MLR],'Validation_RMSE': [rmse_MLR_val],'Train_R2': [r2_MLR],'Validation_R2': [r2_MLR_val]})
+        results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2', 'Validation_R2']]
+  
+    
     
     
     # Lasso
@@ -327,10 +416,15 @@ def run_model(data_R, predictors, response, material, polyFlag):
    
     y_train_las = lasso.predict(X_train)
     
+    if valFlag==True:
+        y_val_las = lasso.predict(X_val)
+    
     # Plot residuals
     plt.figure(figsize=(13,7))
     plt.scatter(y_train_las, y_train_las - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
-    #plt.scatter(y_test_las, y_test_las - y_test, c = "darkblue", alpha=0.5, label = "Validation data")
+    if valFlag==True:
+        plt.scatter(y_val_las, y_val_las - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+      
     plt.title("Lasso Regularization - Residuals",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Residuals",fontsize=14)
@@ -340,7 +434,9 @@ def run_model(data_R, predictors, response, material, polyFlag):
     # Plot predictions
     plt.figure(figsize=(10,9))
     plt.scatter(y_train_las, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
-    #plt.scatter(y_test_las, y_test, c = "darkblue", alpha=0.5, label = "Validation data")
+    if valFlag==True:
+        plt.scatter(y_val_las, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+      
     plt.title("Lasso Regularization - Predicted vs Real",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
@@ -377,14 +473,27 @@ def run_model(data_R, predictors, response, material, polyFlag):
     from sklearn.metrics import r2_score
     print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_las,squared=False),4))))
    
+    
     r2_LASSO = round(r2_score(y_train,y_train_las)*100,2)
     rmse_LASSO = round(mean_squared_error(y_train,y_train_las,squared=False),2)
     
-    tempResults = pd.DataFrame({'Algorithm':['MLR + Lasso'], 'RMSE': [rmse_LASSO],'R2': [r2_LASSO] })
+    if valFlag==False:
+      
+        tempResults = pd.DataFrame({'Algorithm':['MLR + Lasso'], 'RMSE': [rmse_LASSO],'R2': [r2_LASSO] })
+        results = pd.concat([results, tempResults])
+        results = results[['Algorithm','R2','RMSE']]
+        results.sort_values(by='R2', ascending=False, inplace=True)
 
-    results = pd.concat([results, tempResults])
-    results = results[['Algorithm', 'R2','RMSE']]
-    results.sort_values(by='R2', ascending=False, inplace=True)
+    if valFlag==True:
+        r2_LASSO_val = round(r2_score(y_val,y_val_las)*100,2)
+        rmse_LASSO_val = round(mean_squared_error(y_val,y_val_las,squared=False),2)
+          
+        tempResults = pd.DataFrame({'Algorithm':['MLR + Lasso'], 'Train_RMSE': [rmse_LASSO],'Validation_RMSE': [rmse_LASSO_val],'Train_R2': [r2_LASSO],'Validation_R2': [r2_LASSO_val]})
+        results = pd.concat([results, tempResults])
+        results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2','Validation_R2']]
+        results.sort_values(by='Train_R2', ascending=False, inplace=True)
+     
+    
     
     # Elastic Net
     
@@ -408,12 +517,17 @@ def run_model(data_R, predictors, response, material, polyFlag):
     
     y_train_elastic_net= elastic_net.predict(X_train)
     #y_val_elastic_net = elastic_net.predict(X_val)
+    if valFlag==True:
+        y_val_en = elastic_net.predict(X_val)
+    
     
     
     # Plot residuals
     plt.figure(figsize=(13,7))
     plt.scatter(y_train_elastic_net, y_train_elastic_net - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
-    #plt.scatter(y_val_elastic_net, y_val_elastic_net - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+    if valFlag==True:
+        plt.scatter(y_val_en, y_val_en - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+   
     plt.title("Elastic Net Regularization",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Residuals",fontsize=14)
@@ -423,7 +537,9 @@ def run_model(data_R, predictors, response, material, polyFlag):
     # Plot predictions
     plt.figure(figsize=(10,9))
     plt.scatter(y_train_elastic_net, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
-    #plt.scatter(y_val_elastic_net, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+    if valFlag==True:
+        plt.scatter(y_val_en, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+      
     plt.title("Elastic Net Regularization",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
@@ -464,11 +580,21 @@ def run_model(data_R, predictors, response, material, polyFlag):
     r2_EN = round(r2_score(y_train,y_train_elastic_net)*100,2)
     rmse_EN = round(mean_squared_error(y_train,y_train_elastic_net,squared=False),2)
     
-    tempResults = pd.DataFrame({'Algorithm':['MLR + Elastic Net'], 'RMSE': [rmse_EN],'R2': [r2_EN] })
-
-    results = pd.concat([results, tempResults])
-    results = results[['Algorithm', 'R2','RMSE']]
-    results.sort_values(by='R2', ascending=False, inplace=True)
+    if valFlag==False:
+        
+        tempResults = pd.DataFrame({'Algorithm':['MLR + Elastic Net'], 'RMSE': [rmse_EN],'R2': [r2_EN] })
+        results = pd.concat([results, tempResults])
+        results = results[['Algorithm','R2','RMSE']]
+        results.sort_values(by='R2', ascending=False, inplace=True)
+        
+    if valFlag==True:
+        r2_EN_val = round(r2_score(y_val,y_val_en)*100,2)
+        rmse_EN_val = round(mean_squared_error(y_val,y_val_en,squared=False),2)
+          
+        tempResults = pd.DataFrame({'Algorithm':['MLR + Elastic Net'], 'Train_RMSE': [rmse_EN],'Validation_RMSE': [rmse_EN_val],'Train_R2': [r2_EN],'Validation_R2': [r2_EN_val]})
+        results = pd.concat([results, tempResults])
+        results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2','Validation_R2']]
+        results.sort_values(by='Train_R2', ascending=False, inplace=True)
     
     # Ridge
     
@@ -487,10 +613,15 @@ def run_model(data_R, predictors, response, material, polyFlag):
     print("Fine Tuned Alpha :", alpha)
 
     y_train_rdg = ridge.predict(X_train)
+    if valFlag==True:
+        y_val_rdg = ridge.predict(X_val)
 
     # Plot residuals
     plt.figure(figsize=(13,7))
     plt.scatter(y_train_rdg, y_train_rdg - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
+    if valFlag==True:
+        plt.scatter(y_val_rdg, y_val_rdg - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+      
     plt.title("Ridge Regularization",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Residuals",fontsize=14)
@@ -501,6 +632,9 @@ def run_model(data_R, predictors, response, material, polyFlag):
     # Plot predictions
     plt.figure(figsize=(13,7))
     plt.scatter(y_train_rdg, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
+    if valFlag==True:
+        plt.scatter(y_val_rdg, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+      
     plt.title("Ridge Regularization",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
@@ -536,10 +670,21 @@ def run_model(data_R, predictors, response, material, polyFlag):
     r2_RG = round(r2_score(y_train,y_train_rdg)*100,2)
     rmse_RG = round(mean_squared_error(y_train,y_train_rdg,squared=False),2)
     
-    tempResults = pd.DataFrame({'Algorithm':['MLR + Ridge'], 'RMSE': [rmse_RG],'R2': [r2_RG] })
+    if valFlag==False:
+        
+        tempResults = pd.DataFrame({'Algorithm':['MLR + Ridge'], 'RMSE': [rmse_RG],'R2': [r2_RG] })
+        results = pd.concat([results, tempResults])
+        results = results[['Algorithm','R2','RMSE']]
+        results.sort_values(by='R2', ascending=False, inplace=True)
 
-    results = pd.concat([results, tempResults])
-    results = results[['Algorithm', 'R2','RMSE']]
-    results.sort_values(by='R2', ascending=False, inplace=True)
-    
+    if valFlag==True:
+        
+        r2_RG_val = round(r2_score(y_val,y_val_rdg)*100,2)
+        rmse_RG_val = round(mean_squared_error(y_val,y_val_rdg,squared=False),2)
+          
+        tempResults = pd.DataFrame({'Algorithm':['MLR + Ridge'], 'Train_RMSE': [rmse_RG],'Validation_RMSE': [rmse_RG_val],'Train_R2': [r2_RG],'Validation_R2': [r2_RG_val]})
+        results = pd.concat([results, tempResults])
+        results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2','Validation_R2']]
+        results.sort_values(by='Train_R2', ascending=False, inplace=True)
+
     return results,topMLR,topLASSO,topEN,topRG
