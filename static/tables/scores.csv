@@ -1,0 +1,5 @@
+"Algorithm","Train_RMSE","Validation_RMSE","Train_R2","Validation_R2"
+"MLR",0.43,0.45,89.33,76.54
+"MLR + Ridge",0.46,0.46,87.8,75.07
+"MLR + Elastic Net",0.47,0.47,87.64,74.19
+"MLR + Lasso",0.47,0.47,87.62,74.4

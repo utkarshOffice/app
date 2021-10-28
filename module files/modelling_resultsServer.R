@@ -169,7 +169,8 @@ modelling_resultsServer <- function(id, top_session){
                }
              )
            
-
+          #-----------------------------------Rendering images------------------------------------------
+           
            output$material_heatmap <- renderImage({
              # When input$n is 1, filename is ./images/image1.jpeg
              filename <- normalizePath(file.path('./www/Correlation_Heatmap.jpg'))
@@ -182,7 +183,7 @@ modelling_resultsServer <- function(id, top_session){
            # 
            output$model1_Residuals <- renderImage({
              # When input$n is 1, filename is ./images/image1.jpeg
-             filename <- normalizePath(file.path('./www/Plot_MLR_Predicted.jpg'))
+             filename <- normalizePath(file.path('./www/Plot_MLR_Residuals.jpg'))
              list(src = filename,
                   width = "100%")
            }, deleteFile = FALSE)
@@ -192,6 +193,36 @@ modelling_resultsServer <- function(id, top_session){
            output$model1_ActPre <- renderImage({
              # When input$n is 1, filename is ./images/image1.jpeg
              filename <- normalizePath(file.path('./www/Plot_MLR_Predicted.jpg'))
+             # Return a list containing the filename
+             list(src = filename,
+                  width = "100%")
+           }, deleteFile = FALSE)
+           
+           if(scoresTable$Algorithm[2] == 'MLR + Lasso')
+           {
+             model2_path <- 'LASSO'
+           }
+           if(scoresTable$Algorithm[2] == 'MLR + Elastic Net')
+           {
+             model2_path <- 'EN'
+           }
+           if(scoresTable$Algorithm[2] == 'MLR + Ridge')
+           {
+             model2_path <- 'RG'
+           }
+           
+           output$model2_Residuals <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model2_path,'_Residuals.jpg'),fixed = TRUE)))
+             list(src = filename,
+                  width = "100%")
+           }, deleteFile = FALSE)
+           # 
+           # #output$model1_Residuals <- renderImage('Plot_MLR_Residuals.jpg')
+           # 
+           output$model2_ActPre <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model2_path,'_Predicted.jpg'),fixed = TRUE)))
              # Return a list containing the filename
              list(src = filename,
                   width = "100%")
