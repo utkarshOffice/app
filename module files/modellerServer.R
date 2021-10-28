@@ -80,7 +80,7 @@ modellerServer <- function(id, top_session){
       
       #--------------------------------Get Model Results ----------------------------------
   
-      observeEvent(input$polyFlag,
+      observeEvent(input$polyFlag,once = TRUE,
                    {
         observeEvent(req(input$dataset),{
         

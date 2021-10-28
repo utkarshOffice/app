@@ -394,8 +394,6 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
         results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2', 'Validation_R2']]
   
     
-    
-    
     # Lasso
    
     lasso = LassoCV(alphas = [0.0001, 0.0003, 0.0006, 0.001, 0.003, 0.006, 0.01, 0.03, 0.06, 0.1,
@@ -415,36 +413,59 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     print("Fine Tuned Alpha :", alpha)
    
     y_train_las = lasso.predict(X_train)
-    
+
     if valFlag==True:
         y_val_las = lasso.predict(X_val)
     
+
+    sns.set_style('whitegrid')
     # Plot residuals
-    plt.figure(figsize=(13,7))
+    plt.figure(figsize=(10,9))
     plt.scatter(y_train_las, y_train_las - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
+    
+    limits_list = y_train_las
+    #print(8)
+    
     if valFlag==True:
         plt.scatter(y_val_las, y_val_las - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+        limits_list = np.concatenate((y_train_las, y_val_las))
+    
+    #print(9)    
+    lineStart = limits_list.min()-1
+    lineEnd = limits_list.max()+1
       
-    plt.title("Lasso Regularization - Residuals",fontsize=16)
-    plt.xlabel("Predicted values",fontsize=14)
-    plt.ylabel("Residuals",fontsize=14)
-    plt.legend(loc = "upper left",fontsize=14)
-    plt.savefig('static/plots/Plot_LASSO_Residuals.jpg')
+    plt.title("LASSO Residuals",fontsize=16)
+    plt.xlabel("Predicted values",fontsize=10)
+    plt.ylabel("Residuals",fontsize=10)
+    plt.legend(loc = "upper left",fontsize=10)
+        
+    plt.plot([lineStart,lineEnd],[0,0], color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.savefig('./www/Plot_LASSO_Residuals.jpg', bbox_inches = 'tight',dpi=200)
+
     
     # Plot predictions
     plt.figure(figsize=(10,9))
+    
+    limits_list = y_train_las
+    
     plt.scatter(y_train_las, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
     if valFlag==True:
         plt.scatter(y_val_las, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
-      
-    plt.title("Lasso Regularization - Predicted vs Real",fontsize=16)
+        limits_list = np.concatenate((y_train_las, y_val_las))
+
+    lineStart = limits_list.min()-1
+    lineEnd =limits_list.max()+1
+    
+    plt.title("LASSO - Real v/s Predicted",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
-    x1, y1 = [-2,3],[-2,3]
-    x2, y2 = [-2,3], [-2,3]
-    plt.plot(x1, y1, x2, y2, marker = 'o')
     plt.legend(loc = "upper left",fontsize=14)
-    plt.savefig('static/plots/Plot_LASSO_Predicted.jpg')
+    
+    plt.plot([lineStart,lineEnd],[lineStart,lineEnd] , color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.ylim(lineStart,lineEnd)
+    plt.savefig('./www/Plot_LASSO_Predicted.jpg', bbox_inches = 'tight',dpi=200)
     
     # Plot important coefficients
     coefs = pd.Series(lasso.coef_, index = X_train.columns)
@@ -522,32 +543,54 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     
     
     
+    sns.set_style('whitegrid')
     # Plot residuals
-    plt.figure(figsize=(13,7))
+    plt.figure(figsize=(10,9))
     plt.scatter(y_train_elastic_net, y_train_elastic_net - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
+    
+    limits_list = y_train_elastic_net
+    #print(8)
+    
     if valFlag==True:
         plt.scatter(y_val_en, y_val_en - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
-   
-    plt.title("Elastic Net Regularization",fontsize=16)
-    plt.xlabel("Predicted values",fontsize=14)
-    plt.ylabel("Residuals",fontsize=14)
-    plt.legend(loc = "upper left",fontsize=14)
-    plt.show()
+        limits_list = np.concatenate((y_train_elastic_net, y_val_en))
+    
+    #print(9)    
+    lineStart = limits_list.min()-1
+    lineEnd = limits_list.max()+1
+      
+    plt.title("Elastic Net Residuals",fontsize=16)
+    plt.xlabel("Predicted values",fontsize=10)
+    plt.ylabel("Residuals",fontsize=10)
+    plt.legend(loc = "upper left",fontsize=10)
+        
+    plt.plot([lineStart,lineEnd],[0,0], color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.savefig('./www/Plot_EN_Residuals.jpg', bbox_inches = 'tight',dpi=200)
+
     
     # Plot predictions
     plt.figure(figsize=(10,9))
+    
+    limits_list = y_train_elastic_net
+    
     plt.scatter(y_train_elastic_net, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
     if valFlag==True:
         plt.scatter(y_val_en, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
-      
-    plt.title("Elastic Net Regularization",fontsize=16)
+        limits_list = np.concatenate((y_train_elastic_net, y_val_en))
+
+    lineStart = limits_list.min()-1
+    lineEnd =limits_list.max()+1
+    
+    plt.title("Elastic Net - Real v/s Predicted",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
-    x1, y1 = [-1,3],[-1,3]
-    x2, y2 = [-1,3], [-1,3]
-    plt.plot(x1, y1, x2, y2, marker = 'o')
     plt.legend(loc = "upper left",fontsize=14)
-    plt.show()
+    
+    plt.plot([lineStart,lineEnd],[lineStart,lineEnd] , color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.ylim(lineStart,lineEnd)
+    plt.savefig('./www/Plot_EN_Predicted.jpg', bbox_inches = 'tight',dpi=200)
     
     # Plot important coefficients
     coefs = pd.Series(elastic_net.coef_, index = X_train.columns)
@@ -616,31 +659,54 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     if valFlag==True:
         y_val_rdg = ridge.predict(X_val)
 
+    sns.set_style('whitegrid')
     # Plot residuals
-    plt.figure(figsize=(13,7))
+    plt.figure(figsize=(10,9))
     plt.scatter(y_train_rdg, y_train_rdg - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
+    
+    limits_list = y_train_rdg
+    #print(8)
+    
     if valFlag==True:
         plt.scatter(y_val_rdg, y_val_rdg - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
+        limits_list = np.concatenate((y_train_rdg, y_val_rdg))
+    
+    #print(9)    
+    lineStart = limits_list.min()-1
+    lineEnd = limits_list.max()+1
       
-    plt.title("Ridge Regularization",fontsize=16)
-    plt.xlabel("Predicted values",fontsize=14)
-    plt.ylabel("Residuals",fontsize=14)
-    plt.legend(loc = "upper left",fontsize=14)
-    plt.hlines(y = 0, xmin = 10.5, xmax = 13.5, color = "red")
-    plt.show()
+    plt.title("Ridge Residuals",fontsize=16)
+    plt.xlabel("Predicted values",fontsize=10)
+    plt.ylabel("Residuals",fontsize=10)
+    plt.legend(loc = "upper left",fontsize=10)
+        
+    plt.plot([lineStart,lineEnd],[0,0], color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.savefig('./www/Plot_RG_Residuals.jpg', bbox_inches = 'tight',dpi=200)
+
     
     # Plot predictions
-    plt.figure(figsize=(13,7))
+    plt.figure(figsize=(10,9))
+    
+    limits_list = y_train_rdg
+    
     plt.scatter(y_train_rdg, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
     if valFlag==True:
         plt.scatter(y_val_rdg, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
-      
-    plt.title("Ridge Regularization",fontsize=16)
+        limits_list = np.concatenate((y_train_rdg, y_val_rdg))
+
+    lineStart = limits_list.min()-1
+    lineEnd =limits_list.max()+1
+    
+    plt.title("Ridge - Real v/s Predicted",fontsize=16)
     plt.xlabel("Predicted values",fontsize=14)
     plt.ylabel("Real values",fontsize=14)
     plt.legend(loc = "upper left",fontsize=14)
-    plt.plot([10.5, 13.5], [10.5, 13.5], c = "red")
-    plt.show()
+    
+    plt.plot([lineStart,lineEnd],[lineStart,lineEnd] , color='orange',marker = 'o')
+    plt.xlim(lineStart,lineEnd)
+    plt.ylim(lineStart,lineEnd)
+    plt.savefig('./www/Plot_RG_Predicted.jpg', bbox_inches = 'tight',dpi=200)
     
     # Plot important coefficients
     coefs = pd.Series(ridge.coef_, index = X_train.columns)
