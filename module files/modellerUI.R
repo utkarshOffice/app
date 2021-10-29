@@ -38,7 +38,7 @@ modellerUI <- function(id){
              column(width = 6,uiOutput(ns('materialNote')))), 
 
              
-      selectInput(ns('response_var'),em("Select Response Variable"), choices = c('Seal Strength',''), selected = 'Seal Strength') , 
+    selectInput(ns('response_var'),em("Select Response Variable"), choices = c('Seal Strength',''), selected = 'Seal Strength') , 
    
     
     
@@ -48,26 +48,26 @@ modellerUI <- function(id){
     #              style="color: #fff; background-color: #337ab7; border-color: #2e6da4"),
     br(),
    
-    fluidRow(column(width = 6,HTML(paste0("<b><i>","Handle Outliers (Tool in development)","</i></b>")))), 
-    
-    switchInput(
-      inputId = ns("outlierflag"),
-      onLabel = "YES",
-      offLabel = "NO",
-      onStatus = "success", 
-      offStatus = "danger",
-      label='Switch',
-      size = "small"
-    ),
-    
-    br(),
+    # fluidRow(column(width = 6,HTML(paste0("<b><i>","Handle Outliers (Tool in development)","</i></b>")))), 
+    # 
+    # switchInput(
+    #   inputId = ns("outlierflag"),
+    #   onLabel = "YES",
+    #   offLabel = "NO",
+    #   onStatus = "success", 
+    #   offStatus = "danger",
+    #   label='Switch',
+    #   size = "small"
+    # ),
+    # 
+    # br(),
     fluidRow(column(width = 6,HTML(paste0("<b><i>","Perform Validation?","</i></b>")))),
     fluidRow(column(width = 6,
                     
                     switchInput(
                       inputId = ns("valFlag"),
-                      onLabel = "ON",
-                      offLabel = "OFF",
+                      onLabel = "YES",
+                      offLabel = "NO",
                       onStatus = "success", 
                       offStatus = "danger",
                       label='Switch',
@@ -75,6 +75,7 @@ modellerUI <- function(id){
                     )
     )
     ),
+    fluidRow(column(width = 9,uiOutput(ns('paperValNote')))),
     br(),
     
     actionBttn(
