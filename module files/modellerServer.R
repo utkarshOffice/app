@@ -4,7 +4,7 @@ modellerServer <- function(id, top_session){
     function(input, output, session) {
       
       source_python("python_modeller.py")
-      unlink("static/tables/*")
+      unlink("./www/tables/*")
       
       #-------------------------Download Sample Dataset--------------------------------
       
@@ -78,6 +78,27 @@ modellerServer <- function(id, top_session){
       })
     })
       
+      #---------------------Display Note on Validation for Paper---------------------------
+      
+      observeEvent(c(input$valFlag,input$polyFlag),
+              {
+                     
+                if((input$valFlag==TRUE) & (input$polyFlag==FALSE))
+                {
+                    output$paperValNote <- renderUI({
+                      wellPanel(
+                        HTML(paste(em("NOTE: The DOE data for paper models does not support validation, which may result in unexpected scores.")))
+                      )
+                    })
+                }
+              else{
+                output$paperValNote <- renderUI({
+                  NULL
+              })
+              }
+      })
+      
+      
       #--------------------------------Get Model Results ----------------------------------
   
       observeEvent(input$polyFlag,once = TRUE,
@@ -95,7 +116,7 @@ modellerServer <- function(id, top_session){
                         if(input$polyFlag == TRUE)
                         {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
                        
-                       unlink("static/tables/*")
+                       unlink("./www/tables/*")
                         
                        output$results <- renderUI({ns <- NS(id)
                        shinycssloaders::withSpinner(dataTableOutput(ns("resultstable")),type = 3,color.background = 'lightblue')})
@@ -123,11 +144,11 @@ modellerServer <- function(id, top_session){
                        EN_FI <- model_results[[4]]
                        RG_FI <- model_results[[5]]
                        
-                       write.csv(scores,file='static/tables/scores.csv',append=FALSE, row.names = FALSE)
-                       write.csv(MLR_FI,file='static/tables/MLR_FI.csv',append=FALSE, row.names = FALSE)
-                       write.csv(LASSO_FI,file='static/tables/LASSO_FI.csv',append=FALSE, row.names = FALSE)
-                       write.csv(EN_FI,file='static/tables/EN_FI.csv',append=FALSE, row.names = FALSE)
-                       write.csv(RG_FI,file='static/tables/RG_FI.csv',append=FALSE, row.names = FALSE)
+                       write.csv(scores,file='./www/tables/scores.csv',append=FALSE, row.names = FALSE)
+                       write.csv(MLR_FI,file='./www/tables/MLR_FI.csv',append=FALSE, row.names = FALSE)
+                       write.csv(LASSO_FI,file='./www/tables/LASSO_FI.csv',append=FALSE, row.names = FALSE)
+                       write.csv(EN_FI,file='./www/tables/EN_FI.csv',append=FALSE, row.names = FALSE)
+                       write.csv(RG_FI,file='./www/tables/RG_FI.csv',append=FALSE, row.names = FALSE)
                        #View(4)
                        
                        waiter_hide()

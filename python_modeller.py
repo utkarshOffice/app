@@ -68,7 +68,7 @@ def preprocess(data,polyFlag, valFlag):
         data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
         data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
         
-    print("dataflat",data_flat.info())
+    #print("dataflat",data_flat.info())
     
     if polyFlag == True:
         data_flat.drop('Layer_2',axis=1, inplace=True)
@@ -92,7 +92,7 @@ def preprocess(data,polyFlag, valFlag):
     # Drop catergorical columns with only one category throughout dataset
     for col in data.columns:
         if data[col].nunique() == 1:
-            print("Dropping ",col)
+            #print("Dropping ",col)
             data.drop(col,axis=1, inplace=True) 
             
     #print(1)
@@ -374,11 +374,11 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
   
     
     from sklearn.metrics import r2_score
-    print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_mlr)*100,4))))
+    #print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_mlr)*100,4))))
     
    
     from sklearn.metrics import r2_score
-    print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_mlr,squared=False),4))))
+    #print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_mlr,squared=False),4))))
     
     r2_MLR = round(r2_score(y_train,y_train_mlr)*100,2)
     rmse_MLR = round(mean_squared_error(y_train,y_train_mlr,squared=False),2)
@@ -401,7 +401,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
                     max_iter = 50000, cv = 3)
     lasso.fit(X_train, y_train)
     alpha = lasso.alpha_
-    print("Coarse Tuned Alpha :", alpha)
+    #print("Coarse Tuned Alpha :", alpha)
    
     lasso = LassoCV(alphas = [alpha * .6, alpha * .65, alpha * .7, alpha * .75, alpha * .8,
                               alpha * .85, alpha * .9, alpha * .95, alpha, alpha * 1.05,
@@ -410,7 +410,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
                     max_iter = 50000, cv = 3)
     lasso.fit(X_train, y_train)
     alpha = lasso.alpha_
-    print("Fine Tuned Alpha :", alpha)
+    #print("Fine Tuned Alpha :", alpha)
    
     y_train_las = lasso.predict(X_train)
 
@@ -469,8 +469,8 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     
     # Plot important coefficients
     coefs = pd.Series(lasso.coef_, index = X_train.columns)
-    print("Lasso picked " + str(sum(coefs != 0)) + " features and eliminated the other " +  \
-          str(sum(coefs == 0)) + " features")
+    #print("Lasso picked " + str(sum(coefs != 0)) + " features and eliminated the other " +  \
+          #str(sum(coefs == 0)) + " features")
     imp_coefs = pd.concat([coefs.sort_values().head(10),
                          coefs.sort_values().tail(10)])
     imp_coefs.plot(kind = "barh")
@@ -489,10 +489,10 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     
 
     from sklearn.metrics import r2_score
-    print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_las)*100,4))))
+    #print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_las)*100,4))))
    
     from sklearn.metrics import r2_score
-    print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_las,squared=False),4))))
+    #print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_las,squared=False),4))))
    
     
     r2_LASSO = round(r2_score(y_train,y_train_las)*100,2)
@@ -523,7 +523,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
                     max_iter = 50000, cv = 3)
     elastic_net.fit(X_train, y_train)
     alpha = elastic_net.alpha_
-    print("Coarse Tuned Alpha :", alpha)
+    #print("Coarse Tuned Alpha :", alpha)
     
     elastic_net = ElasticNetCV(alphas = [alpha * .6, alpha * .65, alpha * .7, alpha * .75, alpha * .8, 
                               alpha * .85, alpha * .9, alpha * .95, alpha, alpha * 1.05, 
@@ -533,8 +533,8 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     elastic_net.fit(X_train, y_train)
     alpha = elastic_net.alpha_
     l1_ratio = elastic_net.l1_ratio_ 
-    print("Fine Tuned Alpha :", alpha)
-    print("L1 :", l1_ratio)
+    #print("Fine Tuned Alpha :", alpha)
+    #print("L1 :", l1_ratio)
     
     y_train_elastic_net= elastic_net.predict(X_train)
     #y_val_elastic_net = elastic_net.predict(X_val)
@@ -594,8 +594,8 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     
     # Plot important coefficients
     coefs = pd.Series(elastic_net.coef_, index = X_train.columns)
-    print("Elastic Net picked " + str(sum(coefs != 0)) + " features and eliminated the other " +  \
-          str(sum(coefs == 0)) + " features")
+    #print("Elastic Net picked " + str(sum(coefs != 0)) + " features and eliminated the other " +  \
+          #str(sum(coefs == 0)) + " features")
     imp_coefs = pd.concat([coefs.sort_values().head(10),
                          coefs.sort_values().tail(10)])
     imp_coefs.plot(kind = "barh")
@@ -615,10 +615,10 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     
 
     from sklearn.metrics import r2_score
-    print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_elastic_net)*100,4))))
+    #print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_elastic_net)*100,4))))
    
     from sklearn.metrics import r2_score
-    print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_elastic_net,squared=False),4))))
+    #print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_elastic_net,squared=False),4))))
    
     r2_EN = round(r2_score(y_train,y_train_elastic_net)*100,2)
     rmse_EN = round(mean_squared_error(y_train,y_train_elastic_net,squared=False),2)
@@ -644,7 +644,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     ridge = RidgeCV(alphas = [0.01, 0.03, 0.06, 0.1, 0.3, 0.6, 1, 3, 6, 10, 30, 60])
     ridge.fit(X_train, y_train)
     alpha = ridge.alpha_
-    print("Coarse Tuned Alpha :", alpha)
+    #print("Coarse Tuned Alpha :", alpha)
     
     ridge = RidgeCV(alphas = [alpha * .6, alpha * .65, alpha * .7, alpha * .75, alpha * .8, alpha * .85, 
                               alpha * .9, alpha * .95, alpha, alpha * 1.05, alpha * 1.1, alpha * 1.15,
@@ -653,7 +653,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
                     
     ridge.fit(X_train, y_train)
     alpha = ridge.alpha_
-    print("Fine Tuned Alpha :", alpha)
+    #print("Fine Tuned Alpha :", alpha)
 
     y_train_rdg = ridge.predict(X_train)
     if valFlag==True:
@@ -710,8 +710,8 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     
     # Plot important coefficients
     coefs = pd.Series(ridge.coef_, index = X_train.columns)
-    print("Ridge picked " + str(sum(coefs != 0)) + " features and eliminated the other " +  \
-          str(sum(coefs == 0)) + " features")
+    #print("Ridge picked " + str(sum(coefs != 0)) + " features and eliminated the other " +  \
+          #str(sum(coefs == 0)) + " features")
     imp_coefs = pd.concat([coefs.sort_values().head(10),
                          coefs.sort_values().tail(10)])
     imp_coefs.plot(kind = "barh")
@@ -728,10 +728,10 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     topRG = coefs
     
     from sklearn.metrics import r2_score
-    print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_rdg)*100,4))))
+    #print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_rdg)*100,4))))
    
     from sklearn.metrics import r2_score
-    print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_rdg,squared=False),4))))
+    #print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_rdg,squared=False),4))))
    
     r2_RG = round(r2_score(y_train,y_train_rdg)*100,2)
     rmse_RG = round(mean_squared_error(y_train,y_train_rdg,squared=False),2)

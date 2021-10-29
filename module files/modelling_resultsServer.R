@@ -20,11 +20,11 @@ modelling_resultsServer <- function(id, top_session){
       observeEvent(input$refresh,
       {                
         
-           scores <- reactive(read.csv('static/tables/scores.csv'))
-           LASSO_FI <- reactive(read.csv('static/tables/LASSO_FI.csv'))
-           MLR_FI <- reactive(read.csv('static/tables/MLR_FI.csv'))
-           EN_FI <- reactive(read.csv('static/tables/EN_FI.csv'))
-           RG_FI <- reactive(read.csv('static/tables/RG_FI.csv'))
+           scores <- reactive(read.csv('./www/tables/scores.csv'))
+           LASSO_FI <- reactive(read.csv('./www/tables/LASSO_FI.csv'))
+           MLR_FI <- reactive(read.csv('./www/tables/MLR_FI.csv'))
+           EN_FI <- reactive(read.csv('./www/tables/EN_FI.csv'))
+           RG_FI <- reactive(read.csv('./www/tables/RG_FI.csv'))
            
            scoresTable <- head(as.data.frame(scores()),2)
 
@@ -176,7 +176,7 @@ modelling_resultsServer <- function(id, top_session){
              filename <- normalizePath(file.path('./www/Correlation_Heatmap.jpg'))
              # Return a list containing the filename
              list(src = filename,
-                  width = "80%")
+                  width = "80%",height="100%")
            }, deleteFile = FALSE
            )
 
@@ -185,7 +185,7 @@ modelling_resultsServer <- function(id, top_session){
              # When input$n is 1, filename is ./images/image1.jpeg
              filename <- normalizePath(file.path('./www/Plot_MLR_Residuals.jpg'))
              list(src = filename,
-                  width = "100%")
+                  width = "100%",height="100%")
            }, deleteFile = FALSE)
            # 
            # #output$model1_Residuals <- renderImage('Plot_MLR_Residuals.jpg')
@@ -195,7 +195,7 @@ modelling_resultsServer <- function(id, top_session){
              filename <- normalizePath(file.path('./www/Plot_MLR_Predicted.jpg'))
              # Return a list containing the filename
              list(src = filename,
-                  width = "100%")
+                  width = "100%",height="100%")
            }, deleteFile = FALSE)
            
            if(scoresTable$Algorithm[2] == 'MLR + Lasso')
@@ -215,7 +215,7 @@ modelling_resultsServer <- function(id, top_session){
              # When input$n is 1, filename is ./images/image1.jpeg
              filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model2_path,'_Residuals.jpg'),fixed = TRUE)))
              list(src = filename,
-                  width = "100%")
+                  width = "100%",height="100%")
            }, deleteFile = FALSE)
            # 
            # #output$model1_Residuals <- renderImage('Plot_MLR_Residuals.jpg')
@@ -225,7 +225,7 @@ modelling_resultsServer <- function(id, top_session){
              filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model2_path,'_Predicted.jpg'),fixed = TRUE)))
              # Return a list containing the filename
              list(src = filename,
-                  width = "100%")
+                  width = "100%",height="100%")
            }, deleteFile = FALSE)
            
            

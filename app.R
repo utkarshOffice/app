@@ -16,7 +16,9 @@ library(reticulate)
 library(shinycssloaders)
 library(waiter)
 library(shinyBS)
-
+reticulate::virtualenv_create(envname = "myreticulate")
+reticulate::virtualenv_install("myreticulate",  packages = c("pandas","numpy","scikit-learn","seaborn","matplotlib","openpyxl","statsmodels"))
+reticulate::use_virtualenv("myreticulate", required = TRUE)
 
 #source all files in back_end
 for(f in list.files(path="./module files",
