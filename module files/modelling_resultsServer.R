@@ -176,7 +176,7 @@ modelling_resultsServer <- function(id, top_session){
              filename <- normalizePath(file.path('./www/Correlation_Heatmap.jpg'))
              # Return a list containing the filename
              list(src = filename,
-                  width = "80%")
+                  width = "80%",height="100%")
            }, deleteFile = FALSE
            )
 
