@@ -1,3 +1,5 @@
+install.packages('pkgconfig','munsell','ggplot2','tidyselect','generics','yaml')
+
 library(shinydashboard)
 library(shiny)
 library(DT)
@@ -16,6 +18,7 @@ library(reticulate)
 library(shinycssloaders)
 library(waiter)
 library(shinyBS)
+
 # reticulate::virtualenv_create(envname = "myreticulate")
 # reticulate::virtualenv_install("myreticulate",  packages = c("pandas","numpy","scikit-learn","seaborn","matplotlib","openpyxl","statsmodels"))
 # reticulate::use_virtualenv("myreticulate", required = TRUE)
