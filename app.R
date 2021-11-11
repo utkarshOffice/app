@@ -1,4 +1,4 @@
-install.packages('pkgconfig','munsell','ggplot2','tidyselect','generics','yaml')
+#install.packages('pkgconfig','munsell','ggplot2','tidyselect','generics','yaml')
 
 library(shinydashboard)
 library(shiny)
@@ -15,8 +15,8 @@ library(Rcpp)
 library(shinyWidgets)
 library(shinythemes)
 library(reticulate)
-library(shinycssloaders)
 library(waiter)
+library(shinycssloaders)
 library(shinyBS)
 
 # reticulate::virtualenv_create(envname = "myreticulate")
@@ -68,7 +68,7 @@ server <-  function(input, output, session) {
   #   session$doBookmark()
   # })
   # onBookmarked(updateQueryString)
-  # 
+
 }
 # Run the application
 shinyApp(ui, server, enableBookmarking = "url")
