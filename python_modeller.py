@@ -40,6 +40,8 @@ def get_equation(coefs):
     for i in range(length):
         if(equation[i] == '+'):
             equation2 = equation[0:i] + equation[i+1:length]
+            
+    equation2 = equation2.replace("Intercept","1")
 
     return equation2
     
@@ -137,9 +139,9 @@ def feature_engg(data, predictors):
     for col in data.columns:
         if  ((col not in ['Mean(Seal_Strength_N_15mm)','Validation']) & (data[col].dtype in['float64','int64'])):
             data[col+"-2"] = data[col]**2
-            data[col+"-3"] = data[col]**3
-            data[col+"-Sq"] = np.sqrt(data[col])
-            data[col+"-log"] = np.log(data[col])
+            #data[col+"-3"] = data[col]**3
+            #data[col+"-Sq"] = np.sqrt(data[col])
+            #data[col+"-log"] = np.log(data[col])
     
     if (('Sealing_Temperature_C' in predictors) & ('Sealing_Time_ms' in predictors)):
         data["Time_Temp"] = data["Sealing_Time_ms"] * data["Sealing_Temperature_C"]
@@ -184,12 +186,10 @@ def get_predictors(data_R,polyFlag,valFlag):
 def run_model(data_R, predictors, material, polyFlag, valFlag):
   
   
-    
     if isinstance(predictors, str):
       predictors= list([predictors])
     
     
-
     data_flat = data_R
 
     data = preprocess(data_flat,polyFlag,valFlag)
@@ -221,6 +221,8 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
         if (('Sealing_Temperature_C' in predictors) & ('Sealing_Pressure_N_cm2' in predictors) & ('Sealing_Time_ms' in predictors)):
           data_mat= data_mat[((data_mat.Sealing_Pressure_N_cm2!=25)|(data_mat.Sealing_Temperature_C!=100)|(data_mat.Sealing_Time_ms!=200))]
     
+    if material in ['Paper90+metOPP18(Huhtamaki)','Paper90+metOPP18(Huhtamaki2)']:
+        data_mat= data_mat[((data_mat.Sealing_Temperature_C!=120)|(data_mat['Mean(Seal_Strength_N_15mm)']>4))]
     
     #generate correlation heatmap
     heatmap_list = predictors
@@ -483,6 +485,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
     coefs.sort_values(by='Importance',ascending=False,inplace=True)
+    coefs = coefs.append(pd.DataFrame({'Feature': 'Intercept','Importance':lasso.intercept_},index=[0]))
     coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
 
     topLASSO = coefs
@@ -609,6 +612,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
     coefs.sort_values(by='Importance',ascending=False,inplace=True)
+    coefs = coefs.append(pd.DataFrame({'Feature': 'Intercept','Importance':elastic_net.intercept_},index=[0]))
     coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
 
     topEN = coefs
@@ -723,6 +727,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
+    coefs = coefs.append(pd.DataFrame({'Feature': 'Intercept','Importance':ridge.intercept_},index=[0]))
     coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
     
     topRG = coefs

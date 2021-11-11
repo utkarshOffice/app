@@ -325,8 +325,8 @@ Hash: 5ff5f2361851a49534c96caa2a8071c7
 
 Package: plotly
 Source: CRAN
-Version: 4.9.4.1
-Hash: f7df16eca1b31c9a48bd1d4ab2cadd4b
+Version: 4.10.0
+Hash: 2875e429de32e630b7daa02c3f5bae55
 Requires: RColorBrewer, base64enc, crosstalk, data.table, digest,
     dplyr, ggplot2, htmltools, htmlwidgets, httr, jsonlite, lazyeval,
     magrittr, promises, purrr, rlang, scales, tibble, vctrs,
@@ -410,6 +410,17 @@ Source: CRAN
 Version: 2.0.2
 Hash: bdb6a7f2b3c25b8c710615cefdde1af0
 
+Package: rsconnect
+Source: CRAN
+Version: 0.8.24
+Hash: 3b39363878c9ce02dd966dbef53984ee
+Requires: curl, digest, jsonlite, openssl, packrat, yaml, rstudioapi
+
+Package: rstudioapi
+Source: CRAN
+Version: 0.13
+Hash: dab1619920bed1f1660a3d48e4f7cc7f
+
 Package: sass
 Source: CRAN
 Version: 0.4.0
@@ -430,6 +441,12 @@ Hash: 7270787dc86efbcfba473df7639fe5cb
 Requires: R6, bslib, cachem, commonmark, crayon, ellipsis, fastmap,
     fontawesome, glue, htmltools, httpuv, jsonlite, later, lifecycle,
     mime, promises, rlang, withr, sourcetools, xtable
+
+Package: shinyBS
+Source: CRAN
+Version: 0.61
+Hash: 4644935bd93e62a0b82686b26af7efc2
+Requires: htmltools, shiny
 
 Package: shinyWidgets
 Source: CRAN

@@ -35,29 +35,25 @@ modelling_resultsServer <- function(id, top_session){
            EN_FI_df <- as.data.frame(EN_FI())
            RG_FI_df <- as.data.frame(RG_FI())
            
-           model1 <- MLR_FI_df
            
-           output$model1FI <- renderDataTable(model1,
-                                           extensions = "Buttons", 
-                                           options = list(paging = TRUE,
-                                                          scrollX=TRUE, 
-                                                          searching = TRUE,
-                                                          ordering = TRUE,
-                                                          dom = 'Bfrtip',
-                                                          buttons = list(
-                                                            list(extend = 'excel',
-                                                                 filename = 'MLR Feature Importances',
-                                                                 title = "MLR Feature Importances",
-                                                                 header = FALSE),
-                                                            list(extend = 'pdf',
-                                                                 filename = 'MLR Feature Importances',
-                                                                 title = "MLR Feature Importances",
-                                                                 header = FALSE)),
-                                                          pageLength=10, 
-                                                          lengthMenu=c(3,5,10)))
+           if(scoresTable$Algorithm[1] == 'MLR + Lasso')
+           {
+             model1 <- LASSO_FI_df
+           }
+           if(scoresTable$Algorithm[1] == 'MLR + Elastic Net')
+           {
+             model1 <- EN_FI_df
+           }
+           if(scoresTable$Algorithm[1] == 'MLR + Ridge')
+           {
+             model1 <- RG_FI_df
+           }
+           if(scoresTable$Algorithm[1] == 'MLR')
+           {
+             model1 <- MLR_FI_df
+           }
            
-       
-           
+
            if(scoresTable$Algorithm[2] == 'MLR + Lasso')
            {
              model2 <- LASSO_FI_df
@@ -70,46 +66,71 @@ modelling_resultsServer <- function(id, top_session){
            {
              model2 <- RG_FI_df
            }
+           if(scoresTable$Algorithm[2] == 'MLR')
+           {
+             model2 <- MLR_FI_df
+           }
            
-            output$model2FI <- renderDataTable(model2,
-                                             extensions = "Buttons", 
-                                             options = list(paging = TRUE,
-                                                            scrollX=TRUE, 
-                                                            searching = TRUE,
-                                                            ordering = TRUE,
-                                                            dom = 'Bfrtip',
-                                                            buttons = list(
-                                                              list(extend = 'excel',
-                                                                   filename = paste0(scoresTable$Algorithm[2],' Feature Importances'),
-                                                                   title = paste0(scoresTable$Algorithm[2],' Feature Importances'),
-                                                                   header = FALSE),
-                                                              list(extend = 'pdf',
-                                                                   filename = paste0(scoresTable$Algorithm[2],' Feature Importances'),
-                                                                   title = paste0(scoresTable$Algorithm[2],' Feature Importances'),
-                                                                   header = FALSE)),
-                                                            pageLength=10, 
-                                                            lengthMenu=c(3,5,10)))
+           
+           # output$model1FI <- renderDataTable(model1,
+           #                                 extensions = "Buttons", 
+           #                                 options = list(paging = TRUE,
+           #                                                scrollX=TRUE, 
+           #                                                searching = TRUE,
+           #                                                ordering = TRUE,
+           #                                                dom = 'Bfrtip',
+           #                                                buttons = list(
+           #                                                  list(extend = 'excel',
+           #                                                       filename = 'MLR Feature Importances',
+           #                                                       title = "MLR Feature Importances",
+           #                                                       header = FALSE),
+           #                                                  list(extend = 'pdf',
+           #                                                       filename = 'MLR Feature Importances',
+           #                                                       title = "MLR Feature Importances",
+           #                                                       header = FALSE)),
+           #                                                pageLength=10, 
+           #                                                lengthMenu=c(3,5,10)))
+            # output$model2FI <- renderDataTable(model2,
+            #                                  extensions = "Buttons", 
+            #                                  options = list(paging = TRUE,
+            #                                                 scrollX=TRUE, 
+            #                                                 searching = TRUE,
+            #                                                 ordering = TRUE,
+            #                                                 dom = 'Bfrtip',
+            #                                                 buttons = list(
+            #                                                   list(extend = 'excel',
+            #                                                        filename = paste0(scoresTable$Algorithm[2],' Feature Importances'),
+            #                                                        title = paste0(scoresTable$Algorithm[2],' Feature Importances'),
+            #                                                        header = FALSE),
+            #                                                   list(extend = 'pdf',
+            #                                                        filename = paste0(scoresTable$Algorithm[2],' Feature Importances'),
+            #                                                        title = paste0(scoresTable$Algorithm[2],' Feature Importances'),
+            #                                                        header = FALSE)),
+            #                                                 pageLength=10, 
+            #                                                 lengthMenu=c(3,5,10)))
 
-           output$model2FI_Plot1 <- renderPlotly(plot_ly(x = model2$Importance, y = reorder(model2$Feature, model2$Importance), type = 'bar', orientation = 'h'))
-
-           output$model1FI_Plot1 <- renderPlotly(plot_ly(x = model1$Importance, y = reorder(model1$Feature, model1$Importance), type = 'bar', orientation = 'h'))
+           model1_plotDf <- subset(model1, Feature!="Intercept")
+           model2_plotDf <- subset(model2, Feature!="Intercept")
+           
+           output$model2FI_Plot1 <- renderPlotly(plot_ly(x = model2_plotDf$Importance, y = reorder(model2_plotDf$Feature, model2_plotDf$Importance), type = 'bar', orientation = 'h'))
+           output$model1FI_Plot1 <- renderPlotly(plot_ly(x = model1_plotDf$Importance, y = reorder(model1_plotDf$Feature, model1_plotDf$Importance), type = 'bar', orientation = 'h'))
            
            
            output$model_perf_Text <- renderText('Model Performance (Top 2):')
            
-           output$model1FI_Text <- renderText('MLR Feature Importances :')
-           output$model2FI_Text <- renderText(paste0(scoresTable$Algorithm[2],' Feature Importances:'))
+           # output$model1FI_Text <- renderText(paste0(scoresTable$Algorithm[1],' Feature Importances :'))
+           # output$model2FI_Text <- renderText(paste0(scoresTable$Algorithm[2],' Feature Importances:'))
            
-           output$model1FI_Plot1_Text <- renderText('MLR Feature Importances (Plot):')
+           output$model1FI_Plot1_Text <- renderText(paste0(scoresTable$Algorithm[1],' Feature Importances (Plot):'))
            output$model2FI_Plot1_Text <- renderText(paste0(scoresTable$Algorithm[2],' Feature Importances (Plot):'))
            
-           output$model1_Eqn_Text <- renderText('MLR Model Equation:')
+           output$model1_Eqn_Text <- renderText(paste0(scoresTable$Algorithm[1],' Model Equation:'))
            output$model2_Eqn_Text <- renderText(paste0(scoresTable$Algorithm[2],' Model Equation:'))
 
-           output$model1_Residuals_Text <- renderText('MLR Model Residuals')
+           output$model1_Residuals_Text <- renderText(paste0(scoresTable$Algorithm[1],' Model Residuals:'))
            output$model2_Residuals_Text <- renderText(paste0(scoresTable$Algorithm[2],' Model Residuals:'))
            
-           output$model1_ActPre_Text <- renderText('MLR Model Real v/s Predicted')
+           output$model1_ActPre_Text <- renderText(paste0(scoresTable$Algorithm[1],' Model Real v/s Predicted:'))
            output$model2_ActPre_Text <- renderText(paste0(scoresTable$Algorithm[2],' Model Real v/s Predicted:'))
            
            output$material_heatmap_Text <- renderText('Correlation Heatmap')
@@ -171,32 +192,24 @@ modelling_resultsServer <- function(id, top_session){
            
           #-----------------------------------Rendering images------------------------------------------
            
-           output$material_heatmap <- renderImage({
-             # When input$n is 1, filename is ./images/image1.jpeg
-             filename <- normalizePath(file.path('./www/Correlation_Heatmap.jpg'))
-             # Return a list containing the filename
-             list(src = filename,
-                  width = "80%",height="100%")
-           }, deleteFile = FALSE
-           )
-
-           # 
-           output$model1_Residuals <- renderImage({
-             # When input$n is 1, filename is ./images/image1.jpeg
-             filename <- normalizePath(file.path('./www/Plot_MLR_Residuals.jpg'))
-             list(src = filename,
-                  width = "100%",height="100%")
-           }, deleteFile = FALSE)
-           # 
-           # #output$model1_Residuals <- renderImage('Plot_MLR_Residuals.jpg')
-           # 
-           output$model1_ActPre <- renderImage({
-             # When input$n is 1, filename is ./images/image1.jpeg
-             filename <- normalizePath(file.path('./www/Plot_MLR_Predicted.jpg'))
-             # Return a list containing the filename
-             list(src = filename,
-                  width = "100%",height="100%")
-           }, deleteFile = FALSE)
+           if(scoresTable$Algorithm[1] == 'MLR + Lasso')
+           {
+             model1_path <- 'LASSO'
+           }
+           if(scoresTable$Algorithm[1] == 'MLR + Elastic Net')
+           {
+             model1_path <- 'EN'
+           }
+           if(scoresTable$Algorithm[1] == 'MLR + Ridge')
+           {
+             model1_path <- 'RG'
+           }
+           if(scoresTable$Algorithm[1] == 'MLR')
+           {
+             model1_path <- 'MLR'
+           }
+           
+           
            
            if(scoresTable$Algorithm[2] == 'MLR + Lasso')
            {
@@ -210,12 +223,47 @@ modelling_resultsServer <- function(id, top_session){
            {
              model2_path <- 'RG'
            }
+           if(scoresTable$Algorithm[2] == 'MLR')
+           {
+             model2_path <- 'MLR'
+           }
+           
+           
+           
+           output$material_heatmap <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path('./www/Correlation_Heatmap.jpg'))
+             # Return a list containing the filename
+             list(src = filename,
+                  width = "32.5%",height="100%")
+           }, deleteFile = FALSE
+           )
+
+           # 
+           output$model1_Residuals <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model1_path,'_Residuals.jpg'),fixed = TRUE)))
+             list(src = filename,
+                  width = "65%",height="100%")
+           }, deleteFile = FALSE)
+           # 
+           # #output$model1_Residuals <- renderImage('Plot_MLR_Residuals.jpg')
+           # 
+           output$model1_ActPre <- renderImage({
+             # When input$n is 1, filename is ./images/image1.jpeg
+             filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model1_path,'_Predicted.jpg'),fixed = TRUE)))
+             # Return a list containing the filename
+             list(src = filename,
+                  width = "65%",height="100%")
+           }, deleteFile = FALSE)
+           
+           
            
            output$model2_Residuals <- renderImage({
              # When input$n is 1, filename is ./images/image1.jpeg
              filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model2_path,'_Residuals.jpg'),fixed = TRUE)))
              list(src = filename,
-                  width = "100%",height="100%")
+                  width = "65%",height="100%")
            }, deleteFile = FALSE)
            # 
            # #output$model1_Residuals <- renderImage('Plot_MLR_Residuals.jpg')
@@ -225,7 +273,7 @@ modelling_resultsServer <- function(id, top_session){
              filename <- normalizePath(file.path(gsub(" ", "", paste('./www/Plot_',model2_path,'_Predicted.jpg'),fixed = TRUE)))
              # Return a list containing the filename
              list(src = filename,
-                  width = "100%",height="100%")
+                  width = "65%",height="100%")
            }, deleteFile = FALSE)
            
            
