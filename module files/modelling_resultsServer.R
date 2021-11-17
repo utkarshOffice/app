@@ -19,7 +19,7 @@ modelling_resultsServer <- function(id, top_session){
       
       observeEvent(input$refresh,
       {                
-        
+            
            scores <- reactive(read.csv('./www/tables/scores.csv'))
            LASSO_FI <- reactive(read.csv('./www/tables/LASSO_FI.csv'))
            MLR_FI <- reactive(read.csv('./www/tables/MLR_FI.csv'))
@@ -190,6 +190,18 @@ modelling_resultsServer <- function(id, top_session){
                }
              )
            
+           output$ssUI <- renderUI({
+             ns <- NS(id) 
+             actionBttn(
+               inputId = ns('ss'),
+               label = "Capture Results",
+               color = "primary",
+               style = "simple",
+               icon = icon("camera"),
+               size= 'md',
+               block = FALSE
+             )
+           })
           #-----------------------------------Rendering images------------------------------------------
            
            if(scoresTable$Algorithm[1] == 'MLR + Lasso')
@@ -276,6 +288,10 @@ modelling_resultsServer <- function(id, top_session){
                   width = "65%",height="100%")
            }, deleteFile = FALSE)
            
+           
+           observeEvent(input$ss, {
+               screenshot()
+             })
            
       })
      

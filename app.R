@@ -18,6 +18,9 @@ library(reticulate)
 library(waiter)
 library(shinycssloaders)
 library(shinyBS)
+library(shiny)
+library(shinyscreenshot)
+
 
 # reticulate::virtualenv_create(envname = "myreticulate")
 # reticulate::virtualenv_install("myreticulate",  packages = c("pandas","numpy","scikit-learn","seaborn","matplotlib","openpyxl","statsmodels"))

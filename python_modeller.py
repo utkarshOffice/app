@@ -20,7 +20,6 @@ import openpyxl
 warnings.filterwarnings('ignore')
 
 
-
 def get_equation(coefs):
 
     #print(coefs)
@@ -50,34 +49,44 @@ def preprocess(data,polyFlag, valFlag):
     
     data_flat = data
     
+    data_flat_mat = data_flat[data_flat.Material_Name == data_flat.Material_Name.value_counts().index[0]]
+
+    # Drop catergorical columns with only one category per material throughout dataset
+    for col in data_flat_mat.columns:
+        if (data_flat_mat[col].nunique() == 1) & (col not in ['Material_Name']):
+            print("Dropping ",col)
+            data_flat.drop(col,axis=1, inplace=True) 
+    
     # common columns to drop
-    data_flat.drop('Pack_Format',axis=1, inplace=True)
-    data_flat.drop('Converter',axis=1, inplace=True)
-    data_flat.drop('Stack',axis=1, inplace=True)
-    data_flat.drop('Layer_1_outer',axis=1, inplace=True)
-    data_flat.drop('Jaw_Type',axis=1, inplace=True)
-    data_flat.drop('Jaw_Width_mm',axis=1, inplace=True)
-    data_flat.drop('Specimen_Width_mm',axis=1, inplace=True)
-    data_flat.drop('Layer_2_thickness_um',axis=1, inplace=True)
+    #data_flat.drop('Pack_Format',axis=1, inplace=True)
+    #data_flat.drop('Converter',axis=1, inplace=True)
+    #data_flat.drop('Stack',axis=1, inplace=True)
+    #data_flat.drop('Layer_1_outer',axis=1, inplace=True)
+    #data_flat.drop('Jaw_Type',axis=1, inplace=True)
+    #data_flat.drop('Jaw_Width_mm',axis=1, inplace=True)
+    #data_flat.drop('Specimen_Width_mm',axis=1, inplace=True)
+    #data_flat.drop('Layer_2_thickness_um',axis=1, inplace=True)
     data_flat.drop('Sealing_Force_N',axis=1, inplace=True)
 
     
     # laminate family specify dropping
     if polyFlag == False:
-        data_flat.drop('MetOPP_Supplier',axis=1, inplace=True)
+        #data_flat.drop('MetOPP_Supplier',axis=1, inplace=True)
         data_flat.drop('Failure_Mode',axis=1, inplace=True)
-        data_flat.drop('Comments',axis=1, inplace=True)
-        data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
-        data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
+        data_flat.drop('Failure_Mode_A',axis=1, inplace=True)
+        data_flat.drop('Failure_Mode_D',axis=1, inplace=True)
+        #data_flat.drop('Comments',axis=1, inplace=True)
+        #data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
+        #data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
         
     #print("dataflat",data_flat.info())
     
-    if polyFlag == True:
-        data_flat.drop('Layer_2',axis=1, inplace=True)
-        data_flat.drop('Layer_3_sealant',axis=1, inplace=True)
-        data_flat.drop('Layer_1_thickness_um',axis=1, inplace=True)
-        data_flat['Sealent_layer_thickness'] = data_flat['Layer_3_thickness_um']
-        data_flat.drop('Layer_3_thickness_um',axis=1, inplace=True)
+    #if polyFlag == True:
+        #data_flat.drop('Layer_2',axis=1, inplace=True)
+        #data_flat.drop('Layer_3_sealant',axis=1, inplace=True)
+        #data_flat.drop('Layer_1_thickness_um',axis=1, inplace=True)
+        #data_flat['Sealent_layer_thickness'] = data_flat['Layer_3_thickness_um']
+        #data_flat.drop('Layer_3_thickness_um',axis=1, inplace=True)
 
     
     group_cols = list(data_flat.columns)
@@ -91,22 +100,13 @@ def preprocess(data,polyFlag, valFlag):
     data['Mean(Seal_Strength_N_15mm)'] = data['Seal_Strength_N_15mm']
     data_flat.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
 
-    # Drop catergorical columns with only one category throughout dataset
-    for col in data.columns:
-        if data[col].nunique() == 1:
-            #print("Dropping ",col)
-            data.drop(col,axis=1, inplace=True) 
-            
-    #print(1)
-            
-    
     data.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
     
-    if polyFlag == False:
-        data.drop('Failure_Mode_C',axis=1, inplace=True)
-        data.drop('Failure_Mode_A',axis=1, inplace=True)
-        data.drop('Failure_Mode_D',axis=1, inplace=True)
-        data.drop('Failure_Mode_FR',axis=1, inplace=True)
+    #if polyFlag == False:
+        #data.drop('Failure_Mode_C',axis=1, inplace=True)
+        #data.drop('Failure_Mode_A',axis=1, inplace=True)
+        #data.drop('Failure_Mode_D',axis=1, inplace=True)
+        #data.drop('Failure_Mode_FR',axis=1, inplace=True)
     
     data['Material_Name'] = data['Material_Name'].str.replace(' ', '')  
     
@@ -152,14 +152,14 @@ def feature_engg(data, predictors):
     if (('Sealing_Time_ms' in predictors) & ('Sealing_Pressure_N_cm2' in predictors)):
         data["Time_Pr"] = data["Sealing_Time_ms"] * data["Sealing_Pressure_N_cm2"]
         
-    if (('Sealent_layer_thickness' in predictors) & ('Sealing_Temperature_C' in predictors)):
-        data["Temp_Thick"] = data["Sealent_layer_thickness"] * data["Sealing_Temperature_C"]
+    #if (('Sealent_layer_thickness' in predictors) & ('Sealing_Temperature_C' in predictors)):
+    #    data["Temp_Thick"] = data["Sealent_layer_thickness"] * data["Sealing_Temperature_C"]
     
-    if (('Sealing_Time_ms' in predictors) & ('Sealent_layer_thickness' in predictors)):
-        data["Time_Thick"] = data["Sealing_Time_ms"] * data["Sealent_layer_thickness"]
+    #if (('Sealing_Time_ms' in predictors) & ('Sealent_layer_thickness' in predictors)):
+    #    data["Time_Thick"] = data["Sealing_Time_ms"] * data["Sealent_layer_thickness"]
         
-    if (('Sealent_layer_thickness' in predictors) & ('Sealing_Pressure_N_cm2' in predictors)):
-        data["Pr_Thick"] = data["Sealing_Pressure_N_cm2"] * data["Sealent_layer_thickness"]
+    #if (('Sealent_layer_thickness' in predictors) & ('Sealing_Pressure_N_cm2' in predictors)):
+    #    data["Pr_Thick"] = data["Sealing_Pressure_N_cm2"] * data["Sealent_layer_thickness"]
         
     return data
 
@@ -292,12 +292,17 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     #X_train_rfe = sm.add_constant(X_train_rfe)
     #print(y_train.info())
     #print(X_train.info())
-    lm = sm.OLS(y_train,X_train).fit() 
+    
+    regressor = LinearRegression()
+    regressor = regressor.fit(X_train, y_train)
+    
+    y_train_mlr = regressor.predict(X_train)
+    #lm = sm.OLS(y_train,X_train).fit() 
     #print(7)
-    y_train_mlr = lm.predict(X_train)
+    y_train_mlr = regressor.predict(X_train)
    # print(8)
     if valFlag==True:
-        y_val_mlr = lm.predict(X_val)
+        y_val_mlr = regressor.predict(X_val)
     # from sklearn.metrics import r2_score
     # print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_mlr)*100,4))))
     # 
@@ -354,7 +359,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     plt.savefig('./www/Plot_MLR_Predicted.jpg', bbox_inches = 'tight',dpi=200)
 
     # Plot important coefficients
-    coefs = pd.Series(lm.params, index = X_train.columns)
+    coefs = pd.Series(regressor.coef_, index = X_train.columns)
     imp_coefs = pd.concat([coefs.sort_values().head(10),
                          coefs.sort_values().tail(10)])
     imp_coefs.plot(kind = "barh")
@@ -369,6 +374,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     coefs.sort_values(by=0,ascending=False)
     coefs.reset_index(inplace=True)
     coefs.columns = ['Feature','Importance']
+    coefs = coefs.append(pd.DataFrame({'Feature': 'Intercept','Importance':regressor.intercept_},index=[0]))
     coefs.sort_values(by='Importance',ascending=False,inplace=True)
     coefs['Importance'] = coefs['Importance'].apply(lambda x: '%.2e' % Decimal(str(x)))    
 
