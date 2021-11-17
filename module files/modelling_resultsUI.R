@@ -68,9 +68,10 @@ modelling_resultsUI <- function(id){
     br(),
     fluidRow(column(width = 10,span(textOutput(ns('material_heatmap_Text')), style="font-size: 16px;font-weight: bold"),
                     br(),
-                    imageOutput(ns('material_heatmap'))))
-    
-    
+                    imageOutput(ns('material_heatmap')))),
+    br(),
+    br(),
+    uiOutput(ns('ssUI'))
 
   )
 }
