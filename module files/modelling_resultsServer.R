@@ -53,7 +53,6 @@ modelling_resultsServer <- function(id, top_session){
              model1 <- MLR_FI_df
            }
            
-
            if(scoresTable$Algorithm[2] == 'MLR + Lasso')
            {
              model2 <- LASSO_FI_df

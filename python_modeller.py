@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Sep 14 14:22:40 2021
-
 @author: abhishek.hegde
 """
 import pandas as pd
@@ -18,8 +17,7 @@ from scipy.stats import skew
 import warnings
 import openpyxl
 warnings.filterwarnings('ignore')
-
-
+#-------------------------------------------------------------------------------
 def get_equation(coefs):
 
     #print(coefs)
@@ -43,18 +41,20 @@ def get_equation(coefs):
     equation2 = equation2.replace("Intercept","1")
 
     return equation2
-    
+#-------------------------------------------------------------------------------    
 def preprocess(data,polyFlag, valFlag):
     
     
     data_flat = data
     
+    data_flat.Validation.fillna(0,inplace=True)
+    
     data_flat_mat = data_flat[data_flat.Material_Name == data_flat.Material_Name.value_counts().index[0]]
 
     # Drop catergorical columns with only one category per material throughout dataset
     for col in data_flat_mat.columns:
-        if (data_flat_mat[col].nunique() == 1) & (col not in ['Material_Name']):
-            print("Dropping ",col)
+        if (data_flat_mat[col].nunique() == 1) & (col not in ['Material_Name','Validation']):
+            #print("Dropping ",col)
             data_flat.drop(col,axis=1, inplace=True) 
     
     # common columns to drop
@@ -67,20 +67,24 @@ def preprocess(data,polyFlag, valFlag):
     #data_flat.drop('Specimen_Width_mm',axis=1, inplace=True)
     #data_flat.drop('Layer_2_thickness_um',axis=1, inplace=True)
     data_flat.drop('Sealing_Force_N',axis=1, inplace=True)
+    failure_mode_cols = ['Failure_Mode_A','Failure_Mode_D','Failure_Mode','Failure_Mode_FR','Failure_Mode_C']
+    for col in data_flat.columns:
+      if col in failure_mode_cols:
+        #print("Dropping ",col)
+        data_flat.drop(col,axis=1, inplace=True)
 
     
     # laminate family specify dropping
-    if polyFlag == False:
-        #data_flat.drop('MetOPP_Supplier',axis=1, inplace=True)
-        data_flat.drop('Failure_Mode',axis=1, inplace=True)
-        data_flat.drop('Failure_Mode_A',axis=1, inplace=True)
-        data_flat.drop('Failure_Mode_D',axis=1, inplace=True)
-        #data_flat.drop('Comments',axis=1, inplace=True)
-        #data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
-        #data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
+    # if polyFlag == False:
+    #     data_flat.drop('MetOPP_Supplier',axis=1, inplace=True)
+    #     data_flat.drop('Failure_Mode',axis=1, inplace=True)
+    #     data_flat.drop('Failure_Mode_A',axis=1, inplace=True)
+    #     data_flat.drop('Failure_Mode_D',axis=1, inplace=True)
+    #     data_flat.drop('Comments',axis=1, inplace=True)
+    #     data_flat.drop('Layer_1_thickness_gsm',axis=1, inplace=True)
+    #     data_flat.drop('Layer_2_sealant',axis=1, inplace=True)
         
     #print("dataflat",data_flat.info())
-    
     #if polyFlag == True:
         #data_flat.drop('Layer_2',axis=1, inplace=True)
         #data_flat.drop('Layer_3_sealant',axis=1, inplace=True)
@@ -112,28 +116,28 @@ def preprocess(data,polyFlag, valFlag):
     
     
     # adding validation column
-    if valFlag == True:
-      
-      if polyFlag==True:
-          polymer_means = pd.read_excel('www/polymer_means_final.xlsx',engine='openpyxl')
-          data['Validation'] = polymer_means.Validation
-          data.Validation.fillna(0,inplace=True)
-          
-      if polyFlag==False:
-          for i,row in data.iterrows():
-            if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==200)):
-                data.loc[i,'Validation'] = 1    
-            if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==750)):
-                data.loc[i,'Validation'] = 1   
-            if ((row['Sealing_Temperature_C']==240) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==500)):
-                data.loc[i,'Validation'] = 1   
-            if ((row['Sealing_Temperature_C']==168) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==200)):
-                data.loc[i,'Validation'] = 1  
-          data['Validation'].fillna(0,inplace=True)
+    # if valFlag == True:
+    #   
+    #   if polyFlag==True:
+    #       polymer_means = pd.read_excel('www/polymer_means_final.xlsx',engine='openpyxl')
+    #       data['Validation'] = polymer_means.Validation
+    #       data.Validation.fillna(0,inplace=True)
+    #       
+    #   if polyFlag==False:
+    #       for i,row in data.iterrows():
+    #         if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==200)):
+    #             data.loc[i,'Validation'] = 1    
+    #         if ((row['Sealing_Temperature_C']==120) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==750)):
+    #             data.loc[i,'Validation'] = 1   
+    #         if ((row['Sealing_Temperature_C']==240) & (row['Sealing_Pressure_N_cm2']==38.5) & (row['Sealing_Time_ms']==500)):
+    #             data.loc[i,'Validation'] = 1   
+    #         if ((row['Sealing_Temperature_C']==168) & (row['Sealing_Pressure_N_cm2']==115.5) & (row['Sealing_Time_ms']==200)):
+    #             data.loc[i,'Validation'] = 1  
+    #       data['Validation'].fillna(0,inplace=True)
     
     #print(data)
     return data
-
+#-------------------------------------------------------------------------------
 def feature_engg(data, predictors):
     
     for col in data.columns:
@@ -162,7 +166,7 @@ def feature_engg(data, predictors):
     #    data["Pr_Thick"] = data["Sealing_Pressure_N_cm2"] * data["Sealent_layer_thickness"]
         
     return data
-
+#-------------------------------------------------------------------------------
 def get_materials(data_R):
     
     data = data_R
@@ -172,17 +176,18 @@ def get_materials(data_R):
         Material_Names[i] = name.replace(" ", "")
         
     return Material_Names
-
+#-------------------------------------------------------------------------------
 def get_predictors(data_R,polyFlag,valFlag):
     
     data_flat = data_R
     data = preprocess(data_flat,polyFlag,valFlag)
 
     data.drop('Mean(Seal_Strength_N_15mm)',axis=1, inplace=True)
+    data.drop('Validation',axis=1, inplace=True)
     data.drop('Material_Name',axis=1, inplace=True)
     
     return list(data.columns)
-
+#-------------------------------------------------------------------------------
 def run_model(data_R, predictors, material, polyFlag, valFlag):
   
   
@@ -259,7 +264,12 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
    
     #data_mat.to_csv('data_mat.csv',index=False)
     #print("THIS IS DATAMAT ",data_mat.info())
-    if valFlag==True:
+    #print("\n 1 \n")
+
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1) :
+      
+      #print("\n 2 \n")
+
     
       X_train = data_mat[data_mat.Validation == 0]
       X_val = data_mat[data_mat.Validation == 1]
@@ -271,13 +281,16 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
       
       X_val = X_val.drop('Mean(Seal_Strength_N_15mm)', axis=1)
       X_val = X_val.drop('Validation', axis=1)
+    
+    
 
-    if valFlag==False:
-     
+    if (valFlag==False) | (data_mat.Validation.nunique()==1) :
+    
       y_train = data_mat['Mean(Seal_Strength_N_15mm)']
-      X_train = data_mat.drop('Mean(Seal_Strength_N_15mm)', axis=1)
+      X_train = data_mat.drop('Validation', axis=1)
+      X_train = X_train.drop('Mean(Seal_Strength_N_15mm)', axis=1)
 
-   
+
     from sklearn.feature_selection import RFE
     from sklearn.linear_model import LinearRegression
    
@@ -301,7 +314,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     #print(7)
     y_train_mlr = regressor.predict(X_train)
    # print(8)
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         y_val_mlr = regressor.predict(X_val)
     # from sklearn.metrics import r2_score
     # print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_mlr)*100,4))))
@@ -317,7 +330,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_mlr
     #print(8)
     
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_mlr, y_val_mlr - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_mlr, y_val_mlr))
     
@@ -333,7 +346,8 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     plt.plot([lineStart,lineEnd],[0,0], color='orange',marker = 'o')
     plt.xlim(lineStart,lineEnd)
     plt.savefig('./www/Plot_MLR_Residuals.jpg', bbox_inches = 'tight',dpi=200)
-
+    
+    #print("\n 1 \n")
     
     # Plot predictions
     plt.figure(figsize=(10,9))
@@ -341,7 +355,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_mlr
     
     plt.scatter(y_train_mlr, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_mlr, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_mlr, y_val_mlr))
 
@@ -391,17 +405,18 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     r2_MLR = round(r2_score(y_train,y_train_mlr)*100,2)
     rmse_MLR = round(mean_squared_error(y_train,y_train_mlr,squared=False),2)
     
-    if valFlag==False:
+    if (valFlag==False) | (data_mat.Validation.nunique()==1) :
         results = pd.DataFrame({'Algorithm':['MLR'], 'RMSE': [rmse_MLR],'R2': [r2_MLR] })
         results = results[['Algorithm', 'RMSE', 'R2']]
       
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         r2_MLR_val = round(r2_score(y_val,y_val_mlr)*100,2)
         rmse_MLR_val = round(mean_squared_error(y_val,y_val_mlr,squared=False),2)
         results = pd.DataFrame({'Algorithm':['MLR'], 'Train_RMSE': [rmse_MLR],'Validation_RMSE': [rmse_MLR_val],'Train_R2': [r2_MLR],'Validation_R2': [r2_MLR_val]})
         results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2', 'Validation_R2']]
   
-    
+    #print("\n 2 \n")
+
     # Lasso
    
     lasso = LassoCV(alphas = [0.0001, 0.0003, 0.0006, 0.001, 0.003, 0.006, 0.01, 0.03, 0.06, 0.1,
@@ -422,9 +437,10 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
    
     y_train_las = lasso.predict(X_train)
 
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         y_val_las = lasso.predict(X_val)
     
+    #print("\n 3 \n")
 
     sns.set_style('whitegrid')
     # Plot residuals
@@ -434,7 +450,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_las
     #print(8)
     
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_las, y_val_las - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_las, y_val_las))
     
@@ -458,7 +474,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_las
     
     plt.scatter(y_train_las, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_las, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_las, y_val_las))
 
@@ -507,14 +523,14 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     r2_LASSO = round(r2_score(y_train,y_train_las)*100,2)
     rmse_LASSO = round(mean_squared_error(y_train,y_train_las,squared=False),2)
     
-    if valFlag==False:
+    if (valFlag==False) | (data_mat.Validation.nunique()==1) :
       
         tempResults = pd.DataFrame({'Algorithm':['MLR + Lasso'], 'RMSE': [rmse_LASSO],'R2': [r2_LASSO] })
         results = pd.concat([results, tempResults])
         results = results[['Algorithm','R2','RMSE']]
         results.sort_values(by='R2', ascending=False, inplace=True)
 
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         r2_LASSO_val = round(r2_score(y_val,y_val_las)*100,2)
         rmse_LASSO_val = round(mean_squared_error(y_val,y_val_las,squared=False),2)
           
@@ -523,7 +539,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
         results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2','Validation_R2']]
         results.sort_values(by='Train_R2', ascending=False, inplace=True)
      
-    
+    #print("\n 4 \n")
     
     # Elastic Net
     
@@ -547,11 +563,11 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     
     y_train_elastic_net= elastic_net.predict(X_train)
     #y_val_elastic_net = elastic_net.predict(X_val)
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         y_val_en = elastic_net.predict(X_val)
     
     
-    
+    #print("\n 5 \n")
     sns.set_style('whitegrid')
     # Plot residuals
     plt.figure(figsize=(10,9))
@@ -560,7 +576,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_elastic_net
     #print(8)
     
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_en, y_val_en - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_elastic_net, y_val_en))
     
@@ -584,7 +600,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_elastic_net
     
     plt.scatter(y_train_elastic_net, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_en, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_elastic_net, y_val_en))
 
@@ -633,14 +649,14 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     r2_EN = round(r2_score(y_train,y_train_elastic_net)*100,2)
     rmse_EN = round(mean_squared_error(y_train,y_train_elastic_net,squared=False),2)
     
-    if valFlag==False:
+    if (valFlag==False) | (data_mat.Validation.nunique()==1) :
         
         tempResults = pd.DataFrame({'Algorithm':['MLR + Elastic Net'], 'RMSE': [rmse_EN],'R2': [r2_EN] })
         results = pd.concat([results, tempResults])
         results = results[['Algorithm','R2','RMSE']]
         results.sort_values(by='R2', ascending=False, inplace=True)
         
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         r2_EN_val = round(r2_score(y_val,y_val_en)*100,2)
         rmse_EN_val = round(mean_squared_error(y_val,y_val_en,squared=False),2)
           
@@ -650,7 +666,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
         results.sort_values(by='Train_R2', ascending=False, inplace=True)
     
     # Ridge
-    
+    #print("\n 6 \n")
     ridge = RidgeCV(alphas = [0.01, 0.03, 0.06, 0.1, 0.3, 0.6, 1, 3, 6, 10, 30, 60])
     ridge.fit(X_train, y_train)
     alpha = ridge.alpha_
@@ -666,7 +682,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     #print("Fine Tuned Alpha :", alpha)
 
     y_train_rdg = ridge.predict(X_train)
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         y_val_rdg = ridge.predict(X_val)
 
     sns.set_style('whitegrid')
@@ -677,7 +693,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_rdg
     #print(8)
     
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_rdg, y_val_rdg - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_rdg, y_val_rdg))
     
@@ -701,7 +717,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     limits_list = y_train_rdg
     
     plt.scatter(y_train_rdg, y_train, c = "darkred", alpha=0.5, marker = "*", label = "Training data")
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_rdg, y_val, c = "darkblue", alpha=0.5, label = "Validation data")
         limits_list = np.concatenate((y_train_rdg, y_val_rdg))
 
@@ -717,7 +733,8 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     plt.xlim(lineStart,lineEnd)
     plt.ylim(lineStart,lineEnd)
     plt.savefig('./www/Plot_RG_Predicted.jpg', bbox_inches = 'tight',dpi=200)
-    
+    #print("\n 7 \n")
+
     # Plot important coefficients
     coefs = pd.Series(ridge.coef_, index = X_train.columns)
     #print("Ridge picked " + str(sum(coefs != 0)) + " features and eliminated the other " +  \
@@ -747,14 +764,14 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     r2_RG = round(r2_score(y_train,y_train_rdg)*100,2)
     rmse_RG = round(mean_squared_error(y_train,y_train_rdg,squared=False),2)
     
-    if valFlag==False:
+    if (valFlag==False) | (data_mat.Validation.nunique()==1) :
         
         tempResults = pd.DataFrame({'Algorithm':['MLR + Ridge'], 'RMSE': [rmse_RG],'R2': [r2_RG] })
         results = pd.concat([results, tempResults])
         results = results[['Algorithm','R2','RMSE']]
         results.sort_values(by='R2', ascending=False, inplace=True)
 
-    if valFlag==True:
+    if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         
         r2_RG_val = round(r2_score(y_val,y_val_rdg)*100,2)
         rmse_RG_val = round(mean_squared_error(y_val,y_val_rdg,squared=False),2)
@@ -763,5 +780,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
         results = pd.concat([results, tempResults])
         results = results[['Algorithm', 'Train_RMSE', 'Validation_RMSE', 'Train_R2','Validation_R2']]
         results.sort_values(by='Train_R2', ascending=False, inplace=True)
+    #print("\n 8 \n")
 
     return results,topMLR,topLASSO,topEN,topRG
+#-------------------------------------------------------------------------------
