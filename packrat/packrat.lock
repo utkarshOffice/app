@@ -472,6 +472,12 @@ Version: 2.0.0
 Hash: 76cd028f38d0c5a1f198c4daab81ddfe
 Requires: digest, htmltools, jsonlite, shiny
 
+Package: shinyscreenshot
+Source: CRAN
+Version: 0.1.0
+Hash: 07f7f5cdfc6a53e2571b2be0df8bd627
+Requires: jsonlite, shiny, uuid
+
 Package: shinythemes
 Source: CRAN
 Version: 1.2.0
@@ -529,6 +535,11 @@ Package: utf8
 Source: CRAN
 Version: 1.2.2
 Hash: ae77ea6ebb503eaa6ee3b7ca80ea4f1b
+
+Package: uuid
+Source: CRAN
+Version: 1.0-2
+Hash: d66b3bca06109dbca5b31c819af17c54
 
 Package: vctrs
 Source: CRAN

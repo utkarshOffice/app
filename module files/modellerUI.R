@@ -76,6 +76,7 @@ modellerUI <- function(id){
     )
     ),
     fluidRow(column(width = 9,uiOutput(ns('paperValNote')))),
+    fluidRow(column(width = 9,uiOutput(ns('nullValNote')))),
     br(),
     
     actionBttn(

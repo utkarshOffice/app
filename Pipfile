@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+scipy = "*"
+seaborn = "*"
+openpyxl = "*"
+pandas = "*"
+matplotlib = "*"
+statsmodels = "*"
+numpy = "*"
+scikit-learn = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6.8"

@@ -5,6 +5,9 @@ modellerServer <- function(id, top_session){
       
       source_python("python_modeller.py")
       unlink("./www/tables/*")
+      essential_features <- c("Material_Name", "Sealing_Pressure_N_cm2",
+                              "Sealing_Force_N" , "Sealing_Time_ms",
+                              "Sealing_Temperature_C" ,"Seal_Strength_N_15mm", "Validation")
       
       #-------------------------Download Sample Dataset--------------------------------
       
@@ -12,8 +15,6 @@ modellerServer <- function(id, top_session){
       sampleDatasetPaper<- as.data.frame(read_excel('www/Packaging Models Dataset Sample.xlsx',sheet = 'stack_2'))
       sampleDatasetPoly<- as.data.frame(read_excel('www/Packaging Models Dataset Sample.xlsx',sheet = 'stack_3'))
       
-      
-
       output$sampleDataset_Download <-
         downloadHandler(
           filename = "Packaging Models Dataset Sample.xlsx",
@@ -22,17 +23,62 @@ modellerServer <- function(id, top_session){
           }
         )
       
+      #--------------------------------Check Data Format-------------------------------
+
+  
+      flag <- reactive(NULL)
+
+    flag <- eventReactive( c(req(input$dataset),input$polyFlag), {
+
+
+         tryCatch({
+
+           if(input$polyFlag == FALSE)
+           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))}
+           if(input$polyFlag == TRUE)
+           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
+
+           missing_features <- essential_features[!is.element(essential_features,colnames(data()))]
+           missing_features_list <- as.character(strsplit(missing_features, " +"))
+           missing_features_str <- ""
+           for(ele in missing_features_list)
+           {
+             missing_features_str <- paste(ele, missing_features_str, sep = ', \n')
+           }
+
+              if(length(missing_features)>=1){
+                showModal(modalDialog(HTML(paste0("<b> Some Features are missing! </b> <br/>",
+                                                  length(missing_features), " essential features are missing in imported data.
+                                                  Kindly reupload the dataset containing them.<br/>",
+                                                  "<b>The missing features are: </b> <br/>",
+                                                  missing_features_str))))
+              }
+           else{
+             flag <- reactive(input$dataset)
+           }
+         },
+         error=function(e) {
+           showModal(modalDialog(HTML(paste0("<b> File Upload Error! </b> <br/>
+                                              Please upload the correct file again.
+                                  Download sample dataset for reference. <br/><b>  More Details: </b> <br/> ", e))))
+         }
+        )
+      })
+    
+  
+      #flag <- reactive(input$dataset)
+    
+
       #--------------------------------Get Materials-----------------------------------
       
-      observeEvent(input$polyFlag,
-                   {
-      observeEvent(req(input$dataset),{
+      #observeEvent(input$polyFlag,
+                   #{
+      observeEvent(req(flag()),{
 
         if(input$polyFlag == FALSE)
           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))}
         if(input$polyFlag == TRUE)
           {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
-        
         
         material_names <- get_materials(data())
         #View(material_names)
@@ -48,13 +94,13 @@ modellerServer <- function(id, top_session){
         })
         
       })
-    })
+    #})
       
       #--------------------------------Get Predictors ----------------------------------
       
-      observeEvent(input$polyFlag,
-                   {
-      observeEvent(req(input$dataset),{
+      #observeEvent(input$polyFlag,
+                   #{
+      observeEvent(req(flag()),{
         
         if(input$polyFlag == FALSE)
         {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
@@ -76,7 +122,40 @@ modellerServer <- function(id, top_session){
         })
         
       })
-    })
+    #})
+      #-----------------------Check if Validation column is empty--------------------------
+      
+        observeEvent(c(input$valFlag,input$polyFlag),
+                  {
+                     observeEvent(req(flag()),{
+                       
+                       if(input$polyFlag == FALSE)
+                       {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))
+                       #View(data)
+                       }
+                       if(input$polyFlag == TRUE)
+                       {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
+                       
+                       data_df <- as.data.frame(data(),row.names = NULL)
+                       
+                       #View(length(unique(data_df$Validation)))
+                       
+                       if((length(unique(data_df$Validation))==1)&(input$valFlag==TRUE))
+                       {
+                         output$nullValNote <- renderUI({
+                           wellPanel(
+                             HTML(paste(em("NOTE: The data uploaded does not contain any datapoints for validation & hence all points will be used for training.")))
+                           )
+                         })
+                       }
+                       else{
+                         output$nullValNote <- renderUI({
+                           NULL
+                         })
+                       }
+                     })
+                     
+                   })
       
       #---------------------Display Note on Validation for Paper---------------------------
       
@@ -99,11 +178,11 @@ modellerServer <- function(id, top_session){
       })
       
       
-      #--------------------------------Get Model Results ----------------------------------
+      #--------------------------------BUILD MODEL---------------------------------------
   
-      observeEvent(input$polyFlag,once = TRUE,
-                   {
-        observeEvent(req(input$dataset),{
+      #observeEvent(input$polyFlag,once = TRUE,
+                   #{
+        observeEvent(req(flag()),once = TRUE,{
         
                 observeEvent(input$build,ignoreInit = TRUE,
 
@@ -156,11 +235,11 @@ modellerServer <- function(id, top_session){
                        output$model_title1_Text <- renderText('Results Summary ')
                        output$model_title2_Text <- renderText('Models Built - ')
                        
-                       if(input$valFlag == TRUE){
-                          scoresTable <- as.data.frame(c(scores['Algorithm'],scores['Train_R2'],scores['Validation_R2'],scores['Train_RMSE'],scores['Validation_RMSE']))
+                       if((length(unique(data_sent_df$Validation))!=1)&(input$valFlag==TRUE)){
+                         scoresTable <- as.data.frame(c(scores['Algorithm'],scores['Train_R2'],scores['Validation_R2'],scores['Train_RMSE'],scores['Validation_RMSE']))
                        }
-                       if(input$valFlag == FALSE){
-                          scoresTable <- as.data.frame(c(scores['Algorithm'],scores['R2'],scores['RMSE']))
+                       if((length(unique(data_sent_df$Validation))==1)|(input$valFlag==FALSE)){
+                         scoresTable <- as.data.frame(c(scores['Algorithm'],scores['R2'],scores['RMSE']))
                        }
                        
                        output$resultstable <- renderDataTable(scoresTable)
@@ -184,7 +263,7 @@ modellerServer <- function(id, top_session){
                        # attr(input$build, "readonly") <- FALSE
                        # input$build <- FALSE
      
-      })  
+      #})  
       # --------------------------------- Move to results tab --------------------------------------  
         
         
