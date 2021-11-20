@@ -69,9 +69,9 @@ def preprocess(data,polyFlag, valFlag):
     data_flat.drop('Sealing_Force_N',axis=1, inplace=True)
     failure_mode_cols = ['Failure_Mode_A','Failure_Mode_D','Failure_Mode','Failure_Mode_FR','Failure_Mode_C']
     for col in data_flat.columns:
-      if col in failure_mode_cols:
+        if col in failure_mode_cols:
         #print("Dropping ",col)
-        data_flat.drop(col,axis=1, inplace=True)
+            data_flat.drop(col,axis=1, inplace=True)
 
     
     # laminate family specify dropping
@@ -95,16 +95,20 @@ def preprocess(data,polyFlag, valFlag):
     
     group_cols = list(data_flat.columns)
     group_cols.remove('Seal_Strength_N_15mm')
+    group_cols.remove('Validation')
     data_flat = data_flat[data_flat.Seal_Strength_N_15mm.isna()==0]
     data_flat.fillna(0,inplace=True)
     #print(data_flat)
-    data = pd.DataFrame(data_flat.groupby(group_cols).Seal_Strength_N_15mm.mean())
+    data = pd.DataFrame(data_flat.groupby(group_cols).agg({'Seal_Strength_N_15mm':'mean','Validation':'max'}))
+    #print(data)
     data.to_csv('Agg-Data.csv')
     data = pd.read_csv('Agg-Data.csv')
     data['Mean(Seal_Strength_N_15mm)'] = data['Seal_Strength_N_15mm']
     data_flat.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
 
     data.drop('Seal_Strength_N_15mm',axis=1, inplace=True)
+    #print(data)
+    #print(data.info())
     
     #if polyFlag == False:
         #data.drop('Failure_Mode_C',axis=1, inplace=True)
@@ -276,19 +280,24 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
       y_train = X_train['Mean(Seal_Strength_N_15mm)']
       y_val = X_val['Mean(Seal_Strength_N_15mm)']
       
-      X_train = X_train.drop('Mean(Seal_Strength_N_15mm)', axis=1)
-      X_train = X_train.drop('Validation', axis=1)
+      X_train.drop('Mean(Seal_Strength_N_15mm)', axis=1 , inplace= True)
+      X_train.drop('Validation', axis=1, inplace= True)
       
-      X_val = X_val.drop('Mean(Seal_Strength_N_15mm)', axis=1)
-      X_val = X_val.drop('Validation', axis=1)
+      X_val.drop('Mean(Seal_Strength_N_15mm)', axis=1, inplace= True)
+      X_val.drop('Validation', axis=1, inplace= True)
     
-    
+      #print("\n 3 \n")
 
     if (valFlag==False) | (data_mat.Validation.nunique()==1) :
+      
+      #print("\n 3 \n")
     
       y_train = data_mat['Mean(Seal_Strength_N_15mm)']
+      #print(y_train.shape)
       X_train = data_mat.drop('Validation', axis=1)
       X_train = X_train.drop('Mean(Seal_Strength_N_15mm)', axis=1)
+      #print(X_train)
+
 
 
     from sklearn.feature_selection import RFE
@@ -312,7 +321,6 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     y_train_mlr = regressor.predict(X_train)
     #lm = sm.OLS(y_train,X_train).fit() 
     #print(7)
-    y_train_mlr = regressor.predict(X_train)
    # print(8)
     if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         y_val_mlr = regressor.predict(X_val)
@@ -640,11 +648,11 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     topEN = coefs
     
 
-    from sklearn.metrics import r2_score
-    #print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_elastic_net)*100,4))))
-   
-    from sklearn.metrics import r2_score
-    #print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_elastic_net,squared=False),4))))
+    # from sklearn.metrics import r2_score
+    # print("Our model gave {0} r2 on Train Data".format((round(r2_score(y_train,y_train_elastic_net)*100,4))))
+    # 
+    # from sklearn.metrics import r2_score
+    # print("Our model gave {0} RMSE on Train Data".format((round(mean_squared_error(y_train,y_train_elastic_net,squared=False),4))))
    
     r2_EN = round(r2_score(y_train,y_train_elastic_net)*100,2)
     rmse_EN = round(mean_squared_error(y_train,y_train_elastic_net,squared=False),2)
@@ -675,7 +683,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     ridge = RidgeCV(alphas = [alpha * .6, alpha * .65, alpha * .7, alpha * .75, alpha * .8, alpha * .85, 
                               alpha * .9, alpha * .95, alpha, alpha * 1.05, alpha * 1.1, alpha * 1.15,
                               alpha * 1.25, alpha * 1.3, alpha * 1.35, alpha * 1.4], 
-                    cv = 10)
+                    cv = 3)
                     
     ridge.fit(X_train, y_train)
     alpha = ridge.alpha_
@@ -691,7 +699,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     plt.scatter(y_train_rdg, y_train_rdg - y_train, c = "darkred", marker = "*", alpha=0.5, label = "Training data")
     
     limits_list = y_train_rdg
-    #print(8)
+    #print("\n 8 \n")
     
     if (valFlag==True) & (data_mat.Validation.nunique()!=1):
         plt.scatter(y_val_rdg, y_val_rdg - y_val, c = "darkblue", alpha=0.5, label = "Validation data")
@@ -733,7 +741,7 @@ def run_model(data_R, predictors, material, polyFlag, valFlag):
     plt.xlim(lineStart,lineEnd)
     plt.ylim(lineStart,lineEnd)
     plt.savefig('./www/Plot_RG_Predicted.jpg', bbox_inches = 'tight',dpi=200)
-    #print("\n 7 \n")
+    #print("\n 9 \n")
 
     # Plot important coefficients
     coefs = pd.Series(ridge.coef_, index = X_train.columns)

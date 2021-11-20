@@ -25,18 +25,19 @@ modellerServer <- function(id, top_session){
       
       #--------------------------------Check Data Format-------------------------------
 
+  
       flag <- reactive(NULL)
-      
-      flag <- eventReactive( req(input$dataset), {
-         
-         
+
+    flag <- eventReactive( c(req(input$dataset),input$polyFlag), {
+
+
          tryCatch({
-           
+
            if(input$polyFlag == FALSE)
            {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_2'))}
            if(input$polyFlag == TRUE)
            {data <- reactive(read_excel(input$dataset$datapath, sheet='stack_3'))}
-   
+
            missing_features <- essential_features[!is.element(essential_features,colnames(data()))]
            missing_features_list <- as.character(strsplit(missing_features, " +"))
            missing_features_str <- ""
@@ -44,31 +45,34 @@ modellerServer <- function(id, top_session){
            {
              missing_features_str <- paste(ele, missing_features_str, sep = ', \n')
            }
-           
+
               if(length(missing_features)>=1){
                 showModal(modalDialog(HTML(paste0("<b> Some Features are missing! </b> <br/>",
-                                                  length(missing_features), " essential features are missing in imported data. 
+                                                  length(missing_features), " essential features are missing in imported data.
                                                   Kindly reupload the dataset containing them.<br/>",
                                                   "<b>The missing features are: </b> <br/>",
                                                   missing_features_str))))
               }
            else{
-             flag <- input$dataset
+             flag <- reactive(input$dataset)
            }
          },
          error=function(e) {
            showModal(modalDialog(HTML(paste0("<b> File Upload Error! </b> <br/>
-                                              Please upload the correct file again. 
+                                              Please upload the correct file again.
                                   Download sample dataset for reference. <br/><b>  More Details: </b> <br/> ", e))))
          }
         )
       })
     
+  
+      #flag <- reactive(input$dataset)
+    
 
       #--------------------------------Get Materials-----------------------------------
       
-      observeEvent(input$polyFlag,
-                   {
+      #observeEvent(input$polyFlag,
+                   #{
       observeEvent(req(flag()),{
 
         if(input$polyFlag == FALSE)
@@ -90,12 +94,12 @@ modellerServer <- function(id, top_session){
         })
         
       })
-    })
+    #})
       
       #--------------------------------Get Predictors ----------------------------------
       
-      observeEvent(input$polyFlag,
-                   {
+      #observeEvent(input$polyFlag,
+                   #{
       observeEvent(req(flag()),{
         
         if(input$polyFlag == FALSE)
@@ -118,7 +122,7 @@ modellerServer <- function(id, top_session){
         })
         
       })
-    })
+    #})
       #-----------------------Check if Validation column is empty--------------------------
       
         observeEvent(c(input$valFlag,input$polyFlag),
@@ -174,11 +178,11 @@ modellerServer <- function(id, top_session){
       })
       
       
-      #--------------------------------Get Model Results ----------------------------------
+      #--------------------------------BUILD MODEL---------------------------------------
   
-      observeEvent(input$polyFlag,once = TRUE,
-                   {
-        observeEvent(req(flag()),{
+      #observeEvent(input$polyFlag,once = TRUE,
+                   #{
+        observeEvent(req(flag()),once = TRUE,{
         
                 observeEvent(input$build,ignoreInit = TRUE,
 
@@ -259,7 +263,7 @@ modellerServer <- function(id, top_session){
                        # attr(input$build, "readonly") <- FALSE
                        # input$build <- FALSE
      
-      })  
+      #})  
       # --------------------------------- Move to results tab --------------------------------------  
         
         
