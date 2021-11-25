@@ -5,15 +5,16 @@ modellerUI <- function(id){
   
   tagList(
     br(),
+    
     useShinyjs(),
-    fluidRow(column(width = 6,HTML(paste0("<b><i>","Select Laminate Family","</i></b>")))),
+    fluidRow(column(width = 6,HTML(paste0("<b><i>","Select No.of Plys","</i></b>")))),
     extendShinyjs(text = jsResetCode, functions = "reset"),
-    fluidRow(column(width = 6,
+    fluidRow(column(width = 8,
            
            switchInput(
              inputId = ns("polyFlag"),
-             onLabel = "Polymer",
-             offLabel = "Paper",
+             onLabel = "3-Ply",
+             offLabel = " 2-Ply ",
              onStatus = "primary", 
              offStatus = "success",
              label='Switch',

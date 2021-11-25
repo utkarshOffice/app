@@ -24,9 +24,9 @@ modellerServer <- function(id, top_session){
         )
       
       #--------------------------------Check Data Format-------------------------------
-
-  
-      flag <- reactive(NULL)
+      
+      
+    flag <- reactive(NULL)
 
     flag <- eventReactive( c(req(input$dataset),input$polyFlag), {
 
@@ -144,7 +144,7 @@ modellerServer <- function(id, top_session){
                        {
                          output$nullValNote <- renderUI({
                            wellPanel(
-                             HTML(paste(em("NOTE: The data uploaded does not contain any datapoints for validation & hence all points will be used for training.")))
+                             HTML(paste(em("NOTE: The data uploaded does not contain any datapoints for validation and hence all points will be used for training.")))
                            )
                          })
                        }
@@ -166,7 +166,8 @@ modellerServer <- function(id, top_session){
                 {
                     output$paperValNote <- renderUI({
                       wellPanel(
-                        HTML(paste(em("NOTE: The DOE data for paper models does not support validation, which may result in unexpected scores.")))
+                        HTML(paste(em("NOTE: If the DOE data does not contain sufficient validation points, 
+                                      the Validation R2 score may be low and unexpected.")))
                       )
                     })
                 }
@@ -185,7 +186,6 @@ modellerServer <- function(id, top_session){
         observeEvent(req(flag()),once = TRUE,{
         
                 observeEvent(input$build,ignoreInit = TRUE,
-
                   {
                        
                         if(input$polyFlag == FALSE)

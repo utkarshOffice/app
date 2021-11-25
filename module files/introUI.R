@@ -31,7 +31,10 @@ introUI <- function(id){
               tags$li("The results of the top two performing models are then displayed along with their complete set of metrics as the results summary"),
               tags$li("Consumable (Downloadable) Model Equations are delivered in the output."),
               tags$li("These equations can then be separately on-boarded into the Model bank for democratized simulation and optimization runs."),
-              tags$li("The user can upload two types of sealing DOE data - 2-ply and 3-ply material structures. Other structures can also be modeled but it requires manipulating the contents of the set upload file format. In order to do this please contact the F&R Digital Packaging team.")),
+              tags$li("The user can upload two types of sealing DOE data - 2-ply and 3-ply material structures. The standard data format needs to be adhered to. 
+                      This can be downloaded from the 'Builder' page of the app."),
+              tags$li("Structures other than 2-ply and 3-ply can also be modeled but it requires manipulating the contents of the set upload file format. In order to do this please contact the F&R Digital Packaging team.")
+            )
       
       )
   )
