@@ -67,13 +67,12 @@ def preprocess(data,polyFlag, valFlag):
     #data_flat.drop('Specimen_Width_mm',axis=1, inplace=True)
     #data_flat.drop('Layer_2_thickness_um',axis=1, inplace=True)
     data_flat.drop('Sealing_Force_N',axis=1, inplace=True)
-    failure_mode_cols = ['Failure_Mode_A','Failure_Mode_D','Failure_Mode','Failure_Mode_FR','Failure_Mode_C']
+    failure_mode_cols = ['Failure_Mode_A','Failure_Mode_D','Failure_Mode','Failure_Mode_FR','Failure_Mode_C','Comments']
     for col in data_flat.columns:
         if col in failure_mode_cols:
         #print("Dropping ",col)
             data_flat.drop(col,axis=1, inplace=True)
 
-    
     # laminate family specify dropping
     # if polyFlag == False:
     #     data_flat.drop('MetOPP_Supplier',axis=1, inplace=True)
